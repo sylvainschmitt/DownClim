@@ -1,0 +1,11 @@
+__default__:
+  jobname: "default"
+  mem: "10G"
+  cpus: 1
+  time: "48:00:00"
+  
+rule:
+  jobname: "rule"
+  mem: "10G"
+  cpus: 1
+  time: "48:00:00"

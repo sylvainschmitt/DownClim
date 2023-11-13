@@ -1,0 +1,96 @@
+---
+title: "smkTemplate - Workflow template"
+author: Sylvain Schmitt
+date: May 5, 2023
+output:
+  github_document: 
+    toc: yes
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+rm(list = ls()) ; invisible(gc()) ; set.seed(42)
+library(knitr)
+library(tidyverse)
+theme_set(bayesplot::theme_default())
+opts_chunk$set(echo = F, message = F, warning = F, fig.height = 6, fig.width = 8,
+               cache = F, cache.lazy = F)
+```
+
+[`singularity` & `snakemake`](https://github.com/sylvainschmitt/snakemake_singularity) workflow template.
+
+```{r dag, fig.cap="Workflow."}
+knitr::include_graphics("dag/dag.svg")
+```
+
+# Installation
+
+- [x] Python ≥3.5
+- [x] Snakemake ≥5.24.1
+- [x] Golang ≥1.15.2
+- [x] Singularity ≥3.7.3
+- [x] This workflow
+
+```{bash, eval=F, echo=T}
+# Python
+sudo apt-get install python3.5
+# Snakemake
+sudo apt install snakemake`
+# Golang
+export VERSION=1.15.8 OS=linux ARCH=amd64  # change this as you need
+wget -O /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz https://dl.google.com/go/go${VERSION}.${OS}-${ARCH}.tar.gz && \
+sudo tar -C /usr/local -xzf /tmp/go${VERSION}.${OS}-${ARCH}.tar.gz
+echo 'export GOPATH=${HOME}/go' >> ~/.bashrc && \
+echo 'export PATH=/usr/local/go/bin:${PATH}:${GOPATH}/bin' >> ~/.bashrc && \
+source ~/.bashrc
+# Singularity
+mkdir -p ${GOPATH}/src/github.com/sylabs && \
+  cd ${GOPATH}/src/github.com/sylabs && \
+  git clone https://github.com/sylabs/singularity.git && \
+  cd singularity
+git checkout v3.7.3
+cd ${GOPATH}/src/github.com/sylabs/singularity && \
+  ./mconfig && \
+  cd ./builddir && \
+  make && \
+  sudo make install
+# detect Mutations
+git clone git@github.com:sylvainschmitt/smkTemplate.git
+cd smkTemplate
+```
+
+# Usage
+
+## Locally
+
+```{bash, eval=F, echo=T}
+snakemake -np -j 1 --resources mem_mb=10000 # dry run
+snakemake --dag | dot -Tsvg > dag/dag.svg # dag
+snakemake -j 1 --resources mem_mb=10000 # run
+```
+
+## HPC
+
+### Muse
+
+```{bash, eval=F, echo=T}
+module load snakemake # for test on node
+snakemake -np # dry run
+sbatch job_muse.sh # run
+```
+
+### Genologin
+
+```{bash, eval=F, echo=T}
+module load bioinfo/snakemake-5.25.0 # for test on node
+snakemake -np # dry run
+sbatch job_genologin.sh # run
+```
+
+# Workflow
+
+### [rule](https://github.com/sylvainschmitt/smkTemplate/blob/main/rules/rule.smk)
+
+* Script: [`rule.R`](https://github.com/sylvainschmitt/smkTemplate/blob/main/scripts/rule.R)
+
+Dummy example of a rule based on an R script.

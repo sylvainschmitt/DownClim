@@ -1,0 +1,29 @@
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*_cache
+# snakemake
+.snakemake
+# outputs
+results
+report.html
+# genologin
+*.err
+*.out
+# other
+.cache
+.java
+.oracle_jre_usage
+# data
+*.fastq.gz
+*.fa
+*.fa.fai
+*.bed
+*.sam
+*.tsv
+*.csv
+*.sif
+img
+
