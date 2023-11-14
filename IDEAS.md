@@ -1,9 +1,11 @@
 # DownClim - Downscale Climate Projections
 S Schmitt, G Vieilledent , T Arsouze, A Mauri -
-Nov 13, 2023
+Nov 14, 2023
 
 - [Introduction](#introduction)
 - [Data](#data)
+  - [Area](#area)
+  - [Variables](#variables)
   - [Baseline](#baseline)
   - [Climate projections](#climate-projections)
 - [Workflow](#workflow)
@@ -37,49 +39,102 @@ expect Ivory Coast regional climates to be important for projections.
 (3) we assume French Guiana to be a control with mainly lowland and
 homogeneous climate. To demonstrate the aim of the tool, we want to
 validate and/or assess the projections for each country using (1)
-projections on observed year (e.g. 2005\>2020, even if the differences
+projections on observed year (e.g. 2005\>2020, even if the differences
 between scenarios will not be significant), and (2) the difference with
 forest climatic extent with this product versus classical products.
 
 # Data
 
+## Area
+
+New Caledonia (Australasia) to start with (random choice among the three
+but see arguments above).
+
+## Variables
+
+For the moment we will only use monthly temperature (temperature at
+surface, tas, °C), and rainfall (total precipitation, tp, m). The idea
+is to further compute bioclimatic variables :
+
+> Bioclimatic variables are derived from the monthly temperature and
+> rainfall values in order to generate more biologically meaningful
+> variables. These are often used in species distribution modeling and
+> related ecological modeling techniques. The bioclimatic variables
+> represent annual trends (e.g., mean annual temperature, annual
+> precipitation) seasonality (e.g., annual range in temperature and
+> precipitation) and extreme or limiting environmental factors (e.g.,
+> temperature of the coldest and warmest month, and precipitation of the
+> wet and dry quarters). A quarter is a period of three months (1/4 of
+> the year).
+
 ## Baseline
 
 *WorldClim, Chelsa, ERA5-Land, CRU, TAMSAT, CHIRPS, …*
 
-We will use CHELSA (version, reference) for the example with
-spatial_resolution and temporal_resolution. Ideally the tool should be
-built for different baselines (next steps).
+We will use CHELSA (V2.1, Karger et al. (2017) ) for the example with
+1-km and monthly resolutions. Ideally the tool should be built for
+different baselines (next steps).
 
 ## Climate projections
 
-Depending on temporal resolution of the baseline and the sutdy area, we
-should list available data on CORDEX regarding:
+Depending on temporal resolution of the baseline and the study area
+(specifically the continent), we should list available data on CORDEX
+regarding:
 
 - global climate models (GCM)
 - regional climate models (RCM)
-- temporal resolution (AFRICLIM averages over 20 years but we could use
-  finer)
+- temporal resolution (monthly for the example)
 - spatial resolution (a priori the finest)
-- scenarios (RCP or SSP)
+- scenarios (RCP or SSP, RCP 2.6 & 8.5 for the example)
+
+Available CORDEX experiments are described here:
+<http://htmlpreview.github.io/?http://is-enes-data.github.io/CORDEX_status.html>
+.
+
+For Australasia (New Caledonia), we have:
+
+- AUS-22 as the finest domain, e.g. Australasia at 0.22° - 25km
+- 4 GCM: ECMWF-ERAINT, MOHC-HadGEM2-ES, MPI-M-MPI-ESM-(LR/MR),
+  NCC-NorESM1-M
+- 3 RCM: CCLM5-0-15, REMO2015, RegCM4-7
+- 2 RCP: RCP 2.6 & RCP 8.5
 
 # Workflow
 
-Ideas on the fly:
+The workflow is summarised in the draft scheme below.
+
+![](dag/DownClim.png)
+
+Monthly temperature and precipitation are retrieved for the defined area
+for both the baseline and the projections across the historical,
+evaluation and projection years. The projections are retrieved for
+different global (GCM) and regional (RCM) climatic models with several
+scenarios (RCP). Monthly climate is summarised for both the baseline and
+the projections across the historical years. For each evaluation and
+projection year, monthly climate anomalies of projections compared with
+historical means of the projections are computed. For each evaluation
+and projection year, the monthly anomalies are interpolated and added to
+the historical means of the baseline. For each evaluation year, the
+downscaled projections are compared to the baseline. Downscaled
+projections evaluation are summarised across evaluation years.
+Similarly, downscaled projections are summarised across projection
+years. Finally, ensemble of projections & evaluation are made across
+global (GCM) and regional (RCM) climatic models while computing across
+models uncertainties.
+
+Based on:
 
 - snakemake
 - singularity
-- a bit of everything
-- GRASS GIS (more than R terra) for raster operation and interpolation
-- R
+- GRASS GIS for raster operation and interpolation
 - R ncdf4 (or more appropriate NetCDF tools)
 - rmarkdown for automatic reporting of the pipeline?
 
 # Examples
 
 - French Guiana, Ivory Coast, New Caledonia
-- Chelsa v2.1 - 1km - annual?
-- All RCM x GCM available at 1km - annual?
+- Chelsa v2.1 - 1km - monthly
+- All RCM x GCM x RCP available at the finest resolution - monthly
 
 # Assesment
 
@@ -101,6 +156,16 @@ Ideas on the fly:
 # References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-karger2017" class="csl-entry">
+
+Karger, Dirk Nikolaus, Olaf Conrad, Jürgen Böhner, Tobias Kawohl, Holger
+Kreft, Rodrigo Wilber Soria-Auza, Niklaus E. Zimmermann, H. Peter
+Linder, and Michael Kessler. 2017. “Climatologies at High Resolution for
+the Earth’s Land Surface Areas.” *Scientific Data* 4 (1).
+<https://doi.org/10.1038/sdata.2017.122>.
+
+</div>
 
 <div id="ref-platts2014" class="csl-entry">
 
