@@ -1,6 +1,6 @@
-# [DownClim - Downscale Climate Projections](https://sylvainschmitt.github.io/DownClim/)
+# DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Nov 13, 2023
+Nov 15, 2023
 
 - [Installation](#installation)
 - [Credentials](#credentials)

@@ -1,95 +1,153 @@
+---
+bibliography: references.bib
+---
+
 # Literature {.unnumbered}
+
+## To read
+
+-   @navarro-racines2020: NASA Global Daily Downscaled Projections CMIP6 (delta method, perfect sibling evaluation, available WDCC, CCAFS-Climate)
+-   @platts2014: dynamicla downscaling (RCM CORDEX & change-factor downscaling, R & GRASS GIS)
+-   @brown2008: review downscaling for Africa (dynamical & statistical, bias correction, advantages, best practices)
+
+## Examples
+
+-   @gebrechorkos2023:
+    -   What: statistically downscaled CMIP6
+    -   Resolutions: 0.25° (28km) and daily
+    -   How: BCCAQ
+    -   Baseline: MSWX & MSWEP
+    -   Projections: 18 CMIP6 GCMs
+    -   Scenarios: SSP2-4.5, SSP5-3.4-OS & SSP5-8.5
+    -   Variables: daily precipitation, air-temperature, maximum and minimum temperature, wind speed, air pressure, and relative humidity
+    -   Tool: ClimDown R package
+    -   Evaluation: Pearson, RMSE, bias, SE, Taylor diagram
+    -   Access: [CEDA](https://catalogue.ceda.ac.uk/uuid/c107618f1db34801bb88a1e927b82317)
+    -   Note: remove bias & reproduce extreme events
+-   @navarro-racines2020:
+    -   What: statistically downscaled CMIP6
+    -   Resolutions:
+    -   How: delta method
+    -   Baseline:
+    -   Projections:
+    -   Scenarios:
+    -   Variables:
+    -   Tool:
+    -   Evaluation: perfect sibling
+    -   Access: WDCC, CCAFS-Climate
+    -   Note:
+-   @platts2014:
+    -   What: statistically downscaled CORDEX CMIP5
+    -   Resolutions:
+    -   How: change-factor
+    -   Baseline:
+    -   Projections:
+    -   Scenarios:
+    -   Variables:
+    -   Tool: R & GRASS GIS
+    -   Evaluation:
+    -   Access:
+    -   Note:
 
 ## Downscaling
 
--   @gebrechorkos2023:
-    -   statistically downscaled CMIP6 models
-    -   Bias Correction Constructed Analogues with Quantile mapping reordering (BCCAQ)
-    -   daily precipitation, air-temperature, maximum and minimum temperature, wind speed, air pressure, and relative humidity
-    -   18 CMIP6 GCMs
-    -   high-resolution reference datasets
-    -   remove bias & extreme events
-    -   available Centre for Environmental Data Analysis (CEDA): <https://doi.org/10.5285/c107618f1db34801bb88a1e927b82317>
-    -   0.25° and daily
-    -   scenarios: SSP2-4.5, SSP5-3.4-OS and SSP5-8.5
--   @coulibaly2005
--   @wilby2012
--   @navarro-racines2020
--   @brown2008
--   NASA Global Daily Downscaled Projections, CMIP6: <https://www.nature.com/articles/s41597-022-01393-4>
--   AFRICLIM
--   <https://climate.copernicus.eu/high-resolution-climate-projections>
--   <https://theclimatedatafactory.com/high-resolution-cmip6-projections-now-available/>
--   KrigR [@davy2021]
+-   BCCAQ: Bias Correction Constructed Analogues with Quantile mapping reordering [@cannon2015; @werner2016]
+-   CA: Constructed Analogues [@maurer2010]
+-   CI: Climate Imprint [@hunter2005]
+-   DQM: Quantile Delta Mapping [@cannon2015]
+-   TLFN: time-lagged feed-forward neural network or temporal neural network [@coulibaly2005]
+-   SDSM: Statistical DownScaling Model [@wilby2002; @wilby2012]
+-   change-factor or delta method [@navarro-racines2020; @platts2014]
+-   kriging (KrigR) [@davy2021]
+-   CDFt: cumulative distribution function transform (R CDFt) [@lanzante2019]
 
-## Baseline
+## Climate data
 
--   ERA5-Land: reanalysis dataset from ECMWF: European Centre for Medium-Range Weather Forecasts
--   CHELSA: Climatologies at High resolution for the Earth's Land Surface Areas @karger2017
--   WorldClim
--   CRU TS: Climatic Research Unit Time Series
--   TAMSAT: **T**ropical **A**pplications of **M**eteorology using **SAT**ellite data and ground-based observations. <https://www.tamsat.org.uk/>
--   CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations. <https://www.chc.ucsb.edu/data/chirps>
+### Reanalysis
+
+-   ERA5-Land: reanalysis dataset from European Centre for Medium-Range Weather Forecasts (ECMWF) [@muñoz-sabater2021]
+    -   To further describe
+-   CHELSA 2.1: Climatologies at High resolution for the Earth's Land Surface Areas [@karger2017]
+-   WorldClim 2: 1-km spatial resolution climate surfaces for global land areas [@fick2017]
+-   CRU TS 4: monthly high-resolution gridded multivariate climate dataset (Climatic Research Unit Time Series) [@harris2020]
+-   CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations [@funk2015]
+-   TerraClimate: a high-resolution global dataset of monthly climate and climatic water balance from 1958--2015 [@abatzoglou2018]
 -   GloH2O MSWX: Multi-Source Weather [@beck2022] & MSWEP: Multi-Source Weighted-Ensemble Precipitation [@beck2017; @beck2019]
--   TerraClimate
--   GHCNd: Historical Climatology Network Daily
--   GSOD: Global Summary of the Day
--   GPCC: Global Precipitation Climatology Centre
--   CMORPH: Climate Prediction Center morphing technique
--   TRMM: Tropical Rainfall Measuring Mission
--   TMPA: Multi-satellite Precipitation Analysis
--   GSMaP: lobal Satellite Mapping
+-   JRA-55: the Japanese 55-year Reanalysis [@kobayashi2016]
 
-## Projections
+### Observations
 
--   CMIP5
--   
--   CORDEX CMIP5
--   CMIP6: <https://esgf-node.llnl.gov/search/cmip6/>
--   CMIP6 HighReMIP: <https://gmd.copernicus.org/articles/special_issue997.html>
+-   GHCNd: Historical Climatology Network Daily [@menne2012]
+-   GSOD: Global Summary of the Day [@hsparks2017]
+-   GPCC: Global Precipitation Climatology Centre [@becker2013]
+
+### Satellite
+
+-   TAMSAT: Tropical Applications of Meteorology using Satellite data and ground-based observations [@maidment2017]
+-   CMORPH: Climate Prediction Center morphing technique [@joyce2004]
+-   TRMM: Tropical Rainfall Measuring Mission [@kummerow1998]
+-   TMPA: Multi-satellite Precipitation Analysis [@huffman2009]
+-   GSMaP: Global Satellite Mapping [@okamoto]
+
+## Climate projections
+
+-   CMIP5: the fifth phase of Coupled Model Intercomparison Project [@taylor2012]
+-   CORDEX (CMIP5 based): Coordinated Regional Downscaling Experiment [@giorgi2015]
+-   CMIP6: the sixth phase of Coupled Model Intercomparison Project [@tokarska2020]
+-   CMIP6 HighResMIP: High Resolution Model Intercomparison Project [@haarsma2016; @liang-liang2022]
 
 ## Providers
 
--   CDS CMIP6 <https://cds.climate.copernicus.eu/cdsapp#!/dataset/projections-cmip6?tab=form>
--   CMIP6 HighResMIP:
-    -   <https://highresmip.org/data/>
-    -   <https://gmd.copernicus.org/articles/9/4185/2016/>
-    -   3 GCM for 25km on land with future projections: CESM1-CAM5-SE-HR (10, unavailable), MRI-AGCM3-2-H (4), MRI-AGCM3-2-S (16)
--   CORDEX data are available on the CDS store and not only on the esgf node
+-   [CDS](https://cds.climate.copernicus.eu/cdsapp#!/search): Climate Data Store including CMIP (not HighRes), ERA5-Land, CORDEX (not all), ...
+-   ESGF: Earth System Grid Federation for different providers (e.g. UK-CEDA, IPSL, LLNL, ...) including HighResMIP, CMIP, and CORDEX
 
 ## Scenarios
 
--   @hausfather2020
+-   RCP: Representative Concentration Pathways
+    -   Critics of RCP 8.5 used wrongly as buisness as usual in @hausfather2020
+-   SSP: Shared Socio-economic Pathways
 
 ## Selection
 
--   @lutz2016
--   
+-   \(1\) initial selection of climate models based on the range of projected
+    changes in climatic means, (2) refined selection based on the range of
+    projected changes in climatic extremes and (3) final selection based on
+    the climate model skill to simulate past climate [@lutz2016]
 
 ## Evaluation
 
--   <https://www.sciencedirect.com/science/article/pii/S1674927821001477>
--   @gebrechorkos2018
--   Some study are comparing ERA5-Land, CHELSA, and TerraClimate [@hamed2021]
--   Pearson correlation coefficient (r)
--   Root mean square error (RMSE)
--   Bias
--   Standard deviation
+-   TSS: Taylor Skill Score [@liang-liang2022]
+-   IA: index of agreement [@gebrechorkos2018]
+-   CC: Pearson correlation coefficient
+-   RMSE: Root mean square error
+-   MAE: Mean absolute error
+-   R: Relative bias
+-   SD: Standard deviation
 -   Taylor diagram @taylor2001
--   Extreme indices from Expert Team on Climate Change Detection and Indices (ETCCDI, @karl1999)
+-   Extreme indices from Expert Team on Climate Change Detection and Indices (ETCCDI) [@karl1999]
 
 ## Tools
 
--   SAGA GIS
--   CDO: Climate Data Operators <https://code.mpimet.mpg.de/projects/cdo>
--   python xarray
--   python xesmf
--   python salem
--   python rioxarray
--   R terra
--   R netcdf4
--   ClimDown R package for downscaling with Bias Correction/Constructed Analogues with Quantile mapping reordering (BCCAQ): <https://joss.theoj.org/papers/10.21105/joss.00360>, <https://github.com/pacificclimate/ClimDown>
--   climdex.pcic R package for climate extremes indices <http://pacificclimate.github.io/climdex.pcic/>
--   
+### Standalone
 
-## References
+-   SAGA GIS
+-   [CDO](https://code.mpimet.mpg.de/projects/cdo): Climate Data Operators
+-   singularity
+
+### Python
+
+-   xarray
+-   xesmf
+-   salem
+-   rioxarray
+-   snakemake
+
+### R
+
+-   terra
+-   netcdf4
+-   ClimDown: downscaling with Bias Correction/Constructed Analogues with Quantile mapping reordering (BCCAQ) [@hiebert2018]
+-   climdex.pcic: climate extremes indices
+-   KrigR [@davy2021]
+-   CDFt
+-   GSODR [@hsparks2017]

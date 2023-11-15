@@ -22,7 +22,7 @@ For the moment we will only use monthly temperature (temperature at surface, tas
 
 *WorldClim, Chelsa, ERA5-Land, CRU, TAMSAT, CHIRPS, ...*
 
-We will use CHELSA (V2.1, @karger2017 ) for the example with 1-km and monthly resolutions. Ideally the tool should be built for different baselines (next steps).
+We will use CHELSA V2.1 [@karger2017] for the example with 1-km and monthly resolutions. Ideally the tool should be built for different baselines (next steps).
 
 ### Climate projections
 
