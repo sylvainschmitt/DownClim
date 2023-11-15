@@ -30,9 +30,9 @@ knitr::include_graphics("dag/dag.svg")
 
 This workflow is built on:
 
-- [x] Python ≥3.5
-- [x] Snakemake ≥5.24.1
-- [x] Singularity ≥3.7.3
+-   [x] Python ≥3.5
+-   [x] Snakemake ≥5.24.1
+-   [x] Singularity ≥3.7.3
 
 Once installed simply clone the workflow:
 
@@ -59,13 +59,10 @@ sbatch job_muse.sh # HPC run with slurm
 
 ### [rule](https://github.com/sylvainschmitt/smkTemplate/blob/main/rules/rule.smk)
 
-* Script: [`rule.R`](https://github.com/sylvainschmitt/smkTemplate/blob/main/scripts/rule.R)
+-   Script: [`rule.R`](https://github.com/sylvainschmitt/smkTemplate/blob/main/scripts/rule.R)
 
 Dummy example of a rule based on an R script.
 
 # Data
 
 *Detail the different data sources.*
-
-
-

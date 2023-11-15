@@ -1,2 +1,3 @@
-* DownClim 0.1.0.9002: scheme draft
-* DownClim 0.1.0.9001: init
+-   DownClim 0.1.0.9003: switching to a quarto book to accompany the development
+-   DownClim 0.1.0.9002: scheme draft
+-   DownClim 0.1.0.9001: init

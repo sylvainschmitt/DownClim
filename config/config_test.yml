@@ -1,1 +1,9 @@
-key: "value"
+area: "New Caledonia"
+baseline: "CHELSA V2.1"
+hist_years: [1980]
+eval_years: [2006]
+proj_years: [2100]
+domain: "AUS-22"
+gcm: ["ECMWF-ERAINT"]
+rcm: ["CCLM5-0-15"]
+rcp: ["historical", "rcp26", "rcp85"]

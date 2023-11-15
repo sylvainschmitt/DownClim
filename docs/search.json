@@ -1,0 +1,121 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "",
+    "text": "Introduction\nThe purpose of DownClim is to offer a tool for regional and national climate projections including the mechanistic ‘dynamic’ downscaling of the CORDEX initiative. DownClim is opposed to the direct statistical downscaling of global climate projections found in WorldClim and CHELSA. DownClim is directly inspired of AFRICLIM (Platts, Omeny, and Marchant 2014). The approach is justified by an improvement in regional projections of CORDEX compared to CMIP (insert few references), although it can increase uncertainty and sometimes be less reliable (insert indian monsoon reference). The tool is an automated singularity workflow easily reproducible and scalable associated to singularity images for enhance reproducibility and portability.\nAs a first step we will develop the pipeline for three study countries (French Guiana, Ivory Coast and New Caledonia) over three continents, with a single baseline (CHELSA) and a reduced number of global (GCM) and regional (RCM) climate models for a few scenarios (RCP or SSP). Behind the choice of countries we have different hypotheses. (1) we expect New Caledonia regional topography to be important for projections. (2) we expect Ivory Coast regional climates to be important for projections. (3) we assume French Guiana to be a control with mainly lowland and homogeneous climate. To demonstrate the aim of the tool, we want to validate and/or assess the projections for each country using (1) projections on observed year (e.g. 2005&gt;2020, even if the differences between scenarios will not be significant), and (2) the difference with forest climatic extent with this product versus classical products."
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Data",
+    "text": "Data\n\nArea\nNew Caledonia (Australasia) to start with (random choice among the three but see arguments above).\n\n\nVariables\nFor the moment we will only use monthly temperature (temperature at surface, tas, °C), and rainfall (total precipitation, tp, m). The idea is to further compute bioclimatic variables :\n\nBioclimatic variables are derived from the monthly temperature and rainfall values in order to generate more biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year).\n\n\n\nBaseline\nWorldClim, Chelsa, ERA5-Land, CRU, TAMSAT, CHIRPS, …\nWe will use CHELSA (V2.1, Karger et al. (2017) ) for the example with 1-km and monthly resolutions. Ideally the tool should be built for different baselines (next steps).\n\n\nClimate projections\nDepending on temporal resolution of the baseline and the study area (specifically the continent), we should list available data on CORDEX regarding:\n\nglobal climate models (GCM)\nregional climate models (RCM)\ntemporal resolution (monthly for the example)\nspatial resolution (a priori the finest)\nscenarios (RCP or SSP, RCP 2.6 & 8.5 for the example)\n\nAvailable CORDEX experiments are described here: http://htmlpreview.github.io/?http://is-enes-data.github.io/CORDEX_status.html .\nFor Australasia (New Caledonia), we have:\n\nAUS-22 as the finest domain, e.g. Australasia at 0.22° - 25km\n4 GCM: ECMWF-ERAINT, MOHC-HadGEM2-ES, MPI-M-MPI-ESM-(LR/MR), NCC-NorESM1-M\n3 RCM: CCLM5-0-15, REMO2015, RegCM4-7\n2 RCP: RCP 2.6 & RCP 8.5"
+  },
+  {
+    "objectID": "index.html#workflow",
+    "href": "index.html#workflow",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Workflow",
+    "text": "Workflow\nThe workflow is summarised in the draft scheme below.\n\n\n\n\n\nMonthly temperature and precipitation are retrieved for the defined area for both the baseline and the projections across the historical, evaluation and projection years. The projections are retrieved for different global (GCM) and regional (RCM) climatic models with several scenarios (RCP). Monthly climate is summarised for both the baseline and the projections across the historical years. For each evaluation and projection year, monthly climate anomalies of projections compared with historical means of the projections are computed. For each evaluation and projection year, the monthly anomalies are interpolated and added to the historical means of the baseline. For each evaluation year, the downscaled projections are compared to the baseline. Downscaled projections evaluation are summarised across evaluation years. Similarly, downscaled projections are summarised across projection years. Finally, ensemble of projections & evaluation are made across global (GCM) and regional (RCM) climatic models while computing across models uncertainties.\nBased on:\n\nsnakemake\nsingularity\nGRASS GIS for raster operation and interpolation\nR ncdf4 (or more appropriate NetCDF tools)\nrmarkdown for automatic reporting of the pipeline?"
+  },
+  {
+    "objectID": "index.html#examples",
+    "href": "index.html#examples",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Examples",
+    "text": "Examples\n\nFrench Guiana, Ivory Coast, New Caledonia\nChelsa v2.1 - 1km - monthly\nAll RCM x GCM x RCP available at the finest resolution - monthly"
+  },
+  {
+    "objectID": "index.html#assesment",
+    "href": "index.html#assesment",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Assesment",
+    "text": "Assesment\n\npredicted vs observed 2005-2023\ntropical moist forest potential distribution based on CHELSA future vs DownClim projections"
+  },
+  {
+    "objectID": "index.html#next-steps",
+    "href": "index.html#next-steps",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Next steps",
+    "text": "Next steps\nTo develop once first steps done."
+  },
+  {
+    "objectID": "index.html#poeple",
+    "href": "index.html#poeple",
+    "title": "DownClim - Downscale Climate Projections",
+    "section": "Poeple",
+    "text": "Poeple\n\nSylvain Schmitt (sylvain.schmitt@cirad.fr)\nGhislain Vieilledent (ghislain.vieilledent@cirad.fr)\nThomas Arsouze (thomas.arsouze@cirad.fr)\nAchille Mauri (mauri.achille@gmail.com)\n\n\n\n\n\nDavy, Richard, and Erik Kusch. 2021. “Reconciling High Resolution Climate Datasets Using KrigR.” Environmental Research Letters 16 (12): 124040. https://doi.org/10.1088/1748-9326/ac39bf.\n\n\nHamed, Mohammed Magdy, Mohamed Salem Nashwan, and Shamsuddin Shahid. 2021. “Performance Evaluation of Reanalysis Precipitation Products in Egypt Using Fuzzy Entropy Time Series Similarity Analysis.” International Journal of Climatology 41 (11): 5431–46. https://doi.org/10.1002/joc.7286.\n\n\nKarger, Dirk Nikolaus, Olaf Conrad, Jürgen Böhner, Tobias Kawohl, Holger Kreft, Rodrigo Wilber Soria-Auza, Niklaus E. Zimmermann, H. Peter Linder, and Michael Kessler. 2017. “Climatologies at High Resolution for the Earth’s Land Surface Areas.” Scientific Data 4 (1). https://doi.org/10.1038/sdata.2017.122.\n\n\nPlatts, Philip J., Peter A. Omeny, and Rob Marchant. 2014. “AFRICLIM: High-Resolution Climate Projections for Ecological Applications in Africa.” African Journal of Ecology 53 (1): 103–8. https://doi.org/10.1111/aje.12180."
+  },
+  {
+    "objectID": "literature.html#downscaling",
+    "href": "literature.html#downscaling",
+    "title": "Literature",
+    "section": "Downscaling",
+    "text": "Downscaling\n\nS. Gebrechorkos et al. (2023):\n\nstatistically downscaled CMIP6 models\nBias Correction Constructed Analogues with Quantile mapping reordering (BCCAQ)\ndaily precipitation, air-temperature, maximum and minimum temperature, wind speed, air pressure, and relative humidity\n18 CMIP6 GCMs\nhigh-resolution reference datasets\nremove bias & extreme events\navailable Centre for Environmental Data Analysis (CEDA): https://doi.org/10.5285/c107618f1db34801bb88a1e927b82317\n0.25° and daily\nscenarios: SSP2-4.5, SSP5-3.4-OS and SSP5-8.5\n\nCoulibaly, Dibike, and Anctil (2005)\nWilby and Dawson (2012)\nNavarro-Racines et al. (2020)\nBrown et al. (2008)\nNASA Global Daily Downscaled Projections, CMIP6: https://www.nature.com/articles/s41597-022-01393-4\nAFRICLIM\nhttps://climate.copernicus.eu/high-resolution-climate-projections\nhttps://theclimatedatafactory.com/high-resolution-cmip6-projections-now-available/\nKrigR (Davy and Kusch 2021)"
+  },
+  {
+    "objectID": "literature.html#baseline",
+    "href": "literature.html#baseline",
+    "title": "Literature",
+    "section": "Baseline",
+    "text": "Baseline\n\nERA5-Land: reanalysis dataset from ECMWF: European Centre for Medium-Range Weather Forecasts\nCHELSA: Climatologies at High resolution for the Earth’s Land Surface Areas Karger et al. (2017)\nWorldClim\nCRU TS: Climatic Research Unit Time Series\nTAMSAT: Tropical Applications of Meteorology using SATellite data and ground-based observations. https://www.tamsat.org.uk/\nCHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations. https://www.chc.ucsb.edu/data/chirps\nGloH2O MSWX: Multi-Source Weather (Beck et al. 2022) & MSWEP: Multi-Source Weighted-Ensemble Precipitation (Beck et al. 2017; Beck et al. 2019)\nTerraClimate\nGHCNd: Historical Climatology Network Daily\nGSOD: Global Summary of the Day\nGPCC: Global Precipitation Climatology Centre\nCMORPH: Climate Prediction Center morphing technique\nTRMM: Tropical Rainfall Measuring Mission\nTMPA: Multi-satellite Precipitation Analysis\nGSMaP: lobal Satellite Mapping"
+  },
+  {
+    "objectID": "literature.html#projections",
+    "href": "literature.html#projections",
+    "title": "Literature",
+    "section": "Projections",
+    "text": "Projections\n\nCMIP5\n\nCORDEX CMIP5\nCMIP6: https://esgf-node.llnl.gov/search/cmip6/\nCMIP6 HighReMIP: https://gmd.copernicus.org/articles/special_issue997.html"
+  },
+  {
+    "objectID": "literature.html#providers",
+    "href": "literature.html#providers",
+    "title": "Literature",
+    "section": "Providers",
+    "text": "Providers\n\nCDS CMIP6 https://cds.climate.copernicus.eu/cdsapp#!/dataset/projections-cmip6?tab=form\nCMIP6 HighResMIP:\n\nhttps://highresmip.org/data/\nhttps://gmd.copernicus.org/articles/9/4185/2016/\n3 GCM for 25km on land with future projections: CESM1-CAM5-SE-HR (10, unavailable), MRI-AGCM3-2-H (4), MRI-AGCM3-2-S (16)\n\nCORDEX data are available on the CDS store and not only on the esgf node"
+  },
+  {
+    "objectID": "literature.html#scenarios",
+    "href": "literature.html#scenarios",
+    "title": "Literature",
+    "section": "Scenarios",
+    "text": "Scenarios\n\nHausfather and Peters (2020)"
+  },
+  {
+    "objectID": "literature.html#selection",
+    "href": "literature.html#selection",
+    "title": "Literature",
+    "section": "Selection",
+    "text": "Selection\n\nLutz et al. (2016)"
+  },
+  {
+    "objectID": "literature.html#evaluation",
+    "href": "literature.html#evaluation",
+    "title": "Literature",
+    "section": "Evaluation",
+    "text": "Evaluation\n\nhttps://www.sciencedirect.com/science/article/pii/S1674927821001477\nS. H. Gebrechorkos, Hülsmann, and Bernhofer (2018)\nSome study are comparing ERA5-Land, CHELSA, and TerraClimate (Hamed, Nashwan, and Shahid 2021)\nPearson correlation coefficient (r)\nRoot mean square error (RMSE)\nBias\nStandard deviation\nTaylor diagram Taylor (2001)\nExtreme indices from Expert Team on Climate Change Detection and Indices (ETCCDI, Karl, Nicholls, and Ghazi (1999))"
+  },
+  {
+    "objectID": "literature.html#tools",
+    "href": "literature.html#tools",
+    "title": "Literature",
+    "section": "Tools",
+    "text": "Tools\n\nSAGA GIS\nCDO: Climate Data Operators https://code.mpimet.mpg.de/projects/cdo\npython xarray\npython xesmf\npython salem\npython rioxarray\nR terra\nR netcdf4\nClimDown R package for downscaling with Bias Correction/Constructed Analogues with Quantile mapping reordering (BCCAQ): https://joss.theoj.org/papers/10.21105/joss.00360, https://github.com/pacificclimate/ClimDown\nclimdex.pcic R package for climate extremes indices http://pacificclimate.github.io/climdex.pcic/"
+  },
+  {
+    "objectID": "literature.html#references",
+    "href": "literature.html#references",
+    "title": "Literature",
+    "section": "References",
+    "text": "References\n\n\n\n\nBeck, Hylke E., Albert I. J. M. van Dijk, Pablo R. Larraondo, Tim R. McVicar, Ming Pan, Emanuel Dutra, and Diego G. Miralles. 2022. “MSWX: Global 3-Hourly 0.1° Bias-Corrected Meteorological Data Including Near-Real-Time Updates and Forecast Ensembles.” Bulletin of the American Meteorological Society 103 (3): E710–32. https://doi.org/10.1175/bams-d-21-0145.1.\n\n\nBeck, Hylke E., Albert I. J. M. van Dijk, Vincenzo Levizzani, Jaap Schellekens, Diego G. Miralles, Brecht Martens, and Ad de Roo. 2017. “MSWEP: 3-Hourly 0.25° Global Gridded Precipitation (19792015) by Merging Gauge, Satellite, and Reanalysis Data.” Hydrology and Earth System Sciences 21 (1): 589–615. https://doi.org/10.5194/hess-21-589-2017.\n\n\nBeck, Hylke E., Eric F. Wood, Ming Pan, Colby K. Fisher, Diego G. Miralles, Albert I. J. M. van Dijk, Tim R. McVicar, and Robert F. Adler. 2019. “MSWEP V2 Global 3-Hourly 0.1° Precipitation: Methodology and Quantitative Assessment.” Bulletin of the American Meteorological Society 100 (3): 473–500. https://doi.org/10.1175/bams-d-17-0138.1.\n\n\nBrown, Casey, Arthur M. Greene, Paul J. Block, and Alessandra Giannini. 2008. “Review of Downscaling Methodologies for Africa Climate Applications.” Columbia University. https://doi.org/10.7916/D8M04C88.\n\n\nCoulibaly, Paulin, Yonas B. Dibike, and François Anctil. 2005. “Downscaling Precipitation and Temperature with Temporal Neural Networks.” Journal of Hydrometeorology 6 (4): 483–96. https://doi.org/10.1175/jhm409.1.\n\n\nDavy, Richard, and Erik Kusch. 2021. “Reconciling High Resolution Climate Datasets Using KrigR.” Environmental Research Letters 16 (12): 124040. https://doi.org/10.1088/1748-9326/ac39bf.\n\n\nGebrechorkos, Solomon Hailu, Stephan Hülsmann, and Christian Bernhofer. 2018. “Evaluation of Multiple Climate Data Sources for Managing Environmental Resources in East Africa.” Hydrology and Earth System Sciences 22 (8): 4547–64. https://doi.org/10.5194/hess-22-4547-2018.\n\n\nGebrechorkos, Solomon, Julian Leyland, Louise Slater, Michel Wortmann, Philip J. Ashworth, Georgina L. Bennett, Richard Boothroyd, et al. 2023. “A High-Resolution Daily Global Dataset of Statistically Downscaled CMIP6 Models for Climate Impact Analyses.” Scientific Data 10 (1). https://doi.org/10.1038/s41597-023-02528-x.\n\n\nHamed, Mohammed Magdy, Mohamed Salem Nashwan, and Shamsuddin Shahid. 2021. “Performance Evaluation of Reanalysis Precipitation Products in Egypt Using Fuzzy Entropy Time Series Similarity Analysis.” International Journal of Climatology 41 (11): 5431–46. https://doi.org/10.1002/joc.7286.\n\n\nHausfather, Zeke, and Glen P. Peters. 2020. “Emissions  the ‘Business as Usual’ Story Is Misleading.” Nature 577 (7792): 618–20. https://doi.org/10.1038/d41586-020-00177-3.\n\n\nKarger, Dirk Nikolaus, Olaf Conrad, Jürgen Böhner, Tobias Kawohl, Holger Kreft, Rodrigo Wilber Soria-Auza, Niklaus E. Zimmermann, H. Peter Linder, and Michael Kessler. 2017. “Climatologies at High Resolution for the Earth’s Land Surface Areas.” Scientific Data 4 (1). https://doi.org/10.1038/sdata.2017.122.\n\n\nKarl, Thomas R., Neville Nicholls, and Anver Ghazi. 1999. “CLIVAR/GCOS/WMO Workshop on Indices and Indicators for Climate Extremes Workshop Summary.” In, 3–7. Springer Netherlands. https://doi.org/10.1007/978-94-015-9265-9_2.\n\n\nLutz, Arthur F., Herbert W. ter Maat, Hester Biemans, Arun B. Shrestha, Philippus Wester, and Walter W. Immerzeel. 2016. “Selecting Representative Climate Models for Climate Change Impact Studies: An Advanced Envelope-Based Selection Approach.” International Journal of Climatology 36 (12): 3988–4005. https://doi.org/10.1002/joc.4608.\n\n\nNavarro-Racines, Carlos, Jaime Tarapues, Philip Thornton, Andy Jarvis, and Julian Ramirez-Villegas. 2020. “High-Resolution and Bias-Corrected CMIP5 Projections for Climate Change Impact Assessments.” Scientific Data 7 (1). https://doi.org/10.1038/s41597-019-0343-8.\n\n\nTaylor, Karl E. 2001. “Summarizing Multiple Aspects of Model Performance in a Single Diagram.” Journal of Geophysical Research: Atmospheres 106 (D7): 7183–92. https://doi.org/10.1029/2000jd900719.\n\n\nWilby, R. L., and C. W. Dawson. 2012. “The Statistical DownScaling Model: Insights from One Decade of Application.” International Journal of Climatology 33 (7): 1707–19. https://doi.org/10.1002/joc.3544."
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Beck, Hylke E., Albert I. J. M. van Dijk, Pablo R. Larraondo, Tim R.\nMcVicar, Ming Pan, Emanuel Dutra, and Diego G. Miralles. 2022.\n“MSWX: Global 3-Hourly 0.1° Bias-Corrected Meteorological Data\nIncluding Near-Real-Time Updates and Forecast Ensembles.”\nBulletin of the American Meteorological Society 103 (3):\nE710–32. https://doi.org/10.1175/bams-d-21-0145.1.\n\n\nBeck, Hylke E., Albert I. J. M. van Dijk, Vincenzo Levizzani, Jaap\nSchellekens, Diego G. Miralles, Brecht Martens, and Ad de Roo. 2017.\n“MSWEP: 3-Hourly 0.25° Global Gridded Precipitation\n(19792015) by Merging Gauge, Satellite, and Reanalysis\nData.” Hydrology and Earth System Sciences 21 (1):\n589–615. https://doi.org/10.5194/hess-21-589-2017.\n\n\nBeck, Hylke E., Eric F. Wood, Ming Pan, Colby K. Fisher, Diego G.\nMiralles, Albert I. J. M. van Dijk, Tim R. McVicar, and Robert F. Adler.\n2019. “MSWEP V2 Global 3-Hourly 0.1° Precipitation: Methodology\nand Quantitative Assessment.” Bulletin of the American\nMeteorological Society 100 (3): 473–500. https://doi.org/10.1175/bams-d-17-0138.1.\n\n\nBrown, Casey, Arthur M. Greene, Paul J. Block, and Alessandra Giannini.\n2008. “Review of Downscaling Methodologies for Africa Climate\nApplications.” Columbia University. https://doi.org/10.7916/D8M04C88.\n\n\nCoulibaly, Paulin, Yonas B. Dibike, and François Anctil. 2005.\n“Downscaling Precipitation and Temperature with Temporal Neural\nNetworks.” Journal of Hydrometeorology 6 (4): 483–96. https://doi.org/10.1175/jhm409.1.\n\n\nDavy, Richard, and Erik Kusch. 2021. “Reconciling High Resolution\nClimate Datasets Using KrigR.” Environmental Research\nLetters 16 (12): 124040. https://doi.org/10.1088/1748-9326/ac39bf.\n\n\nGebrechorkos, Solomon Hailu, Stephan Hülsmann, and Christian Bernhofer.\n2018. “Evaluation of Multiple Climate Data Sources for Managing\nEnvironmental Resources in East Africa.” Hydrology and Earth\nSystem Sciences 22 (8): 4547–64. https://doi.org/10.5194/hess-22-4547-2018.\n\n\nGebrechorkos, Solomon, Julian Leyland, Louise Slater, Michel Wortmann,\nPhilip J. Ashworth, Georgina L. Bennett, Richard Boothroyd, et al. 2023.\n“A High-Resolution Daily Global Dataset of Statistically\nDownscaled CMIP6 Models for Climate Impact Analyses.”\nScientific Data 10 (1). https://doi.org/10.1038/s41597-023-02528-x.\n\n\nHamed, Mohammed Magdy, Mohamed Salem Nashwan, and Shamsuddin Shahid.\n2021. “Performance Evaluation of Reanalysis Precipitation Products\nin Egypt Using Fuzzy Entropy Time Series Similarity Analysis.”\nInternational Journal of Climatology 41 (11): 5431–46. https://doi.org/10.1002/joc.7286.\n\n\nHausfather, Zeke, and Glen P. Peters. 2020. “Emissions\n the ‘Business as Usual’ Story Is\nMisleading.” Nature 577 (7792): 618–20. https://doi.org/10.1038/d41586-020-00177-3.\n\n\nKarger, Dirk Nikolaus, Olaf Conrad, Jürgen Böhner, Tobias Kawohl, Holger\nKreft, Rodrigo Wilber Soria-Auza, Niklaus E. Zimmermann, H. Peter\nLinder, and Michael Kessler. 2017. “Climatologies at High\nResolution for the Earth’s Land Surface Areas.”\nScientific Data 4 (1). https://doi.org/10.1038/sdata.2017.122.\n\n\nKarl, Thomas R., Neville Nicholls, and Anver Ghazi. 1999.\n“CLIVAR/GCOS/WMO Workshop on Indices and Indicators for Climate\nExtremes Workshop Summary.” In, 3–7. Springer Netherlands. https://doi.org/10.1007/978-94-015-9265-9_2.\n\n\nLutz, Arthur F., Herbert W. ter Maat, Hester Biemans, Arun B. Shrestha,\nPhilippus Wester, and Walter W. Immerzeel. 2016. “Selecting\nRepresentative Climate Models for Climate Change Impact Studies: An\nAdvanced Envelope-Based Selection Approach.”\nInternational Journal of Climatology 36 (12): 3988–4005. https://doi.org/10.1002/joc.4608.\n\n\nNavarro-Racines, Carlos, Jaime Tarapues, Philip Thornton, Andy Jarvis,\nand Julian Ramirez-Villegas. 2020. “High-Resolution and\nBias-Corrected CMIP5 Projections for Climate Change Impact\nAssessments.” Scientific Data 7 (1). https://doi.org/10.1038/s41597-019-0343-8.\n\n\nPlatts, Philip J., Peter A. Omeny, and Rob Marchant. 2014.\n“AFRICLIM: High-Resolution Climate Projections for\nEcological Applications in Africa.” African Journal of\nEcology 53 (1): 103–8. https://doi.org/10.1111/aje.12180.\n\n\nTaylor, Karl E. 2001. “Summarizing Multiple Aspects of Model\nPerformance in a Single Diagram.” Journal of Geophysical\nResearch: Atmospheres 106 (D7): 7183–92. https://doi.org/10.1029/2000jd900719.\n\n\nWilby, R. L., and C. W. Dawson. 2012. “The Statistical DownScaling\nModel: Insights from One Decade of Application.”\nInternational Journal of Climatology 33 (7): 1707–19. https://doi.org/10.1002/joc.3544."
+  }
+]
