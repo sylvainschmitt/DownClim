@@ -159,7 +159,13 @@ div.csl-indent {
   <ul>
   <li><a href="#to-read" id="toc-to-read" class="nav-link active" data-scroll-target="#to-read">To read</a></li>
   <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#downscaling" id="toc-downscaling" class="nav-link" data-scroll-target="#downscaling">Downscaling</a></li>
+  <li><a href="#downscaling" id="toc-downscaling" class="nav-link" data-scroll-target="#downscaling">Downscaling</a>
+  <ul class="collapse">
+  <li><a href="#bias-correction" id="toc-bias-correction" class="nav-link" data-scroll-target="#bias-correction">Bias correction</a></li>
+  <li><a href="#statistical" id="toc-statistical" class="nav-link" data-scroll-target="#statistical">Statistical</a></li>
+  <li><a href="#quantile" id="toc-quantile" class="nav-link" data-scroll-target="#quantile">Quantile</a></li>
+  <li><a href="#other" id="toc-other" class="nav-link" data-scroll-target="#other">Other</a></li>
+  </ul></li>
   <li><a href="#climate-data" id="toc-climate-data" class="nav-link" data-scroll-target="#climate-data">Climate data</a>
   <ul class="collapse">
   <li><a href="#reanalysis" id="toc-reanalysis" class="nav-link" data-scroll-target="#reanalysis">Reanalysis</a></li>
@@ -203,9 +209,11 @@ div.csl-indent {
 <section id="to-read" class="level2">
 <h2 class="anchored" data-anchor-id="to-read">To read</h2>
 <ul>
-<li><span class="citation" data-cites="navarro-racines2020">Navarro-Racines et al. (<a href="references.html#ref-navarro-racines2020" role="doc-biblioref">2020</a>)</span>: NASA Global Daily Downscaled Projections CMIP6 (delta method, perfect sibling evaluation, available WDCC, CCAFS-Climate)</li>
-<li><span class="citation" data-cites="platts2014">Platts, Omeny, and Marchant (<a href="references.html#ref-platts2014" role="doc-biblioref">2014</a>)</span>: dynamicla downscaling (RCM CORDEX &amp; change-factor downscaling, R &amp; GRASS GIS)</li>
 <li><span class="citation" data-cites="brown2008">Brown et al. (<a href="references.html#ref-brown2008" role="doc-biblioref">2008</a>)</span>: review downscaling for Africa (dynamical &amp; statistical, bias correction, advantages, best practices)</li>
+<li><span class="citation" data-cites="quintanaseguí2010">Quintana Seguí et al. (<a href="references.html#ref-quintanaseguí2010" role="doc-biblioref">2010</a>)</span>: comparing statistical downscaling and bias correction: statistical, quantile mapping, anomaly for hydrology</li>
+<li><span class="citation" data-cites="tabor2010">Tabor and Williams (<a href="references.html#ref-tabor2010" role="doc-biblioref">2010</a>)</span>: downscaling for conservation: CMIP3 with change-factor on CRU</li>
+<li><span class="citation" data-cites="zhang2005">Zhang (<a href="references.html#ref-zhang2005" role="doc-biblioref">2005</a>)</span>: statistically downscaling GCM to station for crop, quantile mapping</li>
+<li><span class="citation" data-cites="gebrechorkos2019">Solomon H. Gebrechorkos, Hülsmann, and Bernhofer (<a href="references.html#ref-gebrechorkos2019" role="doc-biblioref">2019</a>)</span>: statistical downscaling of GCM for East Africa</li>
 </ul>
 </section>
 <section id="examples" class="level2">
@@ -228,46 +236,65 @@ div.csl-indent {
 <li><span class="citation" data-cites="navarro-racines2020">Navarro-Racines et al. (<a href="references.html#ref-navarro-racines2020" role="doc-biblioref">2020</a>)</span>:
 <ul>
 <li>What: statistically downscaled CMIP6</li>
-<li>Resolutions:</li>
+<li>Resolutions: 30” (1km) and 30-year means</li>
 <li>How: delta method</li>
-<li>Baseline:</li>
-<li>Projections:</li>
-<li>Scenarios:</li>
-<li>Variables:</li>
-<li>Tool:</li>
+<li>Baseline: WorldClim</li>
+<li>Projections: 35 CMIP5 GCM</li>
+<li>Scenarios: RCP 2.6, 4.5, 6.0 &amp; 8.5</li>
+<li>Variables: mean monthly maximum and minimum temperatures and monthly rainfall</li>
+<li>Tool: ArcGIS &amp; <a href="https://figshare.com/articles/software/Delta_Method_Downscaling_Version_1_0/5236471/4">R</a></li>
 <li>Evaluation: perfect sibling</li>
 <li>Access: WDCC, CCAFS-Climate</li>
-<li>Note:</li>
+<li>Note: thin-plate splines interpolation, Probability Density Function (PDF) comparisons</li>
 </ul></li>
 <li><span class="citation" data-cites="platts2014">Platts, Omeny, and Marchant (<a href="references.html#ref-platts2014" role="doc-biblioref">2014</a>)</span>:
 <ul>
 <li>What: statistically downscaled CORDEX CMIP5</li>
-<li>Resolutions:</li>
-<li>How: change-factor</li>
-<li>Baseline:</li>
-<li>Projections:</li>
-<li>Scenarios:</li>
-<li>Variables:</li>
+<li>Resolutions: 30” (1km) and 20-year means</li>
+<li>How: change-factor (= delta method)</li>
+<li>Baseline: CRU, WorldClim, TAMSAT, CHIRPS</li>
+<li>Projections: 8 GCM CMIP5 x 2 RCM CORDEX</li>
+<li>Scenarios: RCP4.5 &amp; RCP8.5</li>
+<li>Variables: monthly 2-m air temperature (mean, minimum and maximum) and monthly rainfall</li>
 <li>Tool: R &amp; GRASS GIS</li>
-<li>Evaluation:</li>
-<li>Access:</li>
-<li>Note:</li>
+<li>Evaluation: No</li>
+<li>Access: <a href="https://webﬁles.york.ac.uk/KITE/AfriClim/">York University</a></li>
+<li>Note: spline-interpolated</li>
 </ul></li>
 </ul>
 </section>
 <section id="downscaling" class="level2">
 <h2 class="anchored" data-anchor-id="downscaling">Downscaling</h2>
+<section id="bias-correction" class="level3">
+<h3 class="anchored" data-anchor-id="bias-correction">Bias correction</h3>
+<ul>
+<li>delta or change-factor <span class="citation" data-cites="platts2014 navarro-racines2020">(<a href="references.html#ref-platts2014" role="doc-biblioref">Platts, Omeny, and Marchant 2014</a>; <a href="references.html#ref-navarro-racines2020" role="doc-biblioref">Navarro-Racines et al. 2020</a>)</span></li>
+</ul>
+</section>
+<section id="statistical" class="level3">
+<h3 class="anchored" data-anchor-id="statistical">Statistical</h3>
+<ul>
+<li>SDSM: Statistical DownScaling Model <span class="citation" data-cites="wilby2002 wilby2012">(<a href="references.html#ref-wilby2002" role="doc-biblioref">R. L. Wilby, Dawson, and Barrow 2002</a>; <a href="references.html#ref-wilby2012" role="doc-biblioref">R. L. Wilby and Dawson 2012</a>)</span></li>
+</ul>
+</section>
+<section id="quantile" class="level3">
+<h3 class="anchored" data-anchor-id="quantile">Quantile</h3>
 <ul>
 <li>BCCAQ: Bias Correction Constructed Analogues with Quantile mapping reordering <span class="citation" data-cites="cannon2015 werner2016">(<a href="references.html#ref-cannon2015" role="doc-biblioref">Cannon, Sobie, and Murdock 2015</a>; <a href="references.html#ref-werner2016" role="doc-biblioref">Werner and Cannon 2016</a>)</span></li>
 <li>CA: Constructed Analogues <span class="citation" data-cites="maurer2010">(<a href="references.html#ref-maurer2010" role="doc-biblioref">Maurer et al. 2010</a>)</span></li>
 <li>CI: Climate Imprint <span class="citation" data-cites="hunter2005">(<a href="references.html#ref-hunter2005" role="doc-biblioref">Hunter and Meentemeyer 2005</a>)</span></li>
 <li>DQM: Quantile Delta Mapping <span class="citation" data-cites="cannon2015">(<a href="references.html#ref-cannon2015" role="doc-biblioref">Cannon, Sobie, and Murdock 2015</a>)</span></li>
-<li>TLFN: time-lagged feed-forward neural network or temporal neural network <span class="citation" data-cites="coulibaly2005">(<a href="references.html#ref-coulibaly2005" role="doc-biblioref">Coulibaly, Dibike, and Anctil 2005</a>)</span></li>
-<li>SDSM: Statistical DownScaling Model <span class="citation" data-cites="wilby2002 wilby2012">(<a href="references.html#ref-wilby2002" role="doc-biblioref">R. L. Wilby, Dawson, and Barrow 2002</a>; <a href="references.html#ref-wilby2012" role="doc-biblioref">R. L. Wilby and Dawson 2012</a>)</span></li>
-<li>change-factor or delta method <span class="citation" data-cites="navarro-racines2020 platts2014">(<a href="references.html#ref-navarro-racines2020" role="doc-biblioref">Navarro-Racines et al. 2020</a>; <a href="references.html#ref-platts2014" role="doc-biblioref">Platts, Omeny, and Marchant 2014</a>)</span></li>
-<li>kriging (KrigR) <span class="citation" data-cites="davy2021">(<a href="references.html#ref-davy2021" role="doc-biblioref">Davy and Kusch 2021</a>)</span></li>
 <li>CDFt: cumulative distribution function transform (R CDFt) <span class="citation" data-cites="lanzante2019">(<a href="references.html#ref-lanzante2019" role="doc-biblioref">Lanzante et al. 2019</a>)</span></li>
 </ul>
+</section>
+<section id="other" class="level3">
+<h3 class="anchored" data-anchor-id="other">Other</h3>
+<ul>
+<li>TLFN: time-lagged feed-forward neural network or temporal neural network <span class="citation" data-cites="coulibaly2005">(<a href="references.html#ref-coulibaly2005" role="doc-biblioref">Coulibaly, Dibike, and Anctil 2005</a>)</span></li>
+<li>kriging (KrigR) <span class="citation" data-cites="davy2021">(<a href="references.html#ref-davy2021" role="doc-biblioref">Davy and Kusch 2021</a>)</span></li>
+<li>Dynamical downscaling (RCM)</li>
+</ul>
+</section>
 </section>
 <section id="climate-data" class="level2">
 <h2 class="anchored" data-anchor-id="climate-data">Climate data</h2>
@@ -276,15 +303,92 @@ div.csl-indent {
 <ul>
 <li>ERA5-Land: reanalysis dataset from European Centre for Medium-Range Weather Forecasts (ECMWF) <span class="citation" data-cites="muñoz-sabater2021">(<a href="references.html#ref-muñoz-sabater2021" role="doc-biblioref">Muñoz-Sabater et al. 2021</a>)</span>
 <ul>
-<li>To further describe</li>
+<li>Resolutions: 0.1° (9km) &amp; hourly (daily and monthly averages)</li>
+<li>Period: 1950-present</li>
+<li>Area: global</li>
+<li>Variables: 53 including temperature and precipitation</li>
+<li>Provider: <a href="https://cds.climate.copernicus.eu/cdsapp#!/search">CDS</a></li>
+<li>Projections: No (but CMIP &amp; CORDEX on CDS)</li>
+<li>Tools: python cdsapi, R ewcmfr</li>
+<li>Note:</li>
 </ul></li>
-<li>CHELSA 2.1: Climatologies at High resolution for the Earth’s Land Surface Areas <span class="citation" data-cites="karger2017">(<a href="references.html#ref-karger2017" role="doc-biblioref">Karger et al. 2017</a>)</span></li>
-<li>WorldClim 2: 1-km spatial resolution climate surfaces for global land areas <span class="citation" data-cites="fick2017">(<a href="references.html#ref-fick2017" role="doc-biblioref">Fick and Hijmans 2017</a>)</span></li>
-<li>CRU TS 4: monthly high-resolution gridded multivariate climate dataset (Climatic Research Unit Time Series) <span class="citation" data-cites="harris2020">(<a href="references.html#ref-harris2020" role="doc-biblioref">Harris et al. 2020</a>)</span></li>
-<li>CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations <span class="citation" data-cites="funk2015">(<a href="references.html#ref-funk2015" role="doc-biblioref">Funk et al. 2015</a>)</span></li>
-<li>TerraClimate: a high-resolution global dataset of monthly climate and climatic water balance from 1958–2015 <span class="citation" data-cites="abatzoglou2018">(<a href="references.html#ref-abatzoglou2018" role="doc-biblioref">Abatzoglou et al. 2018</a>)</span></li>
-<li>GloH2O MSWX: Multi-Source Weather <span class="citation" data-cites="beck2022">(<a href="references.html#ref-beck2022" role="doc-biblioref">Beck et al. 2022</a>)</span> &amp; MSWEP: Multi-Source Weighted-Ensemble Precipitation <span class="citation" data-cites="beck2017 beck2019">(<a href="references.html#ref-beck2017" role="doc-biblioref">Beck et al. 2017</a>; <a href="references.html#ref-beck2019" role="doc-biblioref">Beck et al. 2019</a>)</span></li>
-<li>JRA-55: the Japanese 55-year Reanalysis <span class="citation" data-cites="kobayashi2016">(<a href="references.html#ref-kobayashi2016" role="doc-biblioref">Kobayashi and Iwasaki 2016</a>)</span></li>
+<li>CHELSA 2.1: Climatologies at High resolution for the Earth’s Land Surface Areas <span class="citation" data-cites="karger2017">(<a href="references.html#ref-karger2017" role="doc-biblioref">Karger et al. 2017</a>)</span>
+<ul>
+<li>Resolutions: 30” (1km) &amp; 20-year means (daily &amp; monthly available)</li>
+<li>Period: 1981-2100</li>
+<li>Area: global</li>
+<li>Variables: pr, rsds, tas, tasmax, tasmin, bioclim</li>
+<li>Provider: <a href="https://chelsa-climate.org/">CHELSA</a></li>
+<li>Projections: downscaled CMIP5 &amp; CMIP6</li>
+<li>Tools: R ntbox, chelsaDL</li>
+<li>Note:</li>
+</ul></li>
+<li>WorldClim 2: 1-km spatial resolution climate surfaces for global land areas <span class="citation" data-cites="fick2017">(<a href="references.html#ref-fick2017" role="doc-biblioref">Fick and Hijmans 2017</a>)</span>
+<ul>
+<li>Resolutions: 30” (1km) &amp; 30-year means</li>
+<li>Period: 1970-2000</li>
+<li>Area: global</li>
+<li>Variables: tasmin, tasmax, tas, pr, rsds, ws, vapr, bioclim</li>
+<li>Provider: <a href="https://www.worldclim.org/">WorldClim</a></li>
+<li>Projections: CMIP6 23 GCM 4 SSP 20-year means</li>
+<li>Tools: R raster &amp; geodata</li>
+<li>Note:</li>
+</ul></li>
+<li>CRU TS 4: monthly high-resolution gridded multivariate climate dataset (Climatic Research Unit Time Series) <span class="citation" data-cites="harris2020">(<a href="references.html#ref-harris2020" role="doc-biblioref">Harris et al. 2020</a>)</span>
+<ul>
+<li>Resolutions: 0.5° (45km) &amp; monthly</li>
+<li>Period: 1901–2018</li>
+<li>Area: global</li>
+<li>Variables: cld, dtr, frs, pet, pre, tmn, tmp, tmx, vap, wet</li>
+<li>Provider: <a href="https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/">CRU</a></li>
+<li>Projections: No</li>
+<li>Tools: R cruts</li>
+<li>Note: angular-distance weighting (ADW)</li>
+</ul></li>
+<li>CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations <span class="citation" data-cites="funk2015">(<a href="references.html#ref-funk2015" role="doc-biblioref">Funk et al. 2015</a>)</span>
+<ul>
+<li>Resolutions: 0.05°(900m) &amp; daily, pentadal, and monthly</li>
+<li>Period: 1981-present</li>
+<li>Area: global</li>
+<li>Variables: rainfall</li>
+<li>Provider: <a href="https://www.chc.ucsb.edu/data/chirps">CHIRPS</a></li>
+<li>Projections: No</li>
+<li>Tools: R chirps</li>
+<li>Note: infrared Cold Cloud Duration</li>
+</ul></li>
+<li>JRA-55: the Japanese 55-year Reanalysis <span class="citation" data-cites="kobayashi2016">(<a href="references.html#ref-kobayashi2016" role="doc-biblioref">Kobayashi and Iwasaki 2016</a>)</span>
+<ul>
+<li>Resolutions:</li>
+<li>Period: 1958-present</li>
+<li>Area: global</li>
+<li>Variables:</li>
+<li>Provider: <a href="https://jra.kishou.go.jp/JRA-55/index_en.html#usage">JRA</a></li>
+<li>Projections: No</li>
+<li>Tools:</li>
+<li>Note:</li>
+</ul></li>
+<li>TerraClimate: a high-resolution global dataset of monthly climate and climatic water balance from 1958–2015 <span class="citation" data-cites="abatzoglou2018">(<a href="references.html#ref-abatzoglou2018" role="doc-biblioref">Abatzoglou et al. 2018</a>)</span>
+<ul>
+<li>Resolutions: 0.04° (4km) &amp; monthly</li>
+<li>Period: 1958-2020</li>
+<li>Area: global</li>
+<li>Variables: Maximum temperature, minimum temperature, vapor pressure, precipitation accumulation, downward surface shortwave radiation, wind-speed</li>
+<li>Provider: <a href="https://www.climatologylab.org/terraclimate.html">TerraClimate</a></li>
+<li>Projections: No</li>
+<li>Tools: R TerraClimate</li>
+<li>Note: derived variables accessible, derived from WorldClim + CRU TS + JRA55</li>
+</ul></li>
+<li>GloH2O MSWX: Multi-Source Weather <span class="citation" data-cites="beck2022">(<a href="references.html#ref-beck2022" role="doc-biblioref">Beck et al. 2022</a>)</span> &amp; MSWEP: Multi-Source Weighted-Ensemble Precipitation <span class="citation" data-cites="beck2017 beck2019">(<a href="references.html#ref-beck2017" role="doc-biblioref">Beck et al. 2017</a>; <a href="references.html#ref-beck2019" role="doc-biblioref">Beck et al. 2019</a>)</span>
+<ul>
+<li>Resolutions: 0.1° (9km) &amp; 3-hourly</li>
+<li>Period: 1979-present</li>
+<li>Area: global</li>
+<li>Variables: precipitation</li>
+<li>Provider: <a href="https://www.gloh2o.org/mswep/">GloH2O</a></li>
+<li>Projections: No</li>
+<li>Tools:</li>
+<li>Note: gauge, ERA5, HydroGFD, PGF, WFDE5, …</li>
+</ul></li>
 </ul>
 </section>
 <section id="observations" class="level3">
@@ -320,6 +424,8 @@ div.csl-indent {
 <ul>
 <li><a href="https://cds.climate.copernicus.eu/cdsapp#!/search">CDS</a>: Climate Data Store including CMIP (not HighRes), ERA5-Land, CORDEX (not all), …</li>
 <li>ESGF: Earth System Grid Federation for different providers (e.g.&nbsp;UK-CEDA, IPSL, LLNL, …) including HighResMIP, CMIP, and CORDEX</li>
+<li><a href="http://www.dkrz.de/">WDCC</a>: World Data Center for Climate</li>
+<li><a href="http://ccafs-climate.org/">CCAFS-Climate</a>: global and regional future high-resolution climate datasets</li>
 </ul>
 </section>
 <section id="scenarios" class="level2">
@@ -334,21 +440,25 @@ div.csl-indent {
 </section>
 <section id="selection" class="level2">
 <h2 class="anchored" data-anchor-id="selection">Selection</h2>
+<p>Compromise for computation limitations.</p>
 <ul>
 <li>(1) initial selection of climate models based on the range of projected changes in climatic means, (2) refined selection based on the range of projected changes in climatic extremes and (3) final selection based on the climate model skill to simulate past climate <span class="citation" data-cites="lutz2016">(<a href="references.html#ref-lutz2016" role="doc-biblioref">Lutz et al. 2016</a>)</span></li>
+<li>envelope approach: representing the diversity of projections</li>
+<li>past-performance approach: capacity to reproduce past/present climate</li>
 </ul>
 </section>
 <section id="evaluation" class="level2">
 <h2 class="anchored" data-anchor-id="evaluation">Evaluation</h2>
 <ul>
 <li>TSS: Taylor Skill Score <span class="citation" data-cites="liang-liang2022">(<a href="references.html#ref-liang-liang2022" role="doc-biblioref">Liang-Liang, Jian, and Ru-Cong 2022</a>)</span></li>
-<li>IA: index of agreement <span class="citation" data-cites="gebrechorkos2018">(<a href="references.html#ref-gebrechorkos2018" role="doc-biblioref">S. H. Gebrechorkos, Hülsmann, and Bernhofer 2018</a>)</span></li>
+<li>IA: index of agreement <span class="citation" data-cites="gebrechorkos2018">(<a href="references.html#ref-gebrechorkos2018" role="doc-biblioref">Solomon Hailu Gebrechorkos, Hülsmann, and Bernhofer 2018</a>)</span></li>
 <li>CC: Pearson correlation coefficient</li>
 <li>RMSE: Root mean square error</li>
 <li>MAE: Mean absolute error</li>
 <li>R: Relative bias</li>
 <li>SD: Standard deviation</li>
-<li>Taylor diagram <span class="citation" data-cites="taylor2001">Taylor (<a href="references.html#ref-taylor2001" role="doc-biblioref">2001</a>)</span></li>
+<li>Taylor diagram <span class="citation" data-cites="taylor2001">(<a href="references.html#ref-taylor2001" role="doc-biblioref">Taylor 2001</a>)</span></li>
+<li>PS: perfect sibling (<span class="citation" data-cites="hawkins2013">Hawkins et al. (<a href="references.html#ref-hawkins2013" role="doc-biblioref">2013</a>)</span>]</li>
 <li>Extreme indices from Expert Team on Climate Change Detection and Indices (ETCCDI) <span class="citation" data-cites="karl1999">(<a href="references.html#ref-karl1999" role="doc-biblioref">Karl, Nicholls, and Ghazi 1999</a>)</span></li>
 </ul>
 </section>
@@ -422,6 +532,9 @@ Funk, Chris, Pete Peterson, Martin Landsfeld, Diego Pedreros, James Verdin, Shra
 <div id="ref-gebrechorkos2018" class="csl-entry" role="listitem">
 Gebrechorkos, Solomon Hailu, Stephan Hülsmann, and Christian Bernhofer. 2018. <span>“Evaluation of Multiple Climate Data Sources for Managing Environmental Resources in East Africa.”</span> <em>Hydrology and Earth System Sciences</em> 22 (8): 4547–64. <a href="https://doi.org/10.5194/hess-22-4547-2018">https://doi.org/10.5194/hess-22-4547-2018</a>.
 </div>
+<div id="ref-gebrechorkos2019" class="csl-entry" role="listitem">
+Gebrechorkos, Solomon H., Stephan Hülsmann, and Christian Bernhofer. 2019. <span>“Statistically Downscaled Climate Dataset for East Africa.”</span> <em>Scientific Data</em> 6 (1). <a href="https://doi.org/10.1038/s41597-019-0038-1">https://doi.org/10.1038/s41597-019-0038-1</a>.
+</div>
 <div id="ref-gebrechorkos2023" class="csl-entry" role="listitem">
 Gebrechorkos, Solomon, Julian Leyland, Louise Slater, Michel Wortmann, Philip J. Ashworth, Georgina L. Bennett, Richard Boothroyd, et al. 2023. <span>“A High-Resolution Daily Global Dataset of Statistically Downscaled CMIP6 Models for Climate Impact Analyses.”</span> <em>Scientific Data</em> 10 (1). <a href="https://doi.org/10.1038/s41597-023-02528-x">https://doi.org/10.1038/s41597-023-02528-x</a>.
 </div>
@@ -439,6 +552,9 @@ Harris, Ian, Timothy J. Osborn, Phil Jones, and David Lister. 2020. <span>“Ver
 </div>
 <div id="ref-hausfather2020" class="csl-entry" role="listitem">
 Hausfather, Zeke, and Glen P. Peters. 2020. <span>“Emissions <span></span> the <span>‘</span>Business as Usual<span>’</span> Story Is Misleading.”</span> <em>Nature</em> 577 (7792): 618–20. <a href="https://doi.org/10.1038/d41586-020-00177-3">https://doi.org/10.1038/d41586-020-00177-3</a>.
+</div>
+<div id="ref-hawkins2013" class="csl-entry" role="listitem">
+Hawkins, Ed, Thomas M. Osborne, Chun Kit Ho, and Andrew J. Challinor. 2013. <span>“Calibration and Bias Correction of Climate Projections for Crop Modelling: An Idealised Case Study over Europe.”</span> <em>Agricultural and Forest Meteorology</em> 170 (March): 19–31. <a href="https://doi.org/10.1016/j.agrformet.2012.04.007">https://doi.org/10.1016/j.agrformet.2012.04.007</a>.
 </div>
 <div id="ref-hiebert2018" class="csl-entry" role="listitem">
 Hiebert, James, Alex J. Cannon, Trevor Murdock, Stephen Sobie, and Arelia Werner. 2018. <span>“ClimDown: Climate Downscaling in r.”</span> <em>The Journal of Open Source Software</em> 3 (22): 360. <a href="https://doi.org/10.21105/joss.00360">https://doi.org/10.21105/joss.00360</a>.
@@ -494,6 +610,12 @@ Okamoto, K.i., T. Ushio, T. Iguchi, N. Takahashi, and K. Iwanami. n.d. <span>“
 <div id="ref-platts2014" class="csl-entry" role="listitem">
 Platts, Philip J., Peter A. Omeny, and Rob Marchant. 2014. <span>“AFRICLIM: High<span>-</span>Resolution Climate Projections for Ecological Applications in Africa.”</span> <em>African Journal of Ecology</em> 53 (1): 103–8. <a href="https://doi.org/10.1111/aje.12180">https://doi.org/10.1111/aje.12180</a>.
 </div>
+<div id="ref-quintanaseguí2010" class="csl-entry" role="listitem">
+Quintana Seguí, P., A. Ribes, E. Martin, F. Habets, and J. Boé. 2010. <span>“Comparison of Three Downscaling Methods in Simulating the Impact of Climate Change on the Hydrology of Mediterranean Basins.”</span> <em>Journal of Hydrology</em> 383 (1-2): 111–24. <a href="https://doi.org/10.1016/j.jhydrol.2009.09.050">https://doi.org/10.1016/j.jhydrol.2009.09.050</a>.
+</div>
+<div id="ref-tabor2010" class="csl-entry" role="listitem">
+Tabor, Karyn, and John W. Williams. 2010. <span>“Globally Downscaled Climate Projections for Assessing the Conservation Impacts of Climate Change.”</span> <em>Ecological Applications</em> 20 (2): 554–65. <a href="https://doi.org/10.1890/09-0173.1">https://doi.org/10.1890/09-0173.1</a>.
+</div>
 <div id="ref-taylor2001" class="csl-entry" role="listitem">
 Taylor, Karl E. 2001. <span>“Summarizing Multiple Aspects of Model Performance in a Single Diagram.”</span> <em>Journal of Geophysical Research: Atmospheres</em> 106 (D7): 7183–92. <a href="https://doi.org/10.1029/2000jd900719">https://doi.org/10.1029/2000jd900719</a>.
 </div>
@@ -511,6 +633,9 @@ Wilby, R. L., and C. W. Dawson. 2012. <span>“The Statistical DownScaling Model
 </div>
 <div id="ref-wilby2002" class="csl-entry" role="listitem">
 Wilby, R. L, C. W Dawson, and E. M Barrow. 2002. <span>“Sdsm <span></span> a Decision Support Tool for the Assessment of Regional Climate Change Impacts.”</span> <em>Environmental Modelling &amp; Software</em> 17 (2): 145–57. <a href="https://doi.org/10.1016/s1364-8152(01)00060-3">https://doi.org/10.1016/s1364-8152(01)00060-3</a>.
+</div>
+<div id="ref-zhang2005" class="csl-entry" role="listitem">
+Zhang, X.-C. 2005. <span>“Spatial Downscaling of Global Climate Model Output for Site-Specific Assessment of Crop Production and Soil Erosion.”</span> <em>Agricultural and Forest Meteorology</em> 135 (1-4): 215–29. <a href="https://doi.org/10.1016/j.agrformet.2005.11.016">https://doi.org/10.1016/j.agrformet.2005.11.016</a>.
 </div>
 </div>
 </section>

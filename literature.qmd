@@ -1,14 +1,12 @@
----
-bibliography: references.bib
----
-
 # Literature {.unnumbered}
 
 ## To read
 
--   @navarro-racines2020: NASA Global Daily Downscaled Projections CMIP6 (delta method, perfect sibling evaluation, available WDCC, CCAFS-Climate)
--   @platts2014: dynamicla downscaling (RCM CORDEX & change-factor downscaling, R & GRASS GIS)
 -   @brown2008: review downscaling for Africa (dynamical & statistical, bias correction, advantages, best practices)
+-   @quintanaseguí2010: comparing statistical downscaling and bias correction: statistical, quantile mapping, anomaly for hydrology
+-   @tabor2010: downscaling for conservation: CMIP3 with change-factor on CRU
+-   @zhang2005: statistically downscaling GCM to station for crop, quantile mapping
+-   @gebrechorkos2019: statistical downscaling of GCM for East Africa
 
 ## Examples
 
@@ -26,54 +24,129 @@ bibliography: references.bib
     -   Note: remove bias & reproduce extreme events
 -   @navarro-racines2020:
     -   What: statistically downscaled CMIP6
-    -   Resolutions:
+    -   Resolutions: 30" (1km) and 30-year means
     -   How: delta method
-    -   Baseline:
-    -   Projections:
-    -   Scenarios:
-    -   Variables:
-    -   Tool:
+    -   Baseline: WorldClim
+    -   Projections: 35 CMIP5 GCM
+    -   Scenarios: RCP 2.6, 4.5, 6.0 & 8.5
+    -   Variables: mean monthly maximum and minimum temperatures and monthly rainfall
+    -   Tool: ArcGIS & [R](https://figshare.com/articles/software/Delta_Method_Downscaling_Version_1_0/5236471/4)
     -   Evaluation: perfect sibling
     -   Access: WDCC, CCAFS-Climate
-    -   Note:
+    -   Note: thin-plate splines interpolation, Probability Density Function (PDF) comparisons
 -   @platts2014:
     -   What: statistically downscaled CORDEX CMIP5
-    -   Resolutions:
-    -   How: change-factor
-    -   Baseline:
-    -   Projections:
-    -   Scenarios:
-    -   Variables:
+    -   Resolutions: 30" (1km) and 20-year means
+    -   How: change-factor (= delta method)
+    -   Baseline: CRU, WorldClim, TAMSAT, CHIRPS
+    -   Projections: 8 GCM CMIP5 x 2 RCM CORDEX
+    -   Scenarios: RCP4.5 & RCP8.5
+    -   Variables: monthly 2-m air temperature (mean, minimum and maximum) and monthly rainfall
     -   Tool: R & GRASS GIS
-    -   Evaluation:
-    -   Access:
-    -   Note:
+    -   Evaluation: No
+    -   Access: [York University](https://webﬁles.york.ac.uk/KITE/AfriClim/)
+    -   Note: spline-interpolated
 
 ## Downscaling
+
+### Bias correction
+
+-   delta or change-factor [@platts2014; @navarro-racines2020]
+
+### Statistical
+
+-   SDSM: Statistical DownScaling Model [@wilby2002; @wilby2012]
+
+### Quantile
 
 -   BCCAQ: Bias Correction Constructed Analogues with Quantile mapping reordering [@cannon2015; @werner2016]
 -   CA: Constructed Analogues [@maurer2010]
 -   CI: Climate Imprint [@hunter2005]
 -   DQM: Quantile Delta Mapping [@cannon2015]
--   TLFN: time-lagged feed-forward neural network or temporal neural network [@coulibaly2005]
--   SDSM: Statistical DownScaling Model [@wilby2002; @wilby2012]
--   change-factor or delta method [@navarro-racines2020; @platts2014]
--   kriging (KrigR) [@davy2021]
 -   CDFt: cumulative distribution function transform (R CDFt) [@lanzante2019]
+
+### Other
+
+-   TLFN: time-lagged feed-forward neural network or temporal neural network [@coulibaly2005]
+-   kriging (KrigR) [@davy2021]
+-   Dynamical downscaling (RCM)
 
 ## Climate data
 
 ### Reanalysis
 
 -   ERA5-Land: reanalysis dataset from European Centre for Medium-Range Weather Forecasts (ECMWF) [@muñoz-sabater2021]
-    -   To further describe
+    -   Resolutions: 0.1° (9km) & hourly (daily and monthly averages)
+    -   Period: 1950-present
+    -   Area: global
+    -   Variables: 53 including temperature and precipitation
+    -   Provider: [CDS](https://cds.climate.copernicus.eu/cdsapp#!/search)
+    -   Projections: No (but CMIP & CORDEX on CDS)
+    -   Tools: python cdsapi, R ewcmfr
+    -   Note:
 -   CHELSA 2.1: Climatologies at High resolution for the Earth's Land Surface Areas [@karger2017]
+    -   Resolutions: 30" (1km) & 20-year means (daily & monthly available)
+    -   Period: 1981-2100
+    -   Area: global
+    -   Variables: pr, rsds, tas, tasmax, tasmin, bioclim
+    -   Provider: [CHELSA](https://chelsa-climate.org/)
+    -   Projections: downscaled CMIP5 & CMIP6
+    -   Tools: R ntbox, chelsaDL
+    -   Note:
 -   WorldClim 2: 1-km spatial resolution climate surfaces for global land areas [@fick2017]
+    -   Resolutions: 30" (1km) & 30-year means
+    -   Period: 1970-2000
+    -   Area: global
+    -   Variables: tasmin, tasmax, tas, pr, rsds, ws, vapr, bioclim
+    -   Provider: [WorldClim](https://www.worldclim.org/)
+    -   Projections: CMIP6 23 GCM 4 SSP 20-year means
+    -   Tools: R raster & geodata
+    -   Note:
 -   CRU TS 4: monthly high-resolution gridded multivariate climate dataset (Climatic Research Unit Time Series) [@harris2020]
+    -   Resolutions: 0.5° (45km) & monthly
+    -   Period: 1901--2018
+    -   Area: global
+    -   Variables: cld, dtr, frs, pet, pre, tmn, tmp, tmx, vap, wet
+    -   Provider: [CRU](https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.07/)
+    -   Projections: No
+    -   Tools: R cruts
+    -   Note: angular-distance weighting (ADW)
 -   CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations [@funk2015]
--   TerraClimate: a high-resolution global dataset of monthly climate and climatic water balance from 1958--2015 [@abatzoglou2018]
--   GloH2O MSWX: Multi-Source Weather [@beck2022] & MSWEP: Multi-Source Weighted-Ensemble Precipitation [@beck2017; @beck2019]
+    -   Resolutions: 0.05°(900m) & daily, pentadal, and monthly
+    -   Period: 1981-present
+    -   Area: global
+    -   Variables: rainfall
+    -   Provider: [CHIRPS](https://www.chc.ucsb.edu/data/chirps)
+    -   Projections: No
+    -   Tools: R chirps
+    -   Note: infrared Cold Cloud Duration
 -   JRA-55: the Japanese 55-year Reanalysis [@kobayashi2016]
+    -   Resolutions:
+    -   Period: 1958-present
+    -   Area: global
+    -   Variables:
+    -   Provider: [JRA](https://jra.kishou.go.jp/JRA-55/index_en.html#usage)
+    -   Projections: No
+    -   Tools:
+    -   Note:
+-   TerraClimate: a high-resolution global dataset of monthly climate and climatic water balance from 1958--2015 [@abatzoglou2018]
+    -   Resolutions: 0.04° (4km) & monthly
+    -   Period: 1958-2020
+    -   Area: global
+    -   Variables: Maximum temperature, minimum temperature, vapor pressure, precipitation accumulation, downward surface shortwave radiation, wind-speed
+    -   Provider: [TerraClimate](https://www.climatologylab.org/terraclimate.html)
+    -   Projections: No
+    -   Tools: R TerraClimate
+    -   Note: derived variables accessible, derived from WorldClim + CRU TS + JRA55
+-   GloH2O MSWX: Multi-Source Weather [@beck2022] & MSWEP: Multi-Source Weighted-Ensemble Precipitation [@beck2017; @beck2019]
+    -   Resolutions: 0.1° (9km) & 3-hourly
+    -   Period: 1979-present
+    -   Area: global
+    -   Variables: precipitation
+    -   Provider: [GloH2O](https://www.gloh2o.org/mswep/)
+    -   Projections: No
+    -   Tools:
+    -   Note: gauge, ERA5, HydroGFD, PGF, WFDE5, ...
 
 ### Observations
 
@@ -100,6 +173,8 @@ bibliography: references.bib
 
 -   [CDS](https://cds.climate.copernicus.eu/cdsapp#!/search): Climate Data Store including CMIP (not HighRes), ERA5-Land, CORDEX (not all), ...
 -   ESGF: Earth System Grid Federation for different providers (e.g. UK-CEDA, IPSL, LLNL, ...) including HighResMIP, CMIP, and CORDEX
+-   [WDCC](http://www.dkrz.de/): World Data Center for Climate
+-   [CCAFS-Climate](http://ccafs-climate.org/): global and regional future high-resolution climate datasets
 
 ## Scenarios
 
@@ -109,10 +184,11 @@ bibliography: references.bib
 
 ## Selection
 
--   \(1\) initial selection of climate models based on the range of projected
-    changes in climatic means, (2) refined selection based on the range of
-    projected changes in climatic extremes and (3) final selection based on
-    the climate model skill to simulate past climate [@lutz2016]
+Compromise for computation limitations.
+
+-   \(1\) initial selection of climate models based on the range of projected changes in climatic means, (2) refined selection based on the range of projected changes in climatic extremes and (3) final selection based on the climate model skill to simulate past climate [@lutz2016]
+-   envelope approach: representing the diversity of projections
+-   past-performance approach: capacity to reproduce past/present climate
 
 ## Evaluation
 
@@ -123,7 +199,8 @@ bibliography: references.bib
 -   MAE: Mean absolute error
 -   R: Relative bias
 -   SD: Standard deviation
--   Taylor diagram @taylor2001
+-   Taylor diagram [@taylor2001]
+-   PS: perfect sibling (@hawkins2013\]
 -   Extreme indices from Expert Team on Climate Change Detection and Indices (ETCCDI) [@karl1999]
 
 ## Tools
