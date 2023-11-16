@@ -145,5 +145,68 @@
     "title": "Literature",
     "section": "Climate projections",
     "text": "Climate projections\n\nCMIP5: the fifth phase of Coupled Model Intercomparison Project (Taylor, Stouffer, and Meehl 2012)\nCORDEX (CMIP5 based): Coordinated Regional Downscaling Experiment (Giorgi and Gutowski 2015)\nCMIP6: the sixth phase of Coupled Model Intercomparison Project (Tokarska et al. 2020)\nCMIP6 HighResMIP: High Resolution Model Intercomparison Project (Haarsma et al. 2016; Liang-Liang, Jian, and Ru-Cong 2022)"
+  },
+  {
+    "objectID": "test_nc.html#packages",
+    "href": "test_nc.html#packages",
+    "title": "Test New Caledonia",
+    "section": "Packages",
+    "text": "Packages\nUsing tidyvserse, ggplot2 and patchwork for data wrangling and plotting; sf, terra, geodata, leaflet, and tidyterra for spatial data manipulation and plotting; and foreach and doParallel for parallelisation.\n\n\nCode\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(patchwork)\nlibrary(sf)\nlibrary(terra)\nlibrary(geodata)\nlibrary(leaflet)\nlibrary(tidyterra)\nlibrary(foreach)\nlibrary(doParallel)\npath &lt;- \"data\"\ncores &lt;- 20"
+  },
+  {
+    "objectID": "test_nc.html#area",
+    "href": "test_nc.html#area",
+    "title": "Test New Caledonia",
+    "section": "Area",
+    "text": "Area\nTest with New Caledonia, extracting the bounding box. The data from GADM includes a lot of island. Maybe land masking could be important in the case of islands.\n\n\nCode\nnc &lt;- gadm(\"New Caledonia\", path = path, leval = 0) %&gt;% \n  st_as_sf() %&gt;% \n  st_union()\nnc_bb &lt;- st_bbox(nc) %&gt;% \n  st_as_sfc()\n\n\n\n\nCode\nleaflet() %&gt;% \n  addTiles() %&gt;%\n  addPolygons(data = nc_bb) %&gt;% \n  addPolygons(data = nc, col = \"red\")"
+  },
+  {
+    "objectID": "test_nc.html#variables",
+    "href": "test_nc.html#variables",
+    "title": "Test New Caledonia",
+    "section": "Variables",
+    "text": "Variables"
+  },
+  {
+    "objectID": "test_nc.html#baseline",
+    "href": "test_nc.html#baseline",
+    "title": "Test New Caledonia",
+    "section": "Baseline",
+    "text": "Baseline\nTest with CHELSA temperature at surface tas for January (01) from 1980 to 2019 split in two datasets: historical (1980:2005) and evaluation (2006:2019) means.\n\n\nCode\nget_chelsa &lt;- function(\n    month, # 1\n    year, # 1980\n    variable, # tas\n    bbox,\n    frequency = \"monthly\",\n    base_url = \"https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V2/GLOBAL\",\n    path = \"data\"\n) {\n  # check receiving folders\n  if(!dir.exists(file.path(path, \"chelsa\", \"raw\")))\n    stop(\"The folder to stock raw rasters is missing\")\n  if(!dir.exists(file.path(path, \"chelsa\", \"cropped\")))\n    stop(\"The folder to stock cropped rasters is missing\")\n  # define file, url, & outputs\n  file &lt;- paste0(c(\"CHELSA\", \n                   variable, \n                   sprintf(\"%02d\", month),\n                   year,\n                   \"V.2.1.tif\"), \n                 collapse = \"_\")\n  url &lt;- file.path(base_url, frequency, variable, file)\n  raw_file &lt;- file.path(path, \"chelsa\", \"raw\", file)\n  cropped_file &lt;- file.path(path, \"chelsa\", \"cropped\", file)\n  # dl & crop\n  if(!file.exists(cropped_file)){\n    if(!file.exists(raw_file))\n      download.file(url, file.path(path, \"chelsa\", \"raw\", file))  \n    rast(raw_file) %&gt;% \n      crop(bbox) %&gt;% \n      writeRaster(cropped_file)\n    unlink(raw_file)\n  }\n}\n\n\n\n\nCode\ndir.create(file.path(path, \"chelsa\"))\ndir.create(file.path(path, \"chelsa\", \"raw\"))\ndir.create(file.path(path, \"chelsa\", \"cropped\"))\n# cl &lt;- makeCluster(cores)\n# registerDoParallel(cl) \nforeach(y = 1980:2019, .packages = c(\"tidyverse\", \"terra\", \"sf\")) %do% \n  get_chelsa(month = 1, year = y, variable = \"tas\", bbox = nc_bb)\n# stopCluster(cl)\n# rm(cl)\nunlink(file.path(path, \"chelsa\", \"raw\"), recursive = TRUE)\nrast(list.files(file.path(path, \"chelsa\", \"cropped\"), full.names = TRUE)) %&gt;% \n  writeRaster(file.path(path, \"chelsa\", \"chelsa_years.tif\"))\nunlink(file.path(path, \"chelsa\", \"cropped\"), recursive = TRUE)\nrast(file.path(path, \"chelsa\", \"chelsa_years.tif\"))[[1:26]] %&gt;% \n  mean() %&gt;% \n  writeRaster(file.path(path, \"chelsa\", \"chelsa_historical_mean.tif\"))\nrast(file.path(path, \"chelsa\", \"chelsa_years.tif\"))[[27:40]] %&gt;% \n  mean() %&gt;% \n  writeRaster(file.path(path, \"chelsa\", \"chelsa_evaluation_mean.tif\"))\n\n\n\n\nCode\nhist &lt;- rast(file.path(path, \"chelsa\", \"chelsa_historical_mean.tif\"))\neval &lt;- rast(file.path(path, \"chelsa\", \"chelsa_evaluation_mean.tif\"))\nggplot() +\n  tidyterra::geom_spatraster(data = hist) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Historical\", \"1980:2005\") +\n  ggplot() +\n  tidyterra::geom_spatraster(data = eval) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation\", \"2006:2019\") + \n  plot_layout(ncol = 1)"
+  },
+  {
+    "objectID": "test_nc.html#projection",
+    "href": "test_nc.html#projection",
+    "title": "Test New Caledonia",
+    "section": "Projection",
+    "text": "Projection\n\nTest with CORDEX temperature at surface tas (2m air temperature) for January (01) daily means using CDS, Australasian domain with 0.22° (AUS-22), RCP 8.5, MOHC-HadGEM2-ES (UK) GCM (among 4), CTP-RegCM4-7 (Italy) RCM (among 3), and ensemble r1i1p1 from 2006 to 2099. The CDS was done I’m switching to manual download on IPSL servers.\n\nTest with CORDEX temperature at surface tas (2m air temperature) for January means using IPSL node, Australasian domain with 0.22° (AUS-22), historical and RCP 8.5 experiments, NCC-NorESM1-M GCM (among 4), REMO2015 RCM (among 2), and ensemble r1i1p1 from 1971 to 2100 split in three datasets: historical (1980:2005), evaluation (2006:2019) and projection (2071:2100) means.\n\n\nCode\nrequest &lt;- function(year, file)\n  list(\n    \"dataset_short_name\" = \"projections-cordex-domains-single-levels\",\n    \"format\" = \"tgz\",\n    \"experiment\" = \"rcp_8_5\",\n    \"domain\" = \"australasia\",\n    \"variable\" = \"2m_air_temperature\",\n    \"temporal_resolution\" = \"daily_mean\",\n    \"horizontal_resolution\" = \"0_22_degree_x_0_22_degree\",\n    \"gcm_model\" = \"ncc_noresm1_m\",\n    \"rcm_model\" = \"ictp_regcm4_7\",\n    \"ensemble_member\" = \"r1i1p1\",\n    \"start_year\" = year,\n    \"end_year\" = year,\n    \"target\" = file\n  )\n\n\n\n\nCode\ncdo mergetime data/cordex/raw/* data/cordex/cordex.nc\n\n\n\n\nCode\nhistorical &lt;- 1980:2005\nevaluation &lt;- 2006:2019\nprojection &lt;- 2071:2100\ncordex &lt;- rast(\"data/cordex/cordex.nc\") %&gt;% \n  crop(nc_bb)\nindices &lt;- data.frame(time = time(cordex)) %&gt;% \n  mutate(layer = 1:n()) %&gt;% \n  filter(month(time) == 1) %&gt;% \n  mutate(historical = (year(time) %in% historical)) %&gt;% \n  mutate(evaluation = (year(time) %in% evaluation)) %&gt;% \n  mutate(projection = (year(time) %in% projection))\ncordex_hist &lt;- cordex[[filter(indices, historical)$layer]] %&gt;% \n  mean()\ncordex_eval &lt;- cordex[[filter(indices, evaluation)$layer]] %&gt;% \n  mean()\ncordex_proj &lt;- cordex[[filter(indices, projection)$layer]] %&gt;% \n  mean()\n\n\n\n\nCode\nggplot() +\n  tidyterra::geom_spatraster(data = cordex_hist) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Historical\", \"1980:2005\") +\n  ggplot() +\n  tidyterra::geom_spatraster(data = cordex_eval) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation\", \"2006:2019\") + \n  ggplot() +\n  tidyterra::geom_spatraster(data = cordex_proj) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Projection\", \"2071:2100\") + \n  plot_layout(ncol = 1)"
+  },
+  {
+    "objectID": "test_nc.html#bias",
+    "href": "test_nc.html#bias",
+    "title": "Test New Caledonia",
+    "section": "Bias",
+    "text": "Bias\nBias is simply computed as projection minus historical means for both evaluation and projection means.\n\n\nCode\ncordex_bias_eval &lt;- cordex_proj - cordex_hist\ncordex_bias_proj &lt;- cordex_proj - cordex_hist\n\n\n\n\nCode\nggplot() +\n  tidyterra::geom_spatraster(data = cordex_bias_eval) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation bias\", \"2006:2019 - 1980:2005\") +\n  ggplot() +\n  tidyterra::geom_spatraster(data = cordex_bias_proj) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Projection bias\", \"2071:2100 - 1980:2005\") + \n  plot_layout(ncol = 1)"
+  },
+  {
+    "objectID": "test_nc.html#interpolation",
+    "href": "test_nc.html#interpolation",
+    "title": "Test New Caledonia",
+    "section": "Interpolation",
+    "text": "Interpolation\nBias is then interpolated to CHELSA resolution using bilinear interpolation (other available).\n\n\nCode\ncordex_bias_eval_int &lt;- resample(cordex_bias_eval, hist, method = 'bilinear')\ncordex_bias_proj_int &lt;- resample(cordex_bias_proj, hist, method = 'bilinear')\n\n\n\n\nCode\nggplot() +\n  tidyterra::geom_spatraster(data = cordex_bias_eval_int) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation bias interpolated\", \"2006:2019 - 1980:2005\") +\n  ggplot() +\n  tidyterra::geom_spatraster(data = cordex_bias_proj_int) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Projection bias interpolated\", \"2071:2100 - 1980:2005\") + \n  plot_layout(ncol = 1)"
+  },
+  {
+    "objectID": "test_nc.html#downscaling",
+    "href": "test_nc.html#downscaling",
+    "title": "Test New Caledonia",
+    "section": "Downscaling",
+    "text": "Downscaling\nFinally, CORDEX is downscaled on CHELSA by adding the interpolated bias to CHELSA historical means.\n\n\nCode\ncordex_eval_ds &lt;- hist + cordex_bias_eval_int\ncordex_proj_ds&lt;- hist + cordex_bias_proj_int\n\n\n\n\nCode\nggplot() +\n  tidyterra::geom_spatraster(data = cordex_eval_ds) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation downscaled\", \"2006:2019\") +\n  ggplot() +\n  tidyterra::geom_spatraster(data = cordex_proj_ds) +\n  scale_fill_viridis_c(\"tas (K)\") +\n  theme_bw() +\n  ggtitle(\"Projection downsclaed\", \"2071:2100\") + \n  plot_layout(ncol = 1)"
+  },
+  {
+    "objectID": "test_nc.html#evaluation",
+    "href": "test_nc.html#evaluation",
+    "title": "Test New Caledonia",
+    "section": "Evaluation",
+    "text": "Evaluation\nEvaluation is based on probability density functions (PDF), correlation coefficient (CC), root mean square error (RMSE) and bias for the downscaled and CHELSA evaluation means (2006:2019).\n\nProbability density functions\nThe downscaled PDF shows a very good match with the CHELSA original data.\n\n\nCode\nlist(\n  chelsa = eval/10,\n  cordex = cordex_eval,\n  downscale = cordex_eval_ds/10\n) %&gt;% lapply(values) %&gt;% \n  lapply(as.data.frame) %&gt;% \n  bind_rows(.id = \"data\") %&gt;% \n  ggplot(aes(mean, col = data)) +\n  geom_density() +\n  theme_bw()\n\n\n\n\n\n\n\nMetrics\nCC is very good with a value if 0.992 and RMSE and bias are very low with respectively 0.076 and 0.021 K. However, bias seems spatially structured mainly on land, which might problematic, despite very low.\n\n\nCode\nvalues &lt;- data.frame(chelsa = values(eval), downscale = values(cordex_eval_ds)) %&gt;% \n  rename(chelsa = mean, downscale = mean.1)\ncor.test(values$chelsa, values$downscale)\n\n\n\n    Pearson's product-moment correlation\n\ndata:  values$chelsa and values$downscale\nt = 8903.5, df = 1272682, p-value &lt; 2.2e-16\nalternative hypothesis: true correlation is not equal to 0\n95 percent confidence interval:\n 0.9920405 0.9920954\nsample estimates:\n     cor \n0.992068 \n\n\n\n\nCode\nvalues %&gt;% \n  mutate(se = (downscale/10-chelsa/10)^2, \n         bias = downscale/10-chelsa/10) %&gt;% \n  na.omit() %&gt;% \n  summarise(RMSE = sqrt(mean(se)), bias = mean(bias)) %&gt;% \n  knitr::kable(col.names = c(\"RMSE (K)\", \"Bias (K)\"))\n\n\n\n\n\nRMSE (K)\nBias (K)\n\n\n\n\n0.075602\n0.0214825\n\n\n\n\n\n\n\nCode\nbias &lt;- cordex_eval_ds/10 - eval/10\nggplot() +\n  tidyterra::geom_spatraster(data = bias) +\n  scale_fill_viridis_c(\"bias (K)\") +\n  theme_bw() +\n  ggtitle(\"Evaluation downscaled\")\n\n\n\n\n\n\n\nCode\nleaflet() %&gt;% \n  addTiles() %&gt;%\n  addRasterImage(bias)"
   }
 ]

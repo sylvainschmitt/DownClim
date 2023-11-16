@@ -1,0 +1,318 @@
+# Test New Caledonia {.unnumbered}
+
+## Packages
+
+Using tidyvserse, ggplot2 and patchwork for data wrangling and plotting; sf, terra, geodata, leaflet, and tidyterra for spatial data manipulation and plotting; and foreach and doParallel for parallelisation.
+
+```{r pkg}
+#| message: false
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(sf)
+library(terra)
+library(geodata)
+library(leaflet)
+library(tidyterra)
+library(foreach)
+library(doParallel)
+path <- "data"
+cores <- 20
+```
+
+## Area
+
+Test with New Caledonia, extracting the bounding box. The data from GADM includes a lot of island. Maybe land masking could be important in the case of islands.
+
+```{r getnc}
+nc <- gadm("New Caledonia", path = path, leval = 0) %>% 
+  st_as_sf() %>% 
+  st_union()
+nc_bb <- st_bbox(nc) %>% 
+  st_as_sfc()
+```
+
+```{r plotnc}
+leaflet() %>% 
+  addTiles() %>%
+  addPolygons(data = nc_bb) %>% 
+  addPolygons(data = nc, col = "red")
+```
+
+## Baseline
+
+Test with CHELSA temperature at surface tas for January (01) from 1980 to 2019 split in two datasets: historical (1980:2005) and evaluation (2006:2019) means.
+
+```{r get_chelsa}
+get_chelsa <- function(
+    month, # 1
+    year, # 1980
+    variable, # tas
+    bbox,
+    frequency = "monthly",
+    base_url = "https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V2/GLOBAL",
+    path = "data"
+) {
+  # check receiving folders
+  if(!dir.exists(file.path(path, "chelsa", "raw")))
+    stop("The folder to stock raw rasters is missing")
+  if(!dir.exists(file.path(path, "chelsa", "cropped")))
+    stop("The folder to stock cropped rasters is missing")
+  # define file, url, & outputs
+  file <- paste0(c("CHELSA", 
+                   variable, 
+                   sprintf("%02d", month),
+                   year,
+                   "V.2.1.tif"), 
+                 collapse = "_")
+  url <- file.path(base_url, frequency, variable, file)
+  raw_file <- file.path(path, "chelsa", "raw", file)
+  cropped_file <- file.path(path, "chelsa", "cropped", file)
+  # dl & crop
+  if(!file.exists(cropped_file)){
+    if(!file.exists(raw_file))
+      download.file(url, file.path(path, "chelsa", "raw", file))  
+    rast(raw_file) %>% 
+      crop(bbox) %>% 
+      writeRaster(cropped_file)
+    unlink(raw_file)
+  }
+}
+```
+
+```{r dl_chelsa}
+#| eval: false
+dir.create(file.path(path, "chelsa"))
+dir.create(file.path(path, "chelsa", "raw"))
+dir.create(file.path(path, "chelsa", "cropped"))
+# cl <- makeCluster(cores)
+# registerDoParallel(cl) 
+foreach(y = 1980:2019, .packages = c("tidyverse", "terra", "sf")) %do% 
+  get_chelsa(month = 1, year = y, variable = "tas", bbox = nc_bb)
+# stopCluster(cl)
+# rm(cl)
+unlink(file.path(path, "chelsa", "raw"), recursive = TRUE)
+rast(list.files(file.path(path, "chelsa", "cropped"), full.names = TRUE)) %>% 
+  writeRaster(file.path(path, "chelsa", "chelsa_years.tif"))
+unlink(file.path(path, "chelsa", "cropped"), recursive = TRUE)
+rast(file.path(path, "chelsa", "chelsa_years.tif"))[[1:26]] %>% 
+  mean() %>% 
+  writeRaster(file.path(path, "chelsa", "chelsa_historical_mean.tif"))
+rast(file.path(path, "chelsa", "chelsa_years.tif"))[[27:40]] %>% 
+  mean() %>% 
+  writeRaster(file.path(path, "chelsa", "chelsa_evaluation_mean.tif"))
+```
+
+```{r chelsa_plot}
+#| message: false
+hist <- rast(file.path(path, "chelsa", "chelsa_historical_mean.tif"))
+eval <- rast(file.path(path, "chelsa", "chelsa_evaluation_mean.tif"))
+ggplot() +
+  tidyterra::geom_spatraster(data = hist) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Historical", "1980:2005") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = eval) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Evaluation", "2006:2019") + 
+  plot_layout(ncol = 1)
+```
+
+## Projection
+
+> Test with CORDEX temperature at surface tas (2m air temperature) for January (01) daily means using CDS, Australasian domain with 0.22° (AUS-22), RCP 8.5, MOHC-HadGEM2-ES (UK) GCM (among 4), CTP-RegCM4-7 (Italy) RCM (among 3), and ensemble r1i1p1 from 2006 to 2099. The CDS was done I'm switching to manual download on IPSL servers.
+
+Test with CORDEX temperature at surface tas (2m air temperature) for January means using [IPSL](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/) node, Australasian domain with 0.22° (AUS-22), historical and RCP 8.5 experiments, NCC-NorESM1-M GCM (among 4), REMO2015 RCM (among 2), and ensemble r1i1p1 from 1971 to 2100 split in three datasets: historical (1980:2005), evaluation (2006:2019) and projection (2071:2100) means.
+
+```{r request_fun}
+request <- function(year, file)
+  list(
+    "dataset_short_name" = "projections-cordex-domains-single-levels",
+    "format" = "tgz",
+    "experiment" = "rcp_8_5",
+    "domain" = "australasia",
+    "variable" = "2m_air_temperature",
+    "temporal_resolution" = "daily_mean",
+    "horizontal_resolution" = "0_22_degree_x_0_22_degree",
+    "gcm_model" = "ncc_noresm1_m",
+    "rcm_model" = "ictp_regcm4_7",
+    "ensemble_member" = "r1i1p1",
+    "start_year" = year,
+    "end_year" = year,
+    "target" = file
+  )
+```
+
+```{bash cdo_merge}
+#| eval: false
+cdo mergetime data/cordex/raw/* data/cordex/cordex.nc
+```
+
+```{r cordex_proj}
+historical <- 1980:2005
+evaluation <- 2006:2019
+projection <- 2071:2100
+cordex <- rast("data/cordex/cordex.nc") %>% 
+  crop(nc_bb)
+indices <- data.frame(time = time(cordex)) %>% 
+  mutate(layer = 1:n()) %>% 
+  filter(month(time) == 1) %>% 
+  mutate(historical = (year(time) %in% historical)) %>% 
+  mutate(evaluation = (year(time) %in% evaluation)) %>% 
+  mutate(projection = (year(time) %in% projection))
+cordex_hist <- cordex[[filter(indices, historical)$layer]] %>% 
+  mean()
+cordex_eval <- cordex[[filter(indices, evaluation)$layer]] %>% 
+  mean()
+cordex_proj <- cordex[[filter(indices, projection)$layer]] %>% 
+  mean()
+```
+
+```{r cordex_plot}
+ggplot() +
+  tidyterra::geom_spatraster(data = cordex_hist) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Historical", "1980:2005") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = cordex_eval) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Evaluation", "2006:2019") + 
+  ggplot() +
+  tidyterra::geom_spatraster(data = cordex_proj) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Projection", "2071:2100") + 
+  plot_layout(ncol = 1)
+```
+
+## Bias
+
+Bias is simply computed as projection minus historical means for both evaluation and projection means.
+
+```{r cordex_bias}
+cordex_bias_eval <- cordex_proj - cordex_hist
+cordex_bias_proj <- cordex_proj - cordex_hist
+```
+
+```{r cordex_bias_plot}
+ggplot() +
+  tidyterra::geom_spatraster(data = cordex_bias_eval) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Evaluation bias", "2006:2019 - 1980:2005") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = cordex_bias_proj) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Projection bias", "2071:2100 - 1980:2005") + 
+  plot_layout(ncol = 1)
+```
+
+## Interpolation
+
+Bias is then interpolated to CHELSA resolution using bilinear interpolation (other available).
+
+```{r bias_int}
+cordex_bias_eval_int <- resample(cordex_bias_eval, hist, method = 'bilinear')
+cordex_bias_proj_int <- resample(cordex_bias_proj, hist, method = 'bilinear')
+```
+
+```{r bias_int_plot}
+#| message: false
+ggplot() +
+  tidyterra::geom_spatraster(data = cordex_bias_eval_int) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Evaluation bias interpolated", "2006:2019 - 1980:2005") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = cordex_bias_proj_int) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Projection bias interpolated", "2071:2100 - 1980:2005") + 
+  plot_layout(ncol = 1)
+```
+
+## Downscaling
+
+Finally, CORDEX is downscaled on CHELSA by adding the interpolated bias to CHELSA historical means.
+
+```{r ds}
+cordex_eval_ds <- hist + cordex_bias_eval_int
+cordex_proj_ds<- hist + cordex_bias_proj_int
+```
+
+```{r ds_plot}
+#| message: false
+ggplot() +
+  tidyterra::geom_spatraster(data = cordex_eval_ds) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Evaluation downscaled", "2006:2019") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = cordex_proj_ds) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Projection downsclaed", "2071:2100") + 
+  plot_layout(ncol = 1)
+```
+
+## Evaluation
+
+Evaluation is based on probability density functions (PDF), correlation coefficient (CC), root mean square error (RMSE) and bias for the downscaled and CHELSA evaluation means (2006:2019).
+
+### Probability density functions
+
+The downscaled PDF shows a very good match with the CHELSA original data.
+
+```{r pdf}
+#| warning: false
+list(
+  chelsa = eval/10,
+  cordex = cordex_eval,
+  downscale = cordex_eval_ds/10
+) %>% lapply(values) %>% 
+  lapply(as.data.frame) %>% 
+  bind_rows(.id = "data") %>% 
+  ggplot(aes(mean, col = data)) +
+  geom_density() +
+  theme_bw()
+```
+
+### Metrics
+
+CC is very good with a value if 0.992 and RMSE and bias are very low with respectively 0.076 and 0.021 K. However, bias seems spatially structured mainly on land, which might problematic, despite very low.
+
+```{r cc}
+values <- data.frame(chelsa = values(eval), downscale = values(cordex_eval_ds)) %>% 
+  rename(chelsa = mean, downscale = mean.1)
+cor.test(values$chelsa, values$downscale)
+```
+
+```{r rmse}
+values %>% 
+  mutate(se = (downscale/10-chelsa/10)^2, 
+         bias = downscale/10-chelsa/10) %>% 
+  na.omit() %>% 
+  summarise(RMSE = sqrt(mean(se)), bias = mean(bias)) %>% 
+  knitr::kable(col.names = c("RMSE (K)", "Bias (K)"))
+```
+
+```{r bias_gg}
+#| message: false
+bias <- cordex_eval_ds/10 - eval/10
+ggplot() +
+  tidyterra::geom_spatraster(data = bias) +
+  scale_fill_viridis_c("bias (K)") +
+  theme_bw() +
+  ggtitle("Evaluation downscaled")
+```
+
+```{r bias_ll}
+leaflet() %>% 
+  addTiles() %>%
+  addRasterImage(bias)
+```
