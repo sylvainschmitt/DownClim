@@ -39,7 +39,7 @@ leaflet() %>%
   addPolygons(data = nc, col = "red")
 ```
 
-## Baseline
+## CHELSA
 
 Test with CHELSA temperature at surface tas for January (01) from 1980 to 2019 split in two datasets: historical (1980:2005) and evaluation (2006:2019) means.
 
@@ -122,13 +122,13 @@ ggplot() +
   plot_layout(ncol = 1)
 ```
 
-## Projections from CDS
+## CORDEX from CDS
 
 Test with CORDEX temperature at surface tas (2m air temperature) for January (01) daily means using CDS, Australasian domain with 0.22° (AUS-22), RCP 8.5, MOHC-HadGEM2-ES (UK) GCM (among 4), CTP-RegCM4-7 (Italy) RCM (among 3), and ensemble r1i1p1 from 2006 to 2099. The CDS was done I'm switching to manual download on IPSL servers.
 
 > The downloading with ecmwfr is super slow and only possible with daily means. Moreover, the raster operation to computed monthly means with terra is too heavy in R. It could be intelligently adapted, but this advocate to use another language.
 
-```{r}
+```{r wf_connect}
 #| eval: false
 wf_set_key(
   user = "******",
@@ -177,7 +177,7 @@ requests <- function(
 }
 ```
 
-```{r}
+```{r dl_cds}
 #| eval: false
 domain = "Australasia"
 gcm <- "NCC-NorESM1-M"
@@ -194,20 +194,20 @@ ncfile <- wf_request_batch(
 )
 ```
 
-```{r}
+```{r untar_cds}
 #| eval: false
 lapply(list.files(file.path(path, "cordex", paste0(gcm, "-", rcm)), full.names = TRUE),
        untar, exdir = file.path(path, "cordex", paste0(gcm, "-", rcm)))
 ```
 
-```{r}
+```{r summarise_cds}
 #| eval: false
 r <- rast(list.files(file.path(path, "cordex", paste0(gcm, "-", rcm)), 
                 pattern = ".nc", full.names = TRUE))
 r_month <- tapp(r, "yearmonths", mean)
 ```
 
-## Projections from ESGF
+## CORDEX from ESGF
 
 Test with CORDEX using [IPSL](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/) node:
 
@@ -223,7 +223,7 @@ To split in three datasets: historical (1980:2005), evaluation (2006:2019) and p
 
 > The bash scripts are way faster but need to be prepared first (maybe we can look for a tool).
 
-```{bash cdo_merge_years}
+```{bash cdo_merge}
 #| eval: false
 vars=(tas pr)
 gcms=(NCC-NorESM1-M MOHC-HadGEM2-ES MPI-M-MPI-ESM-LR MPI-M-MPI-ESM-MR)
@@ -240,10 +240,7 @@ for var in ${vars[@]}; do
     done
   done
 done
-```
 
-```{bash cdo_merge_vars}
-#| eval: false
 gcms=(NCC-NorESM1-M MOHC-HadGEM2-ES MPI-M-MPI-ESM-LR MPI-M-MPI-ESM-MR)
 rcms=(CCLM5-0-15 REMO2015 RegCM4-7)
 experiments=(historical rcp26 rcp85)
@@ -260,7 +257,7 @@ for experiment in ${experiments[@]}; do
 done
 ```
 
-```{r terra_historical}
+```{r cordex}
 #| eval: false
 historical <- 1980:2005
 dir.create(file.path(path, "cordex_esgf", "historical"))
@@ -274,19 +271,6 @@ lapply(files, function(file)
          writeRaster(file.path(path, "cordex_esgf", "historical",  
                         paste0("tas_", gsub(".nc", ".tif", file))))
        )
-lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
-         crop(nc_bb) %>% 
-         subset(grepl("pr", names(.))) %>% 
-         subset(year(time(.)) %in% historical) %>% 
-         tapp(months, mean) %>% 
-         writeRaster(file.path(path, "cordex_esgf", "historical",  
-                        paste0("pr_", gsub(".nc", ".tif", file))))
-       )
-```
-
-```{r terra_evaluation}
-#| eval: false
 evaluation <- 2006:2019
 dir.create(file.path(path, "cordex_esgf", "evaluation"))
 files <- list.files(file.path(path, "cordex_esgf", "merged"), pattern = "_rcp")
@@ -295,23 +279,10 @@ lapply(files, function(file)
          crop(nc_bb) %>% 
          subset(grepl("tas", names(.))) %>% 
          subset(year(time(.)) %in% evaluation) %>% 
-         tapp(months, mean) %>% 
+         tapp(months, median) %>% 
          writeRaster(file.path(path, "cordex_esgf", "evaluation",  
                         paste0("tas_", gsub(".nc", ".tif", file))))
        )
-lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
-         crop(nc_bb) %>% 
-         subset(grepl("pr", names(.))) %>% 
-         subset(year(time(.)) %in% evaluation) %>% 
-         tapp(months, mean) %>% 
-         writeRaster(file.path(path, "cordex_esgf", "evaluation",  
-                        paste0("pr_", gsub(".nc", ".tif", file))))
-       )
-```
-
-```{r terra_projection}
-#| eval: false
 projection <- 2071:2100
 dir.create(file.path(path, "cordex_esgf", "projection"))
 files <- list.files(file.path(path, "cordex_esgf", "merged"), pattern = "_rcp")
@@ -324,22 +295,13 @@ lapply(files, function(file)
          writeRaster(file.path(path, "cordex_esgf", "projection",  
                         paste0("tas_", gsub(".nc", ".tif", file))))
        )
-lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
-         crop(nc_bb) %>% 
-         subset(grepl("pr", names(.))) %>% 
-         subset(year(time(.)) %in% projection) %>% 
-         tapp(months, mean) %>% 
-         writeRaster(file.path(path, "cordex_esgf", "projection",  
-                        paste0("pr_", gsub(".nc", ".tif", file))))
-       )
 ```
 
-## Bias
+### Bias
 
 Bias is simply computed as projection minus historical means for both evaluation and projection means.
 
-```{r eval_bias}
+```{r cordex_bias}
 #| eval: false
 dir.create(file.path(path, "cordex_esgf", "eval_bias"))
 files <- list.files(file.path(path, "cordex_esgf", "evaluation"), pattern = "tas")
@@ -354,10 +316,6 @@ lapply(files, function(file) {
                    paste0(var, "_", gcm, "_", rcm, "_historical.tif")))) %>% 
     writeRaster(file.path(path, "cordex_esgf", "eval_bias", file))
 })
-```
-
-```{r proj_bias}
-#| eval: false
 dir.create(file.path(path, "cordex_esgf", "proj_bias"))
 files <- list.files(file.path(path, "cordex_esgf", "projection"), pattern = "tas")
 lapply(files, function(file) {
@@ -373,11 +331,11 @@ lapply(files, function(file) {
 })
 ```
 
-## Interpolation & downscaling
+### Interpolation & downscaling
 
 Bias is then interpolated to CHELSA resolution using bilinear interpolation (other available). Finally, CORDEX is downscaled on CHELSA by adding the interpolated bias to CHELSA historical means.
 
-```{r eval_ds}
+```{r cordex_ds}
 #| eval: false
 dir.create(file.path(path, "cordex_esgf", "eval_ds"))
 files <- list.files(file.path(path, "cordex_esgf", "eval_bias"), pattern = "tas")
@@ -388,10 +346,6 @@ lapply(files, function(file) {
   writeRaster(x = proj, 
               filename = file.path(path, "cordex_esgf", "eval_ds", file))
 })
-```
-
-```{r proj_ds}
-#| eval: false
 dir.create(file.path(path, "cordex_esgf", "proj_ds"))
 files <- list.files(file.path(path, "cordex_esgf", "proj_bias"), pattern = "tas")
 lapply(files, function(file) {
@@ -403,12 +357,153 @@ lapply(files, function(file) {
 })
 ```
 
-```{r eval_ds_plot}
+```{r cordex_eval_ds_plot}
 #| message: false
 rcp85 <- rast(list.files(file.path(path, "cordex_esgf", "eval_ds"),
                 pattern = "rcp85", full.names = TRUE)) %>% 
   mean()
 rcp26 <- rast(list.files(file.path(path, "cordex_esgf", "eval_ds"),
+                pattern = "rcp26", full.names = TRUE)) %>% 
+  mean()
+ggplot() +
+  tidyterra::geom_spatraster(data = rcp85) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Mean evaluation downscaled for RCP 8.5") +
+  ggplot() +
+  tidyterra::geom_spatraster(data = rcp26) +
+  scale_fill_viridis_c("tas (K)") +
+  theme_bw() +
+  ggtitle("Mean evaluation downscaled for RCP 2.6") + 
+  plot_layout(ncol = 1)
+```
+
+## CMIP5 from ESGF
+
+Test with CORDEX using [IPSL](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/) node:
+
+-   3 driving GCM: MPI-M-MPI-ESM-LR, MPI-M-MPI-ESM-MR, NCC-NorESM1-M
+-   3 experiments: historical, RCP 2.6, & RCP 8.5
+-   ensemble r1i1p1
+-   time frequency of monthly means
+-   1 variables: temperature at surface
+
+To split in three datasets: historical (1980:2005), evaluation (2006:2019) and projection (2071:2100) means.
+
+```{r cmip5}
+#| eval: false
+historical <- 1980:2005
+dir.create(file.path(path, "cmip5_esgf", "historical"))
+files <- list.files(file.path(path, "cmip5_esgf", "raw"), pattern = "historical")
+lapply(files, function(file){
+  var <- str_split_1(file, "_")[1]
+  gcm <- str_split_1(file, "_")[3]
+  rcp <- str_split_1(file, "_")[4]
+  rast(file.path(path, "cmip5_esgf", "raw", file)) %>% 
+         crop(nc_bb) %>% 
+         subset(grepl("tas", names(.))) %>% 
+         subset(year(time(.)) %in% historical) %>% 
+         tapp(months, mean) %>% 
+         writeRaster(file.path(path, "cmip5_esgf", "historical",  
+                        paste0(var, "_", gcm, "_none_", rcp, ".tif")))
+})
+evaluation <- 2006:2019
+dir.create(file.path(path, "cmip5_esgf", "evaluation"))
+files <- list.files(file.path(path, "cmip5_esgf", "raw"), pattern = "_rcp")
+lapply(files, function(file){
+  var <- str_split_1(file, "_")[1]
+  gcm <- str_split_1(file, "_")[3]
+  rcp <- str_split_1(file, "_")[4]
+  rast(file.path(path, "cmip5_esgf", "raw", file)) %>% 
+         crop(nc_bb) %>% 
+         subset(grepl("tas", names(.))) %>% 
+         subset(year(time(.)) %in% evaluation) %>% 
+         tapp(months, mean) %>% 
+         writeRaster(file.path(path, "cmip5_esgf", "evaluation",  
+                        paste0(var, "_", gcm, "_none_", rcp, ".tif")))
+})
+projection <- 2071:2100
+dir.create(file.path(path, "cmip5_esgf", "projection"))
+files <- list.files(file.path(path, "cmip5_esgf", "raw"), pattern = "_rcp")
+lapply(files, function(file) {
+  var <- str_split_1(file, "_")[1]
+  gcm <- str_split_1(file, "_")[3]
+  rcp <- str_split_1(file, "_")[4]
+  rast(file.path(path, "cmip5_esgf", "raw", file)) %>% 
+         crop(nc_bb) %>% 
+         subset(grepl("tas", names(.))) %>% 
+         subset(year(time(.)) %in% projection) %>% 
+         tapp(months, mean) %>% 
+         writeRaster(file.path(path, "cmip5_esgf", "projection",  
+                      paste0(var, "_", gcm, "_none_", rcp, ".tif")))
+})
+```
+
+### Bias
+
+Bias is simply computed as projection minus historical means for both evaluation and projection means.
+
+```{r cmip5_bias}
+#| eval: false
+dir.create(file.path(path, "cmip5_esgf", "eval_bias"))
+files <- list.files(file.path(path, "cmip5_esgf", "evaluation"), pattern = "tas")
+lapply(files, function(file) {
+  var <- str_split_1(file, "_")[1]
+  gcm <- str_split_1(file, "_")[2]
+  rcm <- str_split_1(file, "_")[3]
+  rcp <- gsub(".tif", "", str_split_1(file, "_")[4])
+  (rast(file.path(path, "cmip5_esgf", "evaluation", file)) -
+    rast(file.path(path, "cmip5_esgf", "historical", 
+                   paste0(var, "_", gcm, "_", rcm, "_historical.tif")))) %>% 
+    writeRaster(file.path(path, "cmip5_esgf", "eval_bias", file))
+})
+dir.create(file.path(path, "cmip5_esgf", "proj_bias"))
+files <- list.files(file.path(path, "cmip5_esgf", "projection"), pattern = "tas")
+lapply(files, function(file) {
+  var <- str_split_1(file, "_")[1]
+  gcm <- str_split_1(file, "_")[2]
+  rcm <- str_split_1(file, "_")[3]
+  rcp <- gsub(".tif", "", str_split_1(file, "_")[4])
+
+  (rast(file.path(path, "cmip5_esgf", "projection", file)) -
+    rast(file.path(path, "cmip5_esgf", "historical", 
+                   paste0(var, "_", gcm, "_", rcm, "_historical.tif")))) %>% 
+    writeRaster(file.path(path, "cmip5_esgf", "proj_bias", file))
+})
+```
+
+### Interpolation & downscaling
+
+Bias is then interpolated to CHELSA resolution using bilinear interpolation (other available). Finally, CORDEX is downscaled on CHELSA by adding the interpolated bias to CHELSA historical means.
+
+```{r cmip5_eval_ds}
+#| eval: false
+dir.create(file.path(path, "cmip5_esgf", "eval_ds"))
+files <- list.files(file.path(path, "cmip5_esgf", "eval_bias"), pattern = "tas")
+lapply(files, function(file) {
+  bias <- rast(file.path(path, "cmip5_esgf", "eval_bias", file)) %>% 
+    resample(hist)
+  proj <- hist + bias*10
+  writeRaster(x = proj, 
+              filename = file.path(path, "cmip5_esgf", "eval_ds", file))
+})
+dir.create(file.path(path, "cmip5_esgf", "proj_ds"))
+files <- list.files(file.path(path, "cmip5_esgf", "proj_bias"), pattern = "tas")
+lapply(files, function(file) {
+  bias <- rast(file.path(path, "cmip5_esgf", "proj_bias", file)) %>% 
+    resample(hist)
+  proj <- hist + bias*10
+  writeRaster(x = proj, 
+              filename = file.path(path, "cmip5_esgf", "proj_ds", file))
+})
+```
+
+```{r cmip5_eval_ds_plot}
+#| message: false
+rcp85 <- rast(list.files(file.path(path, "cmip5_esgf", "eval_ds"),
+                pattern = "rcp85", full.names = TRUE)) %>% 
+  mean()
+rcp26 <- rast(list.files(file.path(path, "cmip5_esgf", "eval_ds"),
                 pattern = "rcp26", full.names = TRUE)) %>% 
   mean()
 ggplot() +
@@ -439,14 +534,14 @@ points <- st_sample(nc_bb, 10^4) %>% vect()
   
 chelsa <- terra::extract(eval, points) %>% 
   gather(month, value, -ID) %>% 
-  mutate(variable = "tas", type = "CHELSA",
+  mutate(variable = "tas", type = "raw", origin = "CHELSA",
                      gcm = "", rcm = "", rcp = "")
 
-raw_files <- list.files(file.path(path, "cordex_esgf", "evaluation"), 
+raw_cordex_files <- list.files(file.path(path, "cordex_esgf", "evaluation"), 
            pattern = "tas", full.names = TRUE)
-names(raw_files) <- list.files(file.path(path, "cordex_esgf", "evaluation"), 
+names(raw_cordex_files) <- list.files(file.path(path, "cordex_esgf", "evaluation"), 
            pattern = "tas", full.names = FALSE)
-raw <- raw_files %>% 
+raw_cordex <- raw_cordex_files %>% 
   lapply(rast) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
@@ -455,14 +550,14 @@ raw <- raw_files %>%
   mutate(month = "january") %>% 
   separate(file, c("variable", "gcm", "rcm", "rcp"), "_") %>% 
   mutate(rcp = gsub(".tif", "", rcp)) %>% 
-  mutate(type = "raw") %>% 
+  mutate(type = "raw", origin = "cordex") %>% 
   mutate(value = value*10)
 
-ds_files <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
+ds_cordex_files <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
            pattern = "tas", full.names = TRUE)
-names(ds_files) <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
+names(ds_cordex_files) <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
            pattern = "tas", full.names = FALSE)
-ds <- ds_files %>% 
+ds_cordex <- ds_cordex_files %>% 
   lapply(rast) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
@@ -471,35 +566,87 @@ ds <- ds_files %>%
   mutate(month = "january") %>% 
   separate(file, c("variable", "gcm", "rcm", "rcp"), "_") %>% 
   mutate(rcp = gsub(".tif", "", rcp)) %>% 
-  mutate(type = "downscaled")
+  mutate(type = "downscaled", origin = "cordex")
 
-bind_rows(chelsa, raw, ds) %>% 
+raw_cmip_files <- list.files(file.path(path, "cmip5_esgf", "evaluation"), 
+           pattern = "tas", full.names = TRUE)
+names(raw_cmip_files) <- list.files(file.path(path, "cmip5_esgf", "evaluation"), 
+           pattern = "tas", full.names = FALSE)
+raw_cmip <- raw_cmip_files %>% 
+  lapply(rast) %>% 
+  lapply(terra::extract, points) %>% 
+  bind_rows(.id = "file") %>% 
+  gather(month, value, -file, -ID) %>%
+  filter(month == "janvier") %>% 
+  mutate(month = "january") %>% 
+  separate(file, c("variable", "gcm", "rcm", "rcp"), "_") %>% 
+  mutate(rcp = gsub(".tif", "", rcp)) %>% 
+  mutate(type = "raw", origin = "cmip") %>% 
+  mutate(value = value*10)
+
+ds_cmip_files <- list.files(file.path(path, "cmip5_esgf", "eval_ds"), 
+           pattern = "tas", full.names = TRUE)
+names(ds_cmip_files) <- list.files(file.path(path, "cmip5_esgf", "eval_ds"), 
+           pattern = "tas", full.names = FALSE)
+ds_cmip <- ds_cmip_files %>% 
+  lapply(rast) %>% 
+  lapply(terra::extract, points) %>% 
+  bind_rows(.id = "file") %>% 
+  gather(month, value, -file, -ID) %>%
+  filter(month == "lyr1") %>% 
+  mutate(month = "january") %>% 
+  separate(file, c("variable", "gcm", "rcm", "rcp"), "_") %>% 
+  mutate(rcp = gsub(".tif", "", rcp)) %>% 
+  mutate(type = "downscaled", origin = "cmip")
+
+
+bind_rows(chelsa, raw_cordex, ds_cordex, raw_cmip, ds_cmip) %>% 
   write_tsv(file.path(path, "cordex_esgf", "eval_pdf.tsv"))
 
 chelsa %>% 
-  select(-gcm, -rcm, -rcp, -type) %>% 
+  select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
   rename(observed = value) %>% 
-  left_join(ds %>% 
-              select(-type) %>% 
-              rename(downscaled = value)) %>% 
-  left_join(raw %>% 
-              select(-type) %>% 
-              rename(raw = value)) %>% 
-  gather(type, predicted, -ID, -month, -observed, -variable, -gcm, -rcm, -rcp) %>% 
+  left_join(ds_cordex %>% 
+              select(-type, -origin) %>% 
+              rename(downscaled_cordex = value)) %>% 
+  left_join(raw_cordex %>% 
+              select(-type, -origin) %>% 
+              rename(raw_cordex = value)) %>% 
+    left_join(ds_cmip %>% 
+              select(-type, -origin, -rcm) %>% 
+              rename(downscaled_cmip = value)) %>% 
+  left_join(raw_cmip %>% 
+              select(-type, -origin, -rcm) %>% 
+              rename(raw_cmip = value)) %>% 
+  summary()
+
+list( 
+select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+  rename(observed = value) %>% 
+  left_join(raw_cordex),
+select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+  rename(observed = value) %>% 
+  left_join(ds_cordex),
+select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+  rename(observed = value) %>% 
+  left_join(raw_cmip),
+select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+  rename(observed = value) %>% 
+  left_join(ds_cmip)
+) %>% bind_rows() %>% 
+  rename(predicted = value) %>% 
   write_tsv(file.path(path, "cordex_esgf", "eval_op.tsv"))
 ```
 
 ```{r pdf}
 #| warning: false
-vroom::vroom(file.path(path, "cordex_esgf", "eval.tsv")) %>% 
-  ggplot(aes(value/10-273.15, group = paste(type, gcm, rcm, rcp),
-             col = type)) +
-  geom_density(alpha = 0.1) +
-  geom_density(data = vroom::vroom(file.path(path, "cordex_esgf", "eval.tsv")) %>% 
-                 filter(type == "CHELSA"), 
-               aes(col = "CHELSA"), linewidth = 2) +
-  facet_wrap(~ month) + 
-  theme_bw() + xlab("Temperature (°C)") + ylab("") + xlim(0, 30)
+vroom::vroom(file.path(path, "cordex_esgf", "eval_pdf.tsv")) %>% 
+  ggplot(aes(value/10-273.15, group = paste(origin, type, gcm, rcm, rcp),
+             col = paste(origin, type))) +
+  geom_density() +
+  facet_wrap(~ paste(origin, type)) + 
+  theme_bw() + xlab("Temperature (°C)") + ylab("") +
+  scale_color_discrete(guide = "none")
 ```
 
 ### Metrics
@@ -510,7 +657,7 @@ CC is very good with values 0.99 for most cases and RMSE very low with values be
 #| eval: false
 vroom::vroom(file.path(path, "cordex_esgf", "eval_op.tsv")) %>% 
   na.omit() %>% 
-  group_by(variable, gcm, rcm, rcp, type) %>% 
+  group_by(variable, gcm, rcm, rcp, type, origin) %>% 
   summarise(cc = cor(predicted, observed, method = "pearson"), 
             rmse = sqrt(mean((predicted/10-observed/10)^2)),
             bias = mean(predicted/10-observed/10)) %>% 
@@ -523,21 +670,24 @@ vroom::vroom(file.path(path, "cordex_esgf", "eval_op.tsv")) %>%
 read_tsv(file.path(path, "cordex_esgf", "eval_metrics.tsv")) %>% 
   ggplot(aes(rmse, 1-cc, col = paste(gcm, rcm), shape = rcp)) +
   stat_ellipse(geom = "polygon", alpha = 0.1, 
-               aes(fill = type, group = type)) +
+               aes(fill = paste(origin, type), 
+                   group = paste(origin, type))) +
   geom_point() +
   theme_bw() +
   scale_y_log10(labels = function(x) 1-x) +
   scale_x_log10() +
   scale_color_discrete("") +
   scale_fill_discrete("") +
-  scale_shape_discrete("", ) +
+  scale_shape_discrete("") +
   guides(fill = guide_legend(ncol = 2),
          shape = guide_legend(ncol = 2)) +
   xlab("Root Mean Square Error (RMSE, °C)") +
-  ylab("Correlation Coefficient (CC)")
+  ylab("Correlation Coefficient (CC)") +
+  theme(legend.spacing = unit(0, "npc"), 
+        legend.title = element_blank())
 ```
 
-```{r bias_gg}
+```{r bias_cordex}
 #| message: false
 proj_mean <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
            pattern = "tas", full.names = TRUE) %>% 
@@ -550,5 +700,21 @@ ggplot() +
   tidyterra::geom_spatraster(data = bias) +
   scale_fill_viridis_c("bias (K)") +
   theme_bw() +
-  ggtitle("Mean evaluation downscaled")
+  ggtitle("CORDEX mean bias")
+```
+
+```{r bias_cmip}
+#| message: false
+proj_mean <- list.files(file.path(path, "cmip5_esgf", "eval_ds"), 
+           pattern = "tas", full.names = TRUE) %>% 
+  lapply(rast) %>% 
+  lapply(subset, 1) %>% 
+  rast() %>% 
+  mean()
+bias <- (proj_mean - eval)/10
+ggplot() +
+  tidyterra::geom_spatraster(data = bias) +
+  scale_fill_viridis_c("bias (K)") +
+  theme_bw() +
+  ggtitle("CMIP5 mean bias")
 ```
