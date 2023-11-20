@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9007: NC test for january tas with all available cordex on esgf
 -   DownClim 0.1.0.9006: NC test with R
 -   DownClim 0.1.0.9005: 1st literature round
 -   DownClim 0.1.0.9004: literature reorganisation
