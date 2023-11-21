@@ -63,6 +63,15 @@ sbatch job_muse.sh # HPC run with slurm
 
 Dummy example of a rule based on an R script.
 
+Alternative to get CORDEX:
+
+-   IPSL: https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/
+-   CDS: https://cds.climate.copernicus.eu/cdsapp#!/dataset/projections-cordex-domains-single-levels?tab=overview
+-   esgf-pylient https://esgf-pyclient.readthedocs.io/en/latest/notebooks/demo/subset-cmip5.html
+-   https://github.com/ESGF/sproket
+-   https://pypi.org/project/esgf-scraper/
+-   https://docs.esmvaltool.org/projects/ESMValCore/en/latest/api/esmvalcore.esgf.html
+
 # Data
 
 *Detail the different data sources.*

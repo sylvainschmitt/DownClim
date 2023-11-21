@@ -110,13 +110,13 @@ hist <- rast(file.path(path, "chelsa", "chelsa_historical_mean.tif")) %>%
 eval <- rast(file.path(path, "chelsa", "chelsa_evaluation_mean.tif")) %>% 
   rename(january = mean)
 ggplot() +
-  tidyterra::geom_spatraster(data = hist) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (hist/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Historical", "1980:2005") +
   ggplot() +
-  tidyterra::geom_spatraster(data = eval) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (eval/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Evaluation", "2006:2019") + 
   plot_layout(ncol = 1)
@@ -255,15 +255,45 @@ for experiment in ${experiments[@]}; do
     done
   done
 done
+
+gcms=(NCC-NorESM1-M MOHC-HadGEM2-ES MPI-M-MPI-ESM-LR MPI-M-MPI-ESM-MR)
+rcms=(CCLM5-0-15 REMO2015 RegCM4-7)
+experiments=(historical rcp26 rcp85)
+
+for experiment in ${experiments[@]}; do
+  for gcm in ${gcms[@]}; do
+    for rcm in ${rcms[@]}; do
+      cdo setgridtype,curvilinear \
+        merged/${gcm}_${rcm}_${experiment}.nc \
+        rotated/${gcm}_${rcm}_${experiment}.nc
+      cdo remapbil,global_0.22 \
+        rotated/${gcm}_${rcm}_${experiment}.nc \
+        projected/${gcm}_${rcm}_${experiment}.nc
+    done
+  done
+done
+
+for experiment in ${experiments[@]}; do
+  for gcm in ${gcms[@]}; do
+    for rcm in ${rcms[@]}; do
+      cdo -sellonlatbox,155.86890,172.09009,-22.84806,-17.39917 \
+        projected/${gcm}_${rcm}_${experiment}.nc \
+        cropped/${gcm}_${rcm}_${experiment}.nc
+    done
+  done
+done
+
+rm -r rotated projected
 ```
 
 ```{r cordex}
 #| eval: false
 historical <- 1980:2005
 dir.create(file.path(path, "cordex_esgf", "historical"))
-files <- list.files(file.path(path, "cordex_esgf", "merged"), pattern = "historical")
+files <- list.files(file.path(path, "cordex_esgf", "cropped"), pattern = "historical")
 lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
+       rast(file.path(path, "cordex_esgf", "cropped", file)) %>% 
+         project("EPSG:4326") %>% 
          crop(nc_bb) %>% 
          subset(grepl("tas", names(.))) %>% 
          subset(year(time(.)) %in% historical) %>% 
@@ -273,9 +303,9 @@ lapply(files, function(file)
        )
 evaluation <- 2006:2019
 dir.create(file.path(path, "cordex_esgf", "evaluation"))
-files <- list.files(file.path(path, "cordex_esgf", "merged"), pattern = "_rcp")
+files <- list.files(file.path(path, "cordex_esgf", "cropped"), pattern = "_rcp")
 lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
+       rast(file.path(path, "cordex_esgf", "cropped", file)) %>% 
          crop(nc_bb) %>% 
          subset(grepl("tas", names(.))) %>% 
          subset(year(time(.)) %in% evaluation) %>% 
@@ -285,9 +315,9 @@ lapply(files, function(file)
        )
 projection <- 2071:2100
 dir.create(file.path(path, "cordex_esgf", "projection"))
-files <- list.files(file.path(path, "cordex_esgf", "merged"), pattern = "_rcp")
+files <- list.files(file.path(path, "cordex_esgf", "cropped"), pattern = "_rcp")
 lapply(files, function(file)
-       rast(file.path(path, "cordex_esgf", "merged", file)) %>% 
+       rast(file.path(path, "cordex_esgf", "cropped", file)) %>% 
          crop(nc_bb) %>% 
          subset(grepl("tas", names(.))) %>% 
          subset(year(time(.)) %in% projection) %>% 
@@ -366,13 +396,13 @@ rcp26 <- rast(list.files(file.path(path, "cordex_esgf", "eval_ds"),
                 pattern = "rcp26", full.names = TRUE)) %>% 
   mean()
 ggplot() +
-  tidyterra::geom_spatraster(data = rcp85) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (rcp85/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Mean evaluation downscaled for RCP 8.5") +
   ggplot() +
-  tidyterra::geom_spatraster(data = rcp26) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (rcp26/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Mean evaluation downscaled for RCP 2.6") + 
   plot_layout(ncol = 1)
@@ -507,13 +537,13 @@ rcp26 <- rast(list.files(file.path(path, "cmip5_esgf", "eval_ds"),
                 pattern = "rcp26", full.names = TRUE)) %>% 
   mean()
 ggplot() +
-  tidyterra::geom_spatraster(data = rcp85) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (rcp85/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Mean evaluation downscaled for RCP 8.5") +
   ggplot() +
-  tidyterra::geom_spatraster(data = rcp26) +
-  scale_fill_viridis_c("tas (K)") +
+  tidyterra::geom_spatraster(data = (rcp26/10 - 273.15)) +
+  scale_fill_viridis_c("tas (°C)") +
   theme_bw() +
   ggtitle("Mean evaluation downscaled for RCP 2.6") + 
   plot_layout(ncol = 1)
@@ -532,6 +562,8 @@ The downscaled PDF shows a very good match with the CHELSA original data.
 n <- 10^4
 points <- st_sample(nc_bb, 10^4) %>% vect()
   
+eval <- rast(file.path(path, "chelsa", "chelsa_evaluation_mean.tif")) %>% 
+  rename(january = mean)
 chelsa <- terra::extract(eval, points) %>% 
   gather(month, value, -ID) %>% 
   mutate(variable = "tas", type = "raw", origin = "CHELSA",
@@ -603,34 +635,17 @@ ds_cmip <- ds_cmip_files %>%
 bind_rows(chelsa, raw_cordex, ds_cordex, raw_cmip, ds_cmip) %>% 
   write_tsv(file.path(path, "cordex_esgf", "eval_pdf.tsv"))
 
-chelsa %>% 
-  select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
-  rename(observed = value) %>% 
-  left_join(ds_cordex %>% 
-              select(-type, -origin) %>% 
-              rename(downscaled_cordex = value)) %>% 
-  left_join(raw_cordex %>% 
-              select(-type, -origin) %>% 
-              rename(raw_cordex = value)) %>% 
-    left_join(ds_cmip %>% 
-              select(-type, -origin, -rcm) %>% 
-              rename(downscaled_cmip = value)) %>% 
-  left_join(raw_cmip %>% 
-              select(-type, -origin, -rcm) %>% 
-              rename(raw_cmip = value)) %>% 
-  summary()
-
 list( 
-select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+dplyr::select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
   rename(observed = value) %>% 
   left_join(raw_cordex),
-select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+dplyr::select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
   rename(observed = value) %>% 
   left_join(ds_cordex),
-select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+dplyr::select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
   rename(observed = value) %>% 
   left_join(raw_cmip),
-select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
+dplyr::select(chelsa, -gcm, -rcm, -rcp, -type, -origin) %>% 
   rename(observed = value) %>% 
   left_join(ds_cmip)
 ) %>% bind_rows() %>% 
@@ -689,32 +704,41 @@ read_tsv(file.path(path, "cordex_esgf", "eval_metrics.tsv")) %>%
 
 ```{r bias_cordex}
 #| message: false
-proj_mean <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
+proj_mean_cordex <- list.files(file.path(path, "cordex_esgf", "eval_ds"), 
            pattern = "tas", full.names = TRUE) %>% 
   lapply(rast) %>% 
   lapply(subset, 1) %>% 
   rast() %>% 
   mean()
-bias <- (proj_mean - eval)/10
+bias <- (proj_mean_cordex - eval)/10
 ggplot() +
   tidyterra::geom_spatraster(data = bias) +
-  scale_fill_viridis_c("bias (K)") +
+  scale_fill_viridis_c("bias (°C)") +
   theme_bw() +
   ggtitle("CORDEX mean bias")
 ```
 
 ```{r bias_cmip}
 #| message: false
-proj_mean <- list.files(file.path(path, "cmip5_esgf", "eval_ds"), 
+proj_mean_cmip <- list.files(file.path(path, "cmip5_esgf", "eval_ds"), 
            pattern = "tas", full.names = TRUE) %>% 
   lapply(rast) %>% 
   lapply(subset, 1) %>% 
   rast() %>% 
   mean()
-bias <- (proj_mean - eval)/10
+bias <- (proj_mean_cmip - eval)/10
 ggplot() +
   tidyterra::geom_spatraster(data = bias) +
-  scale_fill_viridis_c("bias (K)") +
+  scale_fill_viridis_c("bias (°C)") +
   theme_bw() +
   ggtitle("CMIP5 mean bias")
+```
+
+```{r bias_cmip_cordex}
+bias <- (proj_mean_cordex - proj_mean_cmip)/10
+ggplot() +
+  tidyterra::geom_spatraster(data = bias) +
+  scale_fill_viridis_c("bias (°C)") +
+  theme_bw() +
+  ggtitle("CORDEX - CMIP mean bias")
 ```

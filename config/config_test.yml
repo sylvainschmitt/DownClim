@@ -1,9 +1,14 @@
 area: "New Caledonia"
+lonmin: 155.86890
+lonmax: 172.09009
+latmin: -22.84806
+latmax: -17.39917
 baseline: "CHELSA V2.1"
 hist_years: [1980]
 eval_years: [2006]
 proj_years: [2100]
+month: [1]
 domain: "AUS-22"
-gcm: ["ECMWF-ERAINT"]
-rcm: ["CCLM5-0-15"]
+gcm: ["MOHC-HadGEM2-ES"]
+rcm: ["REMO2015"]
 rcp: ["historical", "rcp26", "rcp85"]
