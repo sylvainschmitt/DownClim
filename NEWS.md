@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9010: NC test - masking land
 -   DownClim 0.1.0.9009: NC test - fixing coordinates of the rotated North Pole
 -   DownClim 0.1.0.9008: adding CMIP5 to NC test
 -   DownClim 0.1.0.9007: NC test for january tas with all available cordex on esgf

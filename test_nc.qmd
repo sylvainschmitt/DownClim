@@ -106,9 +106,11 @@ rast(file.path(path, "chelsa", "chelsa_years.tif"))[[27:40]] %>%
 ```{r chelsa_plot}
 #| message: false
 hist <- rast(file.path(path, "chelsa", "chelsa_historical_mean.tif")) %>% 
-  rename(january = mean)
+  rename(january = mean) %>% 
+  mask(vect(nc))
 eval <- rast(file.path(path, "chelsa", "chelsa_evaluation_mean.tif")) %>% 
-  rename(january = mean)
+  rename(january = mean) %>% 
+  mask(vect(nc))
 ggplot() +
   tidyterra::geom_spatraster(data = (hist/10 - 273.15)) +
   scale_fill_viridis_c("tas (°C)") +
@@ -391,10 +393,12 @@ lapply(files, function(file) {
 #| message: false
 rcp85 <- rast(list.files(file.path(path, "cordex_esgf", "eval_ds"),
                 pattern = "rcp85", full.names = TRUE)) %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 rcp26 <- rast(list.files(file.path(path, "cordex_esgf", "eval_ds"),
                 pattern = "rcp26", full.names = TRUE)) %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 ggplot() +
   tidyterra::geom_spatraster(data = (rcp85/10 - 273.15)) +
   scale_fill_viridis_c("tas (°C)") +
@@ -532,10 +536,12 @@ lapply(files, function(file) {
 #| message: false
 rcp85 <- rast(list.files(file.path(path, "cmip5_esgf", "eval_ds"),
                 pattern = "rcp85", full.names = TRUE)) %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 rcp26 <- rast(list.files(file.path(path, "cmip5_esgf", "eval_ds"),
                 pattern = "rcp26", full.names = TRUE)) %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 ggplot() +
   tidyterra::geom_spatraster(data = (rcp85/10 - 273.15)) +
   scale_fill_viridis_c("tas (°C)") +
@@ -560,10 +566,8 @@ The downscaled PDF shows a very good match with the CHELSA original data.
 ```{r}
 #| eval: false
 n <- 10^4
-points <- st_sample(nc_bb, 10^4) %>% vect()
-  
-eval <- rast(file.path(path, "chelsa", "chelsa_evaluation_mean.tif")) %>% 
-  rename(january = mean)
+points <- st_sample(nc, 10^4) %>% vect()
+
 chelsa <- terra::extract(eval, points) %>% 
   gather(month, value, -ID) %>% 
   mutate(variable = "tas", type = "raw", origin = "CHELSA",
@@ -575,6 +579,7 @@ names(raw_cordex_files) <- list.files(file.path(path, "cordex_esgf", "evaluation
            pattern = "tas", full.names = FALSE)
 raw_cordex <- raw_cordex_files %>% 
   lapply(rast) %>% 
+  lapply(mask, vect(nc)) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
   gather(month, value, -file, -ID) %>%
@@ -591,6 +596,7 @@ names(ds_cordex_files) <- list.files(file.path(path, "cordex_esgf", "eval_ds"),
            pattern = "tas", full.names = FALSE)
 ds_cordex <- ds_cordex_files %>% 
   lapply(rast) %>% 
+  lapply(mask, vect(nc)) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
   gather(month, value, -file, -ID) %>%
@@ -606,6 +612,7 @@ names(raw_cmip_files) <- list.files(file.path(path, "cmip5_esgf", "evaluation"),
            pattern = "tas", full.names = FALSE)
 raw_cmip <- raw_cmip_files %>% 
   lapply(rast) %>% 
+  lapply(mask, vect(nc)) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
   gather(month, value, -file, -ID) %>%
@@ -622,6 +629,7 @@ names(ds_cmip_files) <- list.files(file.path(path, "cmip5_esgf", "eval_ds"),
            pattern = "tas", full.names = FALSE)
 ds_cmip <- ds_cmip_files %>% 
   lapply(rast) %>% 
+  lapply(mask, vect(nc)) %>% 
   lapply(terra::extract, points) %>% 
   bind_rows(.id = "file") %>% 
   gather(month, value, -file, -ID) %>%
@@ -661,7 +669,8 @@ vroom::vroom(file.path(path, "cordex_esgf", "eval_pdf.tsv")) %>%
   geom_density() +
   facet_wrap(~ paste(origin, type)) + 
   theme_bw() + xlab("Temperature (°C)") + ylab("") +
-  scale_color_discrete(guide = "none")
+  scale_color_discrete(guide = "none") +
+  scale_y_sqrt()
 ```
 
 ### Metrics
@@ -709,7 +718,8 @@ proj_mean_cordex <- list.files(file.path(path, "cordex_esgf", "eval_ds"),
   lapply(rast) %>% 
   lapply(subset, 1) %>% 
   rast() %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 bias <- (proj_mean_cordex - eval)/10
 ggplot() +
   tidyterra::geom_spatraster(data = bias) +
@@ -725,7 +735,8 @@ proj_mean_cmip <- list.files(file.path(path, "cmip5_esgf", "eval_ds"),
   lapply(rast) %>% 
   lapply(subset, 1) %>% 
   rast() %>% 
-  mean()
+  mean() %>% 
+  mask(vect(nc))
 bias <- (proj_mean_cmip - eval)/10
 ggplot() +
   tidyterra::geom_spatraster(data = bias) +
@@ -735,7 +746,8 @@ ggplot() +
 ```
 
 ```{r bias_cmip_cordex}
-bias <- (proj_mean_cordex - proj_mean_cmip)/10
+bias <- ((proj_mean_cordex - proj_mean_cmip)/10) %>% 
+  mask(vect(nc))
 ggplot() +
   tidyterra::geom_spatraster(data = bias) +
   scale_fill_viridis_c("bias (°C)") +
