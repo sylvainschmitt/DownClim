@@ -172,7 +172,7 @@
     "href": "meetings.html#kick-off",
     "title": "Meetings",
     "section": "23/11/22 - Kick off",
-    "text": "23/11/22 - Kick off\nGhislain V., Thomas A., Achille M."
+    "text": "23/11/22 - Kick off\nGhislain V., Thomas A., Achille M.\n\nKeep it simple first\nEvaluation: from weather stations, test on an area with a lot of weather stations\nEvaluation climate data vs baseline climate data\nInterpolation\n\nbilinear is commonly used\n\nAchille previously work downscaling from all available, bioclim computing, and evaluation, for AFRICA and 15 RCM, shell + CDO + wget + GRASS\nProject differences in moist tropical forest distribution between GCM and RCM\nFinally provide a tool and a product\nHave a look to CORDEX downscaling on Europe and North America\nMaybe add Swiss"
   },
   {
     "objectID": "references.html",
