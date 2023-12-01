@@ -4,10 +4,17 @@ sink(log_file, append = TRUE, type = "message")
 sink(log_file, append = TRUE)
 
 # snakemake vars
-folderout <- snakemake@output[[1]]
+filesin <- snakemake@input[[1]]
+fileout <- snakemake@output[[1]]
+
+# test
 
 # libraries
-suppressMessages(library(tidyverse)) 
+library(tidyverse)
+library(terra)
 
 # code
-dir.create(folderout) # dummy
+rast(filesin) %>% 
+  mean() %>% 
+  writeRaster(fileout)
+

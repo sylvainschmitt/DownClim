@@ -1,0 +1,16 @@
+# Meetings {.unnumbered}
+
+## 23/11/22 - Kick off
+
+*Ghislain V., Thomas A., Achille M.*
+
+-   Keep it simple first
+-   Evaluation: from weather stations, test on an area with a lot of weather stations
+-   Evaluation climate data vs baseline climate data
+-   Interpolation
+    -   bilinear is commonly used
+-   Achille previously work downscaling from all available, bioclim computing, and evaluation, for AFRICA and 15 RCM, shell + CDO + wget + GRASS
+-   Project differences in moist tropical forest distribution between GCM and RCM
+-   Finally provide a tool and a product
+-   Have a look to CORDEX downscaling on Europe and North America
+-   Maybe add Swiss
