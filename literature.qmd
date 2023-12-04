@@ -8,6 +8,26 @@
 -   @zhang2005: statistically downscaling GCM to station for crop, quantile mapping
 -   @gebrechorkos2019: statistical downscaling of GCM for East Africa
 
+## Similar approach
+
+-   @chakraborty2020
+    -   Euro-CORDEX
+    -   ECLIPS (European CLimate Index ProjectionS)
+    -   80 annual, seasonal and monthly climate variables for two past (1961--1990 and 1991--2010) and five future (2011--2020, 2021--2140, 2041--2060, 2061--2080 and 2081--2100) periods
+    -   five regional climate models (RCMs)
+    -   RCP 4.5 and RCP 8.5
+    -   ECLIPS 1.1 at 0.11° (RCM native)
+    -   ECLIPS 2.0 30 arcsec downscaled with delta approach
+    -   tested against independent station data from the European Climate Assessment (ECA) dataset
+    -   ECLIPS 2.0 (CC 0.78-0.93) \> ECLIPS 1.1 (CC 0.36-0.78)
+    -   Cited: 13
+-   @shen2020 - EA-CORDEX - Bias Correction and Ensemble Projections of Temperature Changes over Ten Subregions in CORDEX East Asia - three common bias correction methods: variance scaling, additive scaling, and quantile mapping based on empirical distribution - two multi-model averaging methods:
+    -   Bayesian model averaging (BMA)
+    -   simple multi-model averaging (SMA) - calibrating historical (1980--2005) - Future (2006--49) temperature trends - RCP 4.5 and 8.5 - CRU validation
+-   @mcginnis2021 - NA-CORDEX - Five of the major variables used by impacts researchers as well as decision makers have also been bias-corrected - Directly hosted with CORDEX outputs (included on ESGF) - Each RCM community as different experiments corresponding to their questions (ex USA, EU, CA) - Cannon's MBCn algorithm to bias-correct the data, a multivariate quantile-mapping approach that has good all-around performance for multiple uses and corrects the relationships between variables as well as their individual distributions
+-   @falco2018 - SAM-CORDEX - 1990 to 2004 - 0.44° - monthly precipitation and 2-m-temperature - RCM - GCM - ERAi - CRU, UDEL, CPC-UNI evaluation
+-   A tremendous amount of country / region specific applications
+
 ## Examples
 
 -   @gebrechorkos2023:
