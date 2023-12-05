@@ -1,0 +1,6 @@
+name: gadm
+channels:
+  - defaults
+dependencies:
+  - pygadm=0.5.1
+  - matplotlib=3.5.1

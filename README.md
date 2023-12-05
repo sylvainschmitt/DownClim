@@ -1,6 +1,6 @@
 # DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Dec 1, 2023
+Dec 5, 2023
 
 - [Installation](#installation)
 - [Credentials](#credentials)
@@ -27,7 +27,7 @@ This workflow is built on:
 
 - [x] Python ≥3.5
 - [x] Snakemake ≥5.24.1
-- [x] Singularity ≥3.7.3
+- [x] Conda ≥ *to precise*
 
 Once installed simply clone the workflow:
 
@@ -77,158 +77,83 @@ sbatch job_muse.sh # HPC run with slurm
 
 ## Country
 
-### [get_bb](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_bb.py)
+### [get_country](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_country.py)
 
 - Script:
-  [`crop_chelsa.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/crop_chelsa.R)
-- Image: to be defined
+  [`get_country.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_country.py)
+- Environment:
+  [`gadm.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/gadm.yml)
 
-R script to retrieve country bounding box with GADM.
-
-### [samplint_pts](https://github.com/sylvainschmitt/DownClim/blob/main/rules/samplint_pts.py)
-
-- Script:
-  [`samplint_pts.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/samplint_pts.R)
-- Image: to be defined
-
-R script to define sampling points in the land for evaluation.
+Python script to get country limits with GADM and to define sampling
+points in the land for evaluation.
 
 ## CHELSA
 
-### [retrieve_chelsa](https://github.com/sylvainschmitt/DownClim/blob/main/rules/retrieve_chelsa.py)
-
-Shell script to download CHELSA monthly variables in tif.
-
-### [crop_chelsa](https://github.com/sylvainschmitt/DownClim/blob/main/rules/crop_chelsa.py)
+### [get_chelsa](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_chelsa.py)
 
 - Script:
-  [`crop_chelsa.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/crop_chelsa.R)
-- Image: to be defined
+  [`get_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_chelsa.py)
+- Environment:
+  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/xarray.yml)
 
-R script to crop CHELSA with terra on the defined country bounding box.
+Python script to download, crop, adjust CHELSA monthly variables.
 
-### [summarise_chelsa_hist](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_chelsa_hist.py)
-
-- Script:
-  [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
-- Image: to be defined
-
-R script to summarise CHELSA means in the historical period.
-
-### [summarise_chelsa_eval](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_chelsa_eval.py)
+### [summarise_chelsa](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/summarise_chelsa.py)
 
 - Script:
-  [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
-- Image: to be defined
+  [`summarise_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/summarise_chelsa.py)
+- Environment: *to be defined*
 
-R script to summarise CHELSA means in the evaluation period.
+Python script to summarise CHELSA monthly variables on a defined period.
 
 ## CORDEX
 
-### [get_script_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_script_cordex.py)
+### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_cordex.py)
 
 - Script:
-  [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
-- Image: to be defined
+  [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_cordex.py)
+- Environment:
+  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/xarray.yml)
 
-Python script to prepare CORDEX download bash scripts with
-pyesgf.search.
+Python script to download, crop, reproject, and adjust CORDEX monthly
+variables.
 
-### [retrieve_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/retrieve_cordex.py)
-
-Shell script to download CORDEX projections in NetCDF.
-
-### [merge_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/merge_cordex.py)
-
-- Tool: [`cdo mergetime`](https://code.mpimet.mpg.de/projects/cdo/wiki)
-- Image: to be defined
-
-Merge CORDEX files with CDO.
-
-### [project_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/project_cordex.py)
-
-- Tool: [`cdo remapbil`](https://code.mpimet.mpg.de/projects/cdo/wiki)
-- Image: to be defined
-
-Project CORDEX with CDO.
-
-### [crop_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/crop_cordex.py)
-
-- Tool:
-  [`cdo -sellonlatbox`](https://code.mpimet.mpg.de/projects/cdo/wiki)
-- Image: to be defined
-
-Crop CORDEX with CDO on the defined country bounding box.
-
-### [summarise_cordex_hist](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_hist.py)
+### [summarise_cordex](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/summarise_cordex.py)
 
 - Script:
-  [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
-- Image: to be defined
+  [`summarise_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/summarise_cordex.py)
+- Environment: *to be defined*
 
-R script to summarise CORDEX means in the historical period.
+Python script to summarise CORDEX monthly variables on a defined period.
 
-### [summarise_cordex_eval](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_eval.py)
-
-- Script:
-  [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
-- Image: to be defined
-
-R script to summarise CORDEX means in the historical period.
-
-### [summarise_cordex_proj](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_proj.py)
+### [get_anomalies](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_anomalies.py)
 
 - Script:
-  [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
-- Image: to be defined
+  [`get_anomalies.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_anomalies.py)
+- Environment: *to be defined*
 
-R script to summarise CORDEX means in the historical period.
-
-### [cordex_anomalies](https://github.com/sylvainschmitt/DownClim/blob/main/rules/cordex_anomalies.py)
-
-- Script:
-  [`compute_anomalies_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/compute_anomalies_nc.R)
-- Image: to be defined
-
-R script to compute CORDEX anomalies in the evaluation and projection
+Python script to compute CORDEX monthly anomalies between to defined
 periods.
 
 ## Downscaling
 
-### [downscale](https://github.com/sylvainschmitt/DownClim/blob/main/rules/downscale.py)
+### [downscale](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/downscale.py)
 
 - Script:
-  [`downscale.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/downscale.R)
-- Image: to be defined
+  [`downscale.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/downscale.py)
+- Environment: *to be defined*
 
-R script to interpolate anomalies and downscale CORDEX projections with
-bias correction.
+Python script to compute CORDEX downscaled monthly values with bias
+correction on CHELSA.
 
-### [evaluate](https://github.com/sylvainschmitt/DownClim/blob/main/rules/evaluate.py)
-
-- Script:
-  [`evaluate.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/evaluate.R)
-- Image: to be defined
-
-R script to evaluate downscaled and raw CORDEX projections against
-CHELSA on the evaluation period.
-
-### [eval_all](https://github.com/sylvainschmitt/DownClim/blob/main/rules/eval_all.py)
+### [evaluate](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/evaluate.py)
 
 - Script:
-  [`eval_all.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/eval_all.R)
-- Image: to be defined
+  [`evaluate.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/evaluate.py)
+- Environment: *to be defined*
 
-R script to gather all evaluation.
-
-### [eval_tab](https://github.com/sylvainschmitt/DownClim/blob/main/rules/eval_tab.py)
-
-- Script:
-  [`eval_tab.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/eval_tab.R)
-- Image: to be defined
-
-R script to summarise evaluations in correlation coefficient (CC), root
-mean square error (RMSE) and bias.
+Python script to evaluate CORDEX downscaling versus raw projection on
+the evluation period of CHELSA.
 
 # Data
 
@@ -250,14 +175,3 @@ access to high resolution climate data for research and application, and
 is constantly updated and refined.*
 
 # Results
-
-![](README_files/figure-commonmark/pdffig-1.png)
-
-| variable | country       | domain | gcm             | rcm        | rcp   | month | type   | origin     |        cc |    rmse |     bias |
-|:---------|:--------------|:-------|:----------------|:-----------|:------|:------|:-------|:-----------|----------:|--------:|---------:|
-| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | downscaled | 0.5959719 | 5.9e-06 | -3.8e-06 |
-| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | raw        | 0.5491770 | 9.7e-06 | -8.2e-06 |
-
-![](README_files/figure-commonmark/sumfig-1.png)
-
-![](README_files/figure-commonmark/proj-1.png)
