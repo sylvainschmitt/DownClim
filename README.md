@@ -1,6 +1,6 @@
 # DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Dec 1, 2023
+Dec 5, 2023
 
 - [Installation](#installation)
 - [Credentials](#credentials)
@@ -253,10 +253,10 @@ is constantly updated and refined.*
 
 ![](README_files/figure-commonmark/pdffig-1.png)
 
-| variable | country       | domain | gcm             | rcm        | rcp   | month | type   | origin     |        cc |    rmse |     bias |
-|:---------|:--------------|:-------|:----------------|:-----------|:------|:------|:-------|:-----------|----------:|--------:|---------:|
-| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | downscaled | 0.5959719 | 5.9e-06 | -3.8e-06 |
-| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | raw        | 0.5491770 | 9.7e-06 | -8.2e-06 |
+| variable | country       | domain | gcm             | rcm        | rcp   | month | type   | origin     |       cc |    rmse |     bias |
+|:---------|:--------------|:-------|:----------------|:-----------|:------|:------|:-------|:-----------|---------:|--------:|---------:|
+| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | downscaled | 0.596873 | 5.9e-06 | -3.8e-06 |
+| pr       | New-Caledonia | AUS-22 | MOHC-HadGEM2-ES | CCLM5-0-15 | rcp26 | 01    | cordex | raw        | 0.540678 | 9.6e-06 | -8.1e-06 |
 
 ![](README_files/figure-commonmark/sumfig-1.png)
 
