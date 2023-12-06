@@ -178,4 +178,31 @@ is constantly updated and refined.*
 
 # Dev
 
-**Develop how-to dev with envs/dev.yml and mamba.**
+First create or update the `dev-dc` mamba environment with required
+libraries:
+
+``` bash
+mamba env create -f envs/dev-dc.yml # init
+mamba env update -f envs/dev-dc.yml --prune # update
+mamab activate dev-dc
+```
+
+Then `renv` can be used to link Rstudio to `dev-dc` environment (*to be
+checked as now renv files are part of the project*):
+
+``` r
+renv::init()
+renv::use_python(type = 'conda', name = 'dev-dc')
+```
+
+You can now check that you have the correct path with `reticulate` in
+Rstudio R terminal:
+
+    python:         /home/sschmitt/miniforge3/envs/dev-dc/bin/python
+    libpython:      /home/sschmitt/miniforge3/envs/dev-dc/lib/libpython3.10.so
+    pythonhome:     /home/sschmitt/miniforge3/envs/dev-dc:/home/sschmitt/miniforge3/envs/dev-dc
+    version:        3.10.13 | packaged by conda-forge | (main, Oct 26 2023, 18:07:37) [GCC 12.3.0]
+    numpy:          /home/sschmitt/.local/lib/python3.10/site-packages/numpy
+    numpy_version:  1.26.2
+
+    NOTE: Python version was forced by RETICULATE_PYTHON

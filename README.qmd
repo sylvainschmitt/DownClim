@@ -11,12 +11,8 @@ format:
 
 ```{r setup, include=FALSE}
 rm(list = ls()) ; invisible(gc()) ; set.seed(42)
-library(knitr)
-library(tidyverse)
-library(terra)
-theme_set(bayesplot::theme_default())
-opts_chunk$set(echo = F, message = F, warning = F, fig.height = 6, fig.width = 8,
-               cache = F, cache.lazy = F)
+knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.height = 6, fig.width = 8,
+                      cache = F, cache.lazy = F)
 ```
 
 [`snakemake`](https://github.com/sylvainschmitt/snakemake_singularity) workflow to downscale climate projections.
@@ -91,9 +87,7 @@ sbatch job_muse.sh # HPC run with slurm
 -   Script: [`get_area.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_area.py)
 -   Environment: [`gadm.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/gadm.yml)
 
-Python script to get area limits with GADM if country or continent, 
-or based simply on a user-defined bounding-box.
-Sampling points are further defined on the land for evaluation.
+Python script to get area limits with GADM if country or continent, or based simply on a user-defined bounding-box. Sampling points are further defined on the land for evaluation.
 
 ## Baseline
 
@@ -120,10 +114,7 @@ Python script to download, crop, reproject, and adjust CORDEX monthly variables.
 -   Script: [`downscale_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/downscale_bc.py)
 -   Environment: *to be defined*
 
-Python script to compute downscaled projection with bias correction (delta or change-factor method).
-Baseline and projections are summarised by means across an historical and a projected period (e.g. monthly means over 30 years).
-Anomalies between historical and projected periods are computed for the projections.
-Anomalies are interpolated and added to the historical period of the baseline.
+Python script to compute downscaled projection with bias correction (delta or change-factor method). Baseline and projections are summarised by means across an historical and a projected period (e.g. monthly means over 30 years). Anomalies between historical and projected periods are computed for the projections. Anomalies are interpolated and added to the historical period of the baseline.
 
 ## Evaluation
 
@@ -146,5 +137,23 @@ Python script to evaluate downscaled versus raw projection against a baseline on
 
 # Dev
 
-**Develop how-to dev with envs/dev.yml and mamba.**
+First create or update the `dev-dc` mamba environment with required libraries:
 
+```{bash, eval=F, echo=T}
+mamba env create -f envs/dev-dc.yml # init
+mamba env update -f envs/dev-dc.yml --prune # update
+mamab activate dev-dc
+```
+
+Then `renv` can be used to link Rstudio to `dev-dc` environment (*to be checked as now renv files are part of the project*):
+
+```{r, eval=F, echo=T}
+renv::init()
+renv::use_python(type = 'conda', name = 'dev-dc')
+```
+
+You can now check that you have the correct path with `reticulate` in Rstudio R terminal:
+
+```{r }
+reticulate::py_config()
+```

@@ -1,13 +1,12 @@
-name: dev
+name: dev-dc
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - pygadm=0.5.1
-  - matplotlib=3.5.1
+  - python=3.10
+  - pygadm
+  - matplotlib
   - fsspec
   - xarray
   - netCDF4
   - bottleneck
-  - cyordereddict
   - geopandas
