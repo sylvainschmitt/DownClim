@@ -1,14 +1,13 @@
 rule downscale_bc:
     input:
-        proj=expand("results/cordex/raw/{country}_{domain}_{gcm}_{rcm}_{rcp}_{years}.nc",
-                     years=config["cordex_years"], allow_missing = True),
-        base="results/chelsa/raw/{country}_CHELSA_1981-2010_V.2.1.nc"
+        proj="results/projection/raw/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}.nc",
+        base="results/{baseline}/raw/{area}_{baseline}.nc"
     output:
-        "results/cordex/downscaled/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_proj}_{period_base}.nc"
+        "results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}_bc.nc"
     log:
-        "results/logs/downscale_bc_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_proj}_{period_base}.log"
+        "results/logs/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}.log"
     benchmark:
-        "results/benchmarks/downscale_bc_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_proj}_{period_base}.benchmark.txt"
+        "results/benchmarks/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}.benchmark.txt"
     threads: 1
     resources:
         mem_mb=1000

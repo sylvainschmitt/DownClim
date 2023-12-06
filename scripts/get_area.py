@@ -3,10 +3,10 @@ log_file = open(snakemake.log[0],"w")
 sys.stderr = sys.stdout = log_file
 
 # variables
-country = snakemake.params.country
+area = snakemake.params.area
 log10_eval_pts = snakemake.params.log10_eval_pts
-country_file = snakemake.output[0]
-country_fig = snakemake.output[1]
+area_file = snakemake.output[0]
+area_fig = snakemake.output[1]
 pts_file = snakemake.output[2]
 pts_fig = snakemake.output[3]
 
@@ -20,15 +20,15 @@ import matplotlib.pyplot as plt
 import re
 
 # code
-country = re.sub("-", " ", country)
-code = pygadm.AdmNames(country).GID_0[0]
+area = re.sub("-", " ", area)
+code = pygadm.AdmNames(area).GID_0[0]
 gdf = pygadm.AdmItems(admin = code)
 pts = gdf.sample_points(pow(10, log10_eval_pts))
 
 # country
 gdf.plot()
-plt.savefig(country_fig)
-gdf.to_file(country_file)
+plt.savefig(area_fig)
+gdf.to_file(area_file)
 
 # points
 pts.plot()

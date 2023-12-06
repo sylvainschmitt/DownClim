@@ -1,16 +1,15 @@
 rule evaluate_bc:
     input:
-        proj=expand("results/cordex/raw/{country}_{domain}_{gcm}_{rcm}_{rcp}_{years}.nc",
-                     years=config["cordex_years"], allow_missing = True),
-        base="results/chelsa/raw/{country}_CHELSA_1981-2010_V.2.1.nc",
-        ds="results/cordex/downscaled/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.nc",
-        pts="results/countries/{country}_pts.shp"
+        proj="results/projection/raw/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}.nc",
+        base_eval="results/{base_eval}/raw/{area}_{base_eval}.nc",
+        ds="results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_eval}_{period_base}_bc.nc",
+        pts="results/countries/{area}_pts.shp"
     output:
-        "results/evaluation/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.tsv"
+        "results/evaluation/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_eval}_{period_base}_{base_eval}_bc.tsv"
     log:
-        "results/logs/evaluate_bc_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.log"
+        "results/logs/evaluate_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_eval}_{period_base}_{base_eval}.log"
     benchmark:
-        "results/benchmarks/evaluate_bc_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.benchmark.txt"
+        "results/benchmarks/evaluate_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_eval}_{period_base}_{base_eval}.benchmark.txt"
     threads: 1
     resources:
         mem_mb=1000

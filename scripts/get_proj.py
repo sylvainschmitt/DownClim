@@ -3,19 +3,25 @@ log_file = open(snakemake.log[0],"w")
 sys.stderr = sys.stdout = log_file
 
 # variables
+area_file = snakemake.intput[0]
 domain = snakemake.params.domain
-gcm = snakemake.params.gcm
+area = snakemake.params.area
+project = snakemake.params.project
+activity = snakemake.params.activity
+domain = snakemake.params.domain
+institute = snakemake.params.institute
+model = snakemake.params.model
+experiment = snakemake.params.experiment
+ensemble = snakemake.params.ensemble
 rcm = snakemake.params.rcm
-rcp = snakemake.params.rcp
-var = snakemake.params.var
-out_file = snakemake.output[0]
+downscaling = snakemake.params.downscaling
+variables = snakemake.params.variables
+time_frequency = snakemake.params.time_frequency
+proj_years = snakemake.params.proj_years
+nc_file = snakemake.output[0]
 
 # test
-# domain = "AUS-22"
-# gcm = "MOHC-HadGEM2-ES"
-# rcm = "CCLM5-0-15"
-# rcp = "historical"
-# var = "tas"
+raise Exception("Currently in development!")
 
 # code
 from pyesgf.search import SearchConnection

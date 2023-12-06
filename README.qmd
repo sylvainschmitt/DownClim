@@ -6,7 +6,7 @@ date-format: medium
 format: 
   gfm:
     toc: true
-    toc-depth: 2
+    toc-depth: 1
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.height = 6, fig.wi
 
 [![](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-**Description.**
+The purpose of `DownClim` is to offer a tool for regional and national climate projections including the mechanistic 'dynamic' downscaling of the CORDEX initiative. `DownClim` is opposed to the direct statistical downscaling of global climate projections found in WorldClim and CHELSA. The approach is justified by an improvement in regional projections of CORDEX compared to CMIP, although it can increase uncertainty and sometimes be less reliable. The tool is an automated `snakemake` workflow easily reproducible and scalable associated to `conda` environments for enhance reproducibility and portability.
 
 ```{r dag, fig.cap="Workflow."}
 knitr::include_graphics("dag/dag.svg")
@@ -76,7 +76,32 @@ snakemake -j 1 --resources mem_mb=10000 # local run (test)
 sbatch job_muse.sh # HPC run with slurm
 ```
 
-# Config
+# Configuration
+
+Different configuration parameters to set in [`config/config.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/config/config_ex.yml) ordered by steps:
+
+-   Area
+    -   proj_crs: global projection system used for spatial outputs, **a default projection needs to be defined**.
+-   Time
+    -   time_frequency: time frequency of data (month "mon", day "day" or x-hourly "3hr").
+    -   hist_years: historical period on which to adjust projections (e.g. 1980-2005)
+    -   eval_years: evaluation period on which to evaluate projections (e.g. 2006-2019)
+    -   proj_years: projection period on which to downscale the projections (e.g. 2071-2100)
+-   Variables
+    -   variables: used variables (e.g. temperature at surface 'tas", minimum temperature "tasmin", maximum temperature "tasmax", and precipitations "pr")
+-   Baseline
+    -   baseline: climate product for the baseline (CHELSA V2 "chelsa2" , WorldClim V2 "worldclim2", CRU TS V4 "cru4")
+    -   base_years: years to be retrieved (e.g. 1980-2019)
+-   Projection
+    -   projections: files to define the requested projections on ESGF. An example can be found in [config/projections_ex.tsv](https://github.com/sylvainschmitt/DownClim/blob/dev/config/projections_ex.tsv). **A script should be added to help build this file**.
+    -   esgf_years: years to be retrieved (e.g. 1980-2100)
+-   Downscaling
+    -   ds_method: downscaling method to be used (bias correction "bc", quantile-based "qt")
+-   Evaluation
+    -   base_eval: climate product for the evaluation (CHELSA V2 "chelsa2" , WorldClim V2 "worldclim2", CRU TS V4 "cru4")
+    -   log10_eval_pts: decimal logarithm of the number of points to use for evaluation (e.g. 4 for 10,000 evaluation points)
+-   Ensemble
+    -   ens_method: ensemble method to be used (simple multi-model average "sma", bayesian model average "bma")
 
 # Workflow
 
@@ -91,51 +116,115 @@ Python script to get area limits with GADM if country or continent, or based sim
 
 ## Baseline
 
-### [get_chelsa](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_chelsa.py)
+### [get_chelsa2](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_chelsa2.py)
 
--   Script: [`get_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_chelsa.py)
+-   Data: [CHELSA V2.1](https://chelsa-climate.org/)
+-   Script: [`get_chelsa2.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_chelsa2.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, adjust CHELSA monthly variables.
+Python script to download, crop, adjust CHELSA V2.1.
+
+### [get_worldclim2](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_worldclim2.py)
+
+-   Data: [WorldClim 2.1](https://www.worldclim.org/data/worldclim21.html)
+-   Script: [`get_worldclim2.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_worldclim2.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to download, crop, adjust WorldClim 2.1.
+
+### [get_cru4](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cru4.py)
+
+-   Data: [CRU TS v 4.0.7](https://crudata.uea.ac.uk/cru/data/hrg/)
+-   Script: [`get_cru4.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cru4.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to download, crop, adjust CRU TS v 4.0.7.
 
 ## Projection
 
-### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cordex.py)
+### [get_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_proj.py)
 
--   Script: [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex.py)
+-   Data: [CMIP & CORDEX projections](https://esgf-node.ipsl.upmc.fr/projects/esgf-ipsl/)
+-   Script: [`get_proj.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_proj.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, reproject, and adjust CORDEX monthly variables.
+Python script to download, crop, reproject, and adjust CMIP and CORDEX projections (currently CMIP5, CORDEX, CMIP6 Scenario MIP or HighResMIP).
 
 ## Downscaling
 
 ### [downscale_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/downscale_bc.py)
 
 -   Script: [`downscale_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/downscale_bc.py)
--   Environment: *to be defined*
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Python script to compute downscaled projection with bias correction (delta or change-factor method). Baseline and projections are summarised by means across an historical and a projected period (e.g. monthly means over 30 years). Anomalies between historical and projected periods are computed for the projections. Anomalies are interpolated and added to the historical period of the baseline.
+
+### [downscale_qt](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/downscale_qt.py)
+
+-   Script: [`downscale_qt.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/downscale_qt.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to compute downscaled projection with quantile. **Not developed yet! Files ready for future versions.**
 
 ## Evaluation
 
 ### [evaluate_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/evaluate_bc.py)
 
 -   Script: [`evaluate_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/evaluate_bc.py)
--   Environment: *to be defined*
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to evaluate downscaled versus raw projection against a baseline on the defined evaluation period for bias correctino downscaling.
+Python script to evaluate downscaled versus raw projection against a baseline on the defined evaluation period for bias correction downscaling.
+
+### [evaluate_qt](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/evaluate_qt.py)
+
+-   Script: [`evaluate_qt.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/evaluate_qt.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to evaluate downscaled versus raw projection against a baseline on the defined evaluation period for quantile downscaling. **Not developed yet! Files ready for future versions.**
+
+## Ensemble
+
+### [ensemble_sma](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/ensemble_sma.py)
+
+-   Script: [`ensemble_sma.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/ensemble_sma.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to ensemble downscaled projections with simple multi-model averaging (SMA).
+
+### [ensemble_bma](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/ensemble_bma.py)
+
+-   Script: [`ensemble_bma.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/ensemble_bma.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
+
+Python script to ensemble downscaled projections with Bayesian model averaging (BMA). **Not developed yet! Files ready for future versions.**
 
 # Data
 
-[**CORDEX**](https://cordex.org/)**: Coordinated Regional Climate Downscaling Experiment**
-
-*The CORDEX vision is to advance and coordinate the science and application of regional climate downscaling through global partnerships.*
+## Baselines
 
 [**CHELSA V2.1.1**](https://chelsa-climate.org/)**: Climatologies at high resolution for the earth's land surface areas**
 
 *CHELSA (Climatologies at high resolution for the earth's land surface areas) is a very high resolution (30 arc sec, \~1km) global downscaled climate data set currently hosted by the Swiss Federal Institute for Forest, Snow and Landscape Research WSL. It is built to provide free access to high resolution climate data for research and application, and is constantly updated and refined.*
 
-# Dev
+[**WorldClim 2.1**](https://www.worldclim.org/data/worldclim21.html)**: 1km spatial resolution climate surfaces for global land areas**
+
+*WorldClim is a database of high spatial resolution global weather and climate data. These data can be used for mapping and spatial modeling. The data are provided for use in research and related activities.*
+
+[**CRU TS v. 4.07**](https://crudata.uea.ac.uk/cru/data/hrg/)**: monthly high-resolution gridded multivariate climate dataset**
+
+*CRU TS (Climatic Research Unit gridded Time Series) is a widely used climate dataset on a 0.5° latitude by 0.5° longitude grid over all land domains of the world except Antarctica. It is derived by the interpolation of monthly climate anomalies from extensive networks of weather station observations.*
+
+## Projections
+
+[**CMIP**](https://wcrp-cmip.org/)**: Coupled Model Intercomparison Project**
+
+*CMIP is a project of the World Climate Research Programme (WCRP) providing climate projections to understand past, present and future climate changes. CMIP and its associated data infrastructure have become essential to the Intergovernmental Panel on Climate Change (IPCC) and other international and national climate assessments.*
+
+[**CORDEX**](https://cordex.org/)**: Coordinated Regional Climate Downscaling Experiment**
+
+*The CORDEX vision is to advance and coordinate the science and application of regional climate downscaling through global partnerships.*
+
+# Development
 
 First create or update the `dev-dc` mamba environment with required libraries:
 
