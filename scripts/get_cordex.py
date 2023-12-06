@@ -1,5 +1,3 @@
-# esgf-pylient https://esgf-pyclient.readthedocs.io/en/latest/notebooks/demo/subset-cmip5.html
-
 # log
 log_file = open(snakemake.log[0],"w")
 sys.stderr = sys.stdout = log_file
@@ -21,6 +19,7 @@ out_file = snakemake.output[0]
 
 # code
 from pyesgf.search import SearchConnection
+# esgf-pylient https://esgf-pyclient.readthedocs.io/en/latest/notebooks/demo/subset-cmip5.html
 
 server = 'https://esgf-node.ipsl.upmc.fr/esg-search/'
 conn = SearchConnection(server, distrib=True)
@@ -39,4 +38,4 @@ if(ctx.hit_count == 0):
   raise SystemExit('The query has no results')
 # ctx.search()[0].dataset_id
 f = open(out_file, "w")
-f.write(ctx.get_download_script())
+f.write(ctx.get_download_script()) # downloading wget script must be replaced by direct reading of data online

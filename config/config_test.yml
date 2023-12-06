@@ -1,4 +1,5 @@
 baseline: "CHELSA V2.1"
+projections: "config/projections_test.tsv"
 cordex_years: ["1980-2100"]
 hist_years: ["1980-2005"]
 eval_years: ["2006-2019"]

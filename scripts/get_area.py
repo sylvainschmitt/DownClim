@@ -15,15 +15,12 @@ pts_fig = snakemake.output[3]
 # log10_eval_pts = 4
 
 # libs
-# from gadm import GADMDownloader
 import pygadm
 import matplotlib.pyplot as plt
 import re
 
 # code
 country = re.sub("-", " ", country)
-# downloader = GADMDownloader(version="4.0")
-# gdf = downloader.get_shape_data_by_country_name(country_name=country, ad_level=0)
 code = pygadm.AdmNames(country).GID_0[0]
 gdf = pygadm.AdmItems(admin = code)
 pts = gdf.sample_points(pow(10, log10_eval_pts))

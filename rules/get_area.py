@@ -1,4 +1,4 @@
-rule get_country:
+rule get_area:
     output:
         "results/countries/{country}.shp",
         "results/countries/{country}.png",
@@ -9,12 +9,12 @@ rule get_country:
     benchmark:
         "results/benchmarks/get_country_{country}.benchmark.txt"
     threads: 1
-    conda:
-        "../envs/gadm.yml"
     resources:
         mem_mb=1000
+    conda:
+        "../envs/gadm.yml"
     params:
         country="{country}",
         log10_eval_pts=config["log10_eval_pts"]
     script:
-      "../scripts/get_country.py"
+      "../scripts/get_area.py"

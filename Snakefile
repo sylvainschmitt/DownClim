@@ -1,11 +1,9 @@
 configfile: "config/config_test.yml"
-experiment = "config/experiment_test.tsv"
 
 import pandas as pd
-exp = pd.read_table(experiment).set_index("exp", drop=False)
+exp = pd.read_table(config["projections"]).set_index("exp", drop=False)
 
 # rules #
-
 rule all:
    input:
       expand("results/cordex/downscaled/{exp}_{period_proj}_{period_base}.nc",
@@ -17,20 +15,17 @@ rule all:
              period_base=config["hist_years"],
              period_eval=config["eval_years"])
 
-## country ##
-include: "rules/get_country.py"
+## area ##
+include: "rules/get_area.py"
 
-## chelsa ##
+## baselin ##
 include: "rules/get_chelsa.py"
-include: "rules/summarise_chelsa.py"
 
-## cordex ##
+## projection ##
 include: "rules/get_cordex.py"
-include: "rules/summarise_cordex.py"
-include: "rules/get_anomalies.py"
 
 ## downscaling ##
-include: "rules/downscale.py"
-include: "rules/evaluate.py"
-# include: "rules/eval_all.py"
-# include: "rules/eval_tab.py"
+include: "rules/downscale_bc.py"
+
+## evaluation ##
+include: "rules/evaluate_bc.py"

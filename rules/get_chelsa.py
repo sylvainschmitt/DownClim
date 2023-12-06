@@ -8,10 +8,10 @@ rule get_chelsa:
     benchmark:
         "results/benchmarks/get_chelsa_{country}.benchmark.txt"
     threads: 1
-    conda:
-        "../envs/xarray.yml"
     resources:
         mem_mb=1000
+    conda:
+        "../envs/xarray.yml"
     params:
         country="{country}",
         variables=config["variables"]

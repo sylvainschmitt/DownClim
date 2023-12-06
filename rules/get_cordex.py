@@ -10,6 +10,8 @@ rule get_cordex:
     threads: 1
     resources:
         mem_mb=1000
+    conda:
+        "../envs/xarray.yml"
     params:
         country="{country}",
         domain="{domain}",
