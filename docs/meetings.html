@@ -227,6 +227,31 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="thomas-a." class="level2">
 <h2 class="anchored" data-anchor-id="thomas-a.">23/12/05 - Thomas A.</h2>
+<p><strong>Dev</strong>:</p>
+<ul class="task-list">
+<li><input type="checkbox">Use any filenaming according to the dev, but include all key informations as metadata in the NetCDF data files and TSV evaluation files</li>
+<li><input type="checkbox">Use all CORDEX and ESGF terminology for projections (including ensemble etc)</li>
+<li><input type="checkbox">Check GADM ability to work with continent, and develop the specific case of defined bounding box</li>
+<li><input type="checkbox">Define the projection in configuration with default available projection common for all outputs in the project</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for daily and x-hourly data</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for statistical / quantile-based downscaling</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for pre- and post- selection</li>
+<li><input type="checkbox">Develop architecture &amp; code for CHELSA and WorldClim baseline, while developing generic getter architecture for further products (e.g.&nbsp;ERA5-Land, but each product will need its own getter). The resulting NetCDF file should be the cleanest as possible and generic. The working unit will be a NetCDF file with all variables across the whole area and the whole time period.</li>
+<li><input type="checkbox">Gather summarise_cordex, get_anomalies &amp; downscale in a single bias-correction downscaling rule</li>
+<li><input type="checkbox">Develop architecture and code for evaluation based on the baseline and CRU TS 4 as independent data, while developing generic getter architecture for further products (e.g.&nbsp;ERA5-Land, but each product will need its own getter). Should be similar or same rules as the one used to get the baseline.</li>
+<li><input type="checkbox">Develop architecture and code for ensemble projections based on simple multi-model averaging producing both ensemble and <strong>uncertainties</strong>, and develop architecture (but not code, include stops) for more sophisticated method such as Bayesian model averaging.</li>
+</ul>
+<p><strong>Notes</strong>:</p>
+<ul>
+<li>Use Visual Studio for python dev</li>
+<li>Do not use pip for libraries</li>
+<li>Figure out how reticulate deals with environments, and which environment is used in Rstudio terminal</li>
+<li>Use conda with mamba forge as recommended for snakemake</li>
+<li>Re-install snakemake in a conda environment as recommended</li>
+<li>Use a personal dev environment in yaml to be shared with co-authors for tests and developments</li>
+<li>Use single rule minimal environments for rules libraries</li>
+<li>Ask for help on specific rules scripts on a continuous-flow basis using if possible GitHub issues</li>
+</ul>
 
 
 </section>

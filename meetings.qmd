@@ -44,3 +44,28 @@ Python questions/devs:
 -   Python/R script for automatic experiment table creation with available CORDEX
 
 ## 23/12/05 - Thomas A.
+
+**Dev**:
+
+-   [ ] Use any filenaming according to the dev, but include all key informations as metadata in the NetCDF data files and TSV evaluation files
+-   [ ] Use all CORDEX and ESGF terminology for projections (including ensemble etc)
+-   [ ] Check GADM ability to work with continent, and develop the specific case of defined bounding box
+-   [ ] Define the projection in configuration with default available projection common for all outputs in the project
+-   [ ] Develop architecture (but not code, include stops) for daily and x-hourly data
+-   [ ] Develop architecture (but not code, include stops) for statistical / quantile-based downscaling
+-   [ ] Develop architecture (but not code, include stops) for pre- and post- selection
+-   [ ] Develop architecture & code for CHELSA and WorldClim baseline, while developing generic getter architecture for further products (e.g. ERA5-Land, but each product will need its own getter). The resulting NetCDF file should be the cleanest as possible and generic. The working unit will be a NetCDF file with all variables across the whole area and the whole time period.
+-   [ ] Gather summarise_cordex, get_anomalies & downscale in a single bias-correction downscaling rule
+-   [ ] Develop architecture and code for evaluation based on the baseline and CRU TS 4 as independent data, while developing generic getter architecture for further products (e.g. ERA5-Land, but each product will need its own getter). Should be similar or same rules as the one used to get the baseline.
+-   [ ] Develop architecture and code for ensemble projections based on simple multi-model averaging producing both ensemble and **uncertainties**, and develop architecture (but not code, include stops) for more sophisticated method such as Bayesian model averaging.
+
+**Notes**:
+
+-   Use Visual Studio for python dev
+-   Do not use pip for libraries
+-   Figure out how reticulate deals with environments, and which environment is used in Rstudio terminal
+-   Use conda with mamba forge as recommended for snakemake
+-   Re-install snakemake in a conda environment as recommended
+-   Use a personal dev environment in yaml to be shared with co-authors for tests and developments
+-   Use single rule minimal environments for rules libraries
+-   Ask for help on specific rules scripts on a continuous-flow basis using if possible GitHub issues
