@@ -22,9 +22,6 @@ workflow to downscale climate projections.
 
 [![](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 
-Project Status: WIP – Initial development is in progress, but there has
-not yet been a stable, usable release suitable for the public.
-
 </div>
 
 **Description.**
@@ -99,12 +96,12 @@ sbatch job_muse.sh # HPC run with slurm
 
 ## Area
 
-### [get_area](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_area.py)
+### [get_area](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_area.py)
 
 - Script:
-  [`get_area.py`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/get_area.py)
+  [`get_area.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_area.py)
 - Environment:
-  [`gadm.yml`](https://github.com/sylvainschmitt/DownClim/blob/main/envs/gadm.yml)
+  [`gadm.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/gadm.yml)
 
 Python script to get area limits with GADM if country or continent, or
 based simply on a user-defined bounding-box. Sampling points are further
@@ -112,33 +109,33 @@ defined on the land for evaluation.
 
 ## Baseline
 
-### [get_chelsa](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_chelsa.py)
+### [get_chelsa](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_chelsa.py)
 
 - Script:
-  [`get_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/get_chelsa.py)
+  [`get_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_chelsa.py)
 - Environment:
-  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/main/envs/xarray.yml)
+  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Python script to download, crop, adjust CHELSA monthly variables.
 
 ## Projection
 
-### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_cordex.py)
+### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cordex.py)
 
 - Script:
-  [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/get_cordex.py)
+  [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex.py)
 - Environment:
-  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/main/envs/xarray.yml)
+  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Python script to download, crop, reproject, and adjust CORDEX monthly
 variables.
 
 ## Downscaling
 
-### [downscale_bc](https://github.com/sylvainschmitt/DownClim/blob/main/rules/downscale_bc.py)
+### [downscale_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/downscale_bc.py)
 
 - Script:
-  [`downscale_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/downscale_bc.py)
+  [`downscale_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/downscale_bc.py)
 - Environment: *to be defined*
 
 Python script to compute downscaled projection with bias correction
@@ -150,10 +147,10 @@ the historical period of the baseline.
 
 ## Evaluation
 
-### [evaluate_bc](https://github.com/sylvainschmitt/DownClim/blob/main/rules/evaluate_bc.py)
+### [evaluate_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/evaluate_bc.py)
 
 - Script:
-  [`evaluate_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/evaluate_bc.py)
+  [`evaluate_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/evaluate_bc.py)
 - Environment: *to be defined*
 
 Python script to evaluate downscaled versus raw projection against a
