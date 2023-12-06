@@ -1,21 +1,20 @@
 rule evaluate:
     input:
-        "results/downscaled/eval_{var}_{country}_{domain}_{gcm}_{rcm}_{rcp}_{month}.tif",
-        "results/cordex/eval/{var}_{country}_{domain}_{gcm}_{rcm}_{rcp}.nc",
-        "results/chelsa/eval/{var}_{country}_{month}.tif",
-        "results/countries/{country}_sampling.tsv"
+        "results/cordex/downscaled/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.nc",
+        "results/cordex/mean/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}.nc",
+        "results/chelsa/mean/{country}_CHELSA_{period_eval}_V.2.1.tif",
+        "results/countries/{country}_pts.shp"
     output:
-        "results/evaluation/{var}_{country}_{domain}_{gcm}_{rcm}_{rcp}_{month}.tsv"
+        "results/evaluation/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.tsv"
     log:
-        "results/logs/evaluate_{var}_{country}_{domain}_{gcm}_{rcm}_{rcp}_{month}.log"
+        "results/logs/evaluate_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.log"
     benchmark:
-        "results/benchmarks/evaluate_{var}_{country}_{domain}_{gcm}_{rcm}_{rcp}_{month}.benchmark.txt"
+        "results/benchmarks/evaluate_{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.benchmark.txt"
     threads: 1
     resources:
         mem_mb=1000
     params:
-        var="{var}",
-        month="{month}",
-        country="{country}"
+        period_base="{period_base}",
+        period_proj="{period_eval}"
     script:
-      "../scripts/evaluate_rast.R"
+      "../scripts/evaluate.py"

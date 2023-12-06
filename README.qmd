@@ -33,7 +33,7 @@ This workflow is built on:
 
 -   [x] Python ≥3.5
 -   [x] Snakemake ≥5.24.1
--   [x] Singularity ≥3.7.3
+-   [x] Conda ≥ *to precise*
 
 Once installed simply clone the workflow:
 
@@ -72,138 +72,67 @@ sbatch job_muse.sh # HPC run with slurm
 
 ## Country
 
-### [get_bb](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_bb.py)
+### [get_country](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_country.py)
 
--   Script: [`crop_chelsa.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/crop_chelsa.R)
--   Image: to be defined
+-   Script: [`get_country.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_country.py)
+-   Environment: [`gadm.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/gadm.yml)
 
-R script to retrieve country bounding box with GADM.
-
-### [samplint_pts](https://github.com/sylvainschmitt/DownClim/blob/main/rules/samplint_pts.py)
-
--   Script: [`samplint_pts.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/samplint_pts.R)
--   Image: to be defined
-
-R script to define sampling points in the land for evaluation.
+Python script to get country limits with GADM and to define sampling points in the land for evaluation.
 
 ## CHELSA
 
-### [retrieve_chelsa](https://github.com/sylvainschmitt/DownClim/blob/main/rules/retrieve_chelsa.py)
+### [get_chelsa](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_chelsa.py)
 
-Shell script to download CHELSA monthly variables in tif.
+-   Script: [`get_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_chelsa.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/xarray.yml)
 
-### [crop_chelsa](https://github.com/sylvainschmitt/DownClim/blob/main/rules/crop_chelsa.py)
+Python script to download, crop, adjust CHELSA monthly variables.
 
--   Script: [`crop_chelsa.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/crop_chelsa.R)
--   Image: to be defined
+### [summarise_chelsa](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/summarise_chelsa.py)
 
-R script to crop CHELSA with terra on the defined country bounding box.
+-   Script: [`summarise_chelsa.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/summarise_chelsa.py)
+-   Environment:  *to be defined*
 
-### [summarise_chelsa_hist](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_chelsa_hist.py)
-
--   Script: [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
--   Image: to be defined
-
-R script to summarise CHELSA means in the historical period.
-
-### [summarise_chelsa_eval](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_chelsa_eval.py)
-
--   Script: [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
--   Image: to be defined
-
-R script to summarise CHELSA means in the evaluation period.
+Python script to summarise CHELSA monthly variables on a defined period.
 
 ## CORDEX
 
-### [get_script_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/get_script_cordex.py)
+### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_cordex.py)
 
--   Script: [`summarise_mean_rast.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_rast.R)
--   Image: to be defined
+-   Script: [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_cordex.py)
+-   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/xarray/envs/xarray.yml)
 
-Python script to prepare CORDEX download bash scripts with pyesgf.search.
+Python script to download, crop, reproject, and adjust CORDEX monthly variables.
 
-### [retrieve_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/retrieve_cordex.py)
+### [summarise_cordex](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/summarise_cordex.py)
 
-Shell script to download CORDEX projections in NetCDF.
+-   Script: [`summarise_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/summarise_cordex.py)
+-   Environment:  *to be defined*
 
-### [merge_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/merge_cordex.py)
+Python script to summarise CORDEX monthly variables on a defined period.
 
--   Tool: [`cdo mergetime`](https://code.mpimet.mpg.de/projects/cdo/wiki)
--   Image: to be defined
+### [get_anomalies](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/get_anomalies.py)
 
-Merge CORDEX files with CDO.
+-   Script: [`get_anomalies.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/get_anomalies.py)
+-   Environment:  *to be defined*
 
-### [project_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/project_cordex.py)
-
--   Tool: [`cdo remapbil`](https://code.mpimet.mpg.de/projects/cdo/wiki)
--   Image: to be defined
-
-Project CORDEX with CDO.
-
-### [crop_cordex](https://github.com/sylvainschmitt/DownClim/blob/main/rules/crop_cordex.py)
-
--   Tool: [`cdo -sellonlatbox`](https://code.mpimet.mpg.de/projects/cdo/wiki)
--   Image: to be defined
-
-Crop CORDEX with CDO on the defined country bounding box.
-
-### [summarise_cordex_hist](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_hist.py)
-
--   Script: [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
--   Image: to be defined
-
-R script to summarise CORDEX means in the historical period.
-
-### [summarise_cordex_eval](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_eval.py)
-
--   Script: [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
--   Image: to be defined
-
-R script to summarise CORDEX means in the historical period.
-
-### [summarise_cordex_proj](https://github.com/sylvainschmitt/DownClim/blob/main/rules/summarise_cordex_proj.py)
-
--   Script: [`summarise_mean_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/summarise_mean_nc.R)
--   Image: to be defined
-
-R script to summarise CORDEX means in the historical period.
-
-### [cordex_anomalies](https://github.com/sylvainschmitt/DownClim/blob/main/rules/cordex_anomalies.py)
-
--   Script: [`compute_anomalies_nc.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/compute_anomalies_nc.R)
--   Image: to be defined
-
-R script to compute CORDEX anomalies in the evaluation and projection periods.
+Python script to compute CORDEX monthly anomalies between to defined periods.
 
 ## Downscaling
 
-### [downscale](https://github.com/sylvainschmitt/DownClim/blob/main/rules/downscale.py)
+### [downscale](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/downscale.py)
 
--   Script: [`downscale.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/downscale.R)
--   Image: to be defined
+-   Script: [`downscale.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/downscale.py)
+-   Environment:  *to be defined*
 
-R script to interpolate anomalies and downscale CORDEX projections with bias correction.
+Python script to compute CORDEX downscaled monthly values with bias correction on CHELSA.
 
-### [evaluate](https://github.com/sylvainschmitt/DownClim/blob/main/rules/evaluate.py)
+### [evaluate](https://github.com/sylvainschmitt/DownClim/blob/xarray/rules/evaluate.py)
 
--   Script: [`evaluate.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/evaluate.R)
--   Image: to be defined
+-   Script: [`evaluate.py`](https://github.com/sylvainschmitt/DownClim/blob/xarray/scripts/evaluate.py)
+-   Environment:  *to be defined*
 
-R script to evaluate downscaled and raw CORDEX projections against CHELSA on the evaluation period.
-
-### [eval_all](https://github.com/sylvainschmitt/DownClim/blob/main/rules/eval_all.py)
-
--   Script: [`eval_all.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/eval_all.R)
--   Image: to be defined
-
-R script to gather all evaluation.
-
-### [eval_tab](https://github.com/sylvainschmitt/DownClim/blob/main/rules/eval_tab.py)
-
--   Script: [`eval_tab.R`](https://github.com/sylvainschmitt/DownClim/blob/main/scripts/eval_tab.R)
--   Image: to be defined
-
-R script to summarise evaluations in correlation coefficient (CC), root mean square error (RMSE) and bias.
+Python script to evaluate CORDEX downscaling versus raw projection on the evluation period of CHELSA.
 
 # Data
 
@@ -216,43 +145,3 @@ R script to summarise evaluations in correlation coefficient (CC), root mean squ
 *CHELSA (Climatologies at high resolution for the earth's land surface areas) is a very high resolution (30 arc sec, \~1km) global downscaled climate data set currently hosted by the Swiss Federal Institute for Forest, Snow and Landscape Research WSL. It is built to provide free access to high resolution climate data for research and application, and is constantly updated and refined.*
 
 # Results
-
-```{r pdffig}
-read_tsv("results/evaluation/all.tsv") %>% 
-  gather(origin, value, -variable, -country, -domain, -gcm, -rcm, -rcp, -month) %>% 
-  ggplot(aes(value, col = origin)) +
-  geom_density() +
-  theme_bw() +
-  ggtitle("January precipitation (kg m-2 s-1) in New Caledonia", 
-          "MOHC-HadGEM2-ES, CCLM5-0-15, RCP 2.6")
-```
-
-```{r sumtab}
-read_tsv("results/evaluation/summary.tsv") %>% kable()
-```
-
-```{r sumfig}
-read_tsv("results/evaluation/summary.tsv") %>% 
-   ggplot(aes(rmse, 1-cc, col = paste(type, origin))) +
-  geom_point() +
-  theme_bw() +
-  scale_y_log10(labels = function(x) 1-x) +
-  scale_x_log10() +
-  scale_color_discrete("") +
-  xlab("Root Mean Square Error (RMSE, °C)") +
-  ylab("Correlation Coefficient (CC)") +
-  theme(legend.position = "bottom") +
-  ggtitle("January precipitation (kg m-2 s-1) in New Caledonia", 
-          "MOHC-HadGEM2-ES, CCLM5-0-15, RCP 2.6")
-```
-
-```{r proj}
-pp <- rast("results/downscaled/proj_pr_New-Caledonia_AUS-22_MOHC-HadGEM2-ES_CCLM5-0-15_rcp26_01.tif")
-pp <- pp/100
-ggplot() +
-  tidyterra::geom_spatraster(data = pp) +
-  scale_fill_viridis_c("Precipitation (mm)", direction = -1) +
-  theme_bw() +
-  ggtitle("January precipitation in New Caledonia", 
-          "MOHC-HadGEM2-ES, CCLM5-0-15, RCP 2.6, downscaled from CHELSA V2.1")
-```

@@ -8,35 +8,29 @@ exp = pd.read_table(experiment).set_index("exp", drop=False)
 
 rule all:
    input:
-      expand("results/downscaled/proj_{var}_{exp}_{month}.tif",
-              exp=exp.exp,
-              month=config["months"],
-              var=config["variables"]),
-      "results/evaluation/summary.tsv"
+      expand("results/cordex/downscaled/{exp}_{period_proj}_{period_base}.nc",
+             exp=exp.exp,
+             period_base=config["hist_years"],
+             period_proj=config["proj_years"]),
+      expand("results/evaluation/{exp}_{period_eval}_{period_base}.tsv",
+             exp=exp.exp,
+             period_base=config["hist_years"],
+             period_eval=config["eval_years"])
 
 ## country ##
-include: "rules/get_bb.py"
-include: "rules/sampling_pts.py"
+include: "rules/get_country.py"
 
 ## chelsa ##
-include: "rules/retrieve_chelsa.py"
-include: "rules/crop_chelsa.py"
-include: "rules/summarise_chelsa_hist.py"
-include: "rules/summarise_chelsa_eval.py"
+include: "rules/get_chelsa.py"
+include: "rules/summarise_chelsa.py"
 
 ## cordex ##
-include: "rules/get_script_cordex.py"
-include: "rules/retrieve_cordex.py"
-include: "rules/merge_cordex.py"
-include: "rules/project_cordex.py"
-include: "rules/crop_cordex.py"
-include: "rules/summarise_cordex_hist.py"
-include: "rules/summarise_cordex_eval.py"
-include: "rules/summarise_cordex_proj.py"
-include: "rules/cordex_anomalies.py"
+include: "rules/get_cordex.py"
+include: "rules/summarise_cordex.py"
+include: "rules/get_anomalies.py"
 
 ## downscaling ##
 include: "rules/downscale.py"
 include: "rules/evaluate.py"
-include: "rules/eval_all.py"
-include: "rules/eval_tab.py"
+# include: "rules/eval_all.py"
+# include: "rules/eval_tab.py"

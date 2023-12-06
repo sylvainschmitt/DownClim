@@ -1,0 +1,11 @@
+name: xarray
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - fsspec
+  - xarray
+  - netCDF4
+  - bottleneck
+  - cyordereddict
+  - geopandas
