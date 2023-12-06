@@ -151,6 +151,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#kick-off" id="toc-kick-off" class="nav-link active" data-scroll-target="#kick-off">23/11/22 - Kick off</a></li>
+  <li><a href="#dev-summary" id="toc-dev-summary" class="nav-link" data-scroll-target="#dev-summary">23/12/05 - Dev summary</a></li>
+  <li><a href="#thomas-a." id="toc-thomas-a." class="nav-link" data-scroll-target="#thomas-a.">23/12/05 - Thomas A.</a></li>
   </ul>
 </nav>
     </div>
@@ -190,6 +192,65 @@ ul.task-list li input[type="checkbox"] {
 <li>Finally provide a tool and a product</li>
 <li>Have a look to CORDEX downscaling on Europe and North America</li>
 <li>Maybe add Swiss</li>
+</ul>
+</section>
+<section id="dev-summary" class="level2">
+<h2 class="anchored" data-anchor-id="dev-summary">23/12/05 - Dev summary</h2>
+<p>Dev points:</p>
+<ul>
+<li>File naming, for instance longest is results/evaluation/{country}_{domain}_{gcm}_{rcm}_{rcp}_{period_eval}_{period_base}.tsv</li>
+<li>Modularity:
+<ul>
+<li><strong>Space</strong>: currenlty country level based on GADM, but should be adapted to work at regional scale, global scale, and defined bounding box. Resolution of the baseline.</li>
+<li><strong>Time</strong>: currently resolution of months. I would keep finer resolution, i.e.&nbsp;days or x-hourly, for another version (but maybe more complicated to implement with current structure). I do not think year resolution is useful. Period depend on the different products, for instance beware of the short period of evaluation of CHELSA (2010) which can question the comparison with other such as WorldClim</li>
+<li><strong>Baseline</strong>: currently CHELSA 2.1, add WorldClim? add ERA5-Land?, ready for more?</li>
+<li><strong>Projection</strong>: currently CORDEX, add CMIP5 for comparison, add CMIP6?, add CMIP6 HighRes?</li>
+<li><strong>Scenarios</strong>: all RCPs, add SSPs (depend on CMIP6)?; linked to projection</li>
+<li><strong>Downscaling</strong>: bias correction based on delta / change factor of anomalies only? I would keep more sophisticated quantile based approach for another version (but maybe more complicated to implement with current structure)</li>
+<li><strong>Pre-selection</strong>: currently none. Could be based on climatic range of projections in the defined area. But it is needed for lack of computing power, which I think is not the case here.</li>
+<li><strong>Evaluation</strong>: all available metrics, automatic report. Which data? Currently same as the baseline used. External data could be added for multiple evaluations, e.g.&nbsp;CRU TS 4.</li>
+<li><strong>Post-selection</strong>: currently none. Could be based on previous evaluation. But I do not think it is useful by itself, but could be included eventually in ensemble.</li>
+<li><strong>Ensemble</strong>: currently none. Should be added for general users relying on ensemble projections, while reporting uncertainties (very important). Could be simple multi-model averaging or more complex approaches including Bayesian model averaging.</li>
+</ul></li>
+</ul>
+<p>Python questions/devs:</p>
+<ul>
+<li>Environment management local / Rstudio / conda with mamba-forge</li>
+<li>Local / Rstudio envs conflict</li>
+<li>Very slow conda envs (but working for country)</li>
+<li>Help on online nc reading from CHELSA or esgf</li>
+<li>Help on xarray use, but currently pretty autonomous</li>
+<li>Fresh installation tutorial</li>
+<li>Updating management of HPC with profiles in snakemake</li>
+<li>Python/R script for automatic experiment table creation with available CORDEX</li>
+</ul>
+</section>
+<section id="thomas-a." class="level2">
+<h2 class="anchored" data-anchor-id="thomas-a.">23/12/05 - Thomas A.</h2>
+<p><strong>Dev</strong>:</p>
+<ul class="task-list">
+<li><input type="checkbox">Use any filenaming according to the dev, but include all key informations as metadata in the NetCDF data files and TSV evaluation files</li>
+<li><input type="checkbox">Use all CORDEX and ESGF terminology for projections (including ensemble etc)</li>
+<li><input type="checkbox">Check GADM ability to work with continent, and develop the specific case of defined bounding box</li>
+<li><input type="checkbox">Define the projection in configuration with default available projection common for all outputs in the project</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for daily and x-hourly data</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for statistical / quantile-based downscaling</li>
+<li><input type="checkbox">Develop architecture (but not code, include stops) for pre- and post- selection</li>
+<li><input type="checkbox">Develop architecture &amp; code for CHELSA and WorldClim baseline, while developing generic getter architecture for further products (e.g.&nbsp;ERA5-Land, but each product will need its own getter). The resulting NetCDF file should be the cleanest as possible and generic. The working unit will be a NetCDF file with all variables across the whole area and the whole time period.</li>
+<li><input type="checkbox">Gather summarise_cordex, get_anomalies &amp; downscale in a single bias-correction downscaling rule</li>
+<li><input type="checkbox">Develop architecture and code for evaluation based on the baseline and CRU TS 4 as independent data, while developing generic getter architecture for further products (e.g.&nbsp;ERA5-Land, but each product will need its own getter). Should be similar or same rules as the one used to get the baseline.</li>
+<li><input type="checkbox">Develop architecture and code for ensemble projections based on simple multi-model averaging producing both ensemble and <strong>uncertainties</strong>, and develop architecture (but not code, include stops) for more sophisticated method such as Bayesian model averaging.</li>
+</ul>
+<p><strong>Notes</strong>:</p>
+<ul>
+<li>Use Visual Studio for python dev</li>
+<li>Do not use pip for libraries</li>
+<li>Figure out how reticulate deals with environments, and which environment is used in Rstudio terminal</li>
+<li>Use conda with mamba forge as recommended for snakemake</li>
+<li>Re-install snakemake in a conda environment as recommended</li>
+<li>Use a personal dev environment in yaml to be shared with co-authors for tests and developments</li>
+<li>Use single rule minimal environments for rules libraries</li>
+<li>Ask for help on specific rules scripts on a continuous-flow basis using if possible GitHub issues</li>
 </ul>
 
 
