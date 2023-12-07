@@ -1,3 +1,7 @@
+# to trace rust error
+import os
+os.environ["RUST_BACKTRACE"] = "full"
+
 configfile: "config/config_dag.yml"
 
 import pandas as pd
