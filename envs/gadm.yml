@@ -5,3 +5,5 @@ dependencies:
   - python=3.10
   - pygadm=0.5.1
   - matplotlib=3.5.1
+  - cffi
+  - qt6-wayland

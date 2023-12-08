@@ -10,3 +10,12 @@ dependencies:
   - netCDF4
   - bottleneck
   - geopandas
+  - defusedxml
+  - myproxyclient
+  - cf_xarray
+  - py-cordex
+  - cdo
+  - xesmf
+  - cartopy
+  - requests
+  - aiohttp

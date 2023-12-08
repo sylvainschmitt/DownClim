@@ -3,8 +3,10 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - fsspec
+  - cffi
+  - pandas
+  - geopandas
   - xarray
+  - rioxarray
   - netCDF4
   - bottleneck
-  - geopandas

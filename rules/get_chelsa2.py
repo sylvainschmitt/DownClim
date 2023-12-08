@@ -17,5 +17,5 @@ rule get_chelsa2:
         variables=config["variables"],
         time_frequency=config["time_frequency"],
         base_years=config["base_years"]
-    shell:
+    script:
       "../scripts/get_chelsa2.py"

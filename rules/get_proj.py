@@ -25,6 +25,7 @@ rule get_proj:
         downscaling="{downscaling}",
         variables=config["variables"],
         time_frequency=config["time_frequency"],
-        proj_years=config["esgf_years"]
+        proj_years=config["esgf_years"],
+        esgf_credential=config["esgf_credential"]
     shell:
       "../scripts/get_proj.py"

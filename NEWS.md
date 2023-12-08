@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9016: get_chelsa2 python script v1
 -   DownClim 0.1.0.9015: pipeline structure
 -   DownClim 0.1.0.9014: setting dev env with mamba, dev-dc.yml, and renv
 -   DownClim 0.1.0.9013: minimal workflow with fused downscale_bc

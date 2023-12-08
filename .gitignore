@@ -27,6 +27,7 @@ report.html
 img
 data
 achille
-
+# credentials
+config/credentials_esgf.yml
 
 /.quarto/

@@ -12,11 +12,12 @@ variables: ["tas", "tasmin", "tasmax", "pr"]
 
 # Baseline
 baseline: "chelsa2"
-base_years: ["1980-2019"]
+base_years: "1980-1981"
 
 # Projection
 projections: "config/projections_ex.tsv"
 esgf_years: ["1980-2100"]
+esgf_credential: "config/credentials_esgf.yml"
 
 # Downscaling
 ds_method: "bc"

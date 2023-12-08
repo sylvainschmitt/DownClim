@@ -1,6 +1,6 @@
 # DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Dec 6, 2023
+Dec 7, 2023
 
 - [Installation](#installation)
 - [Credentials](#credentials)
@@ -56,8 +56,6 @@ snakemake -np
 
 # Credentials
 
-**To further update following the `get_cordex` rule with `pyesgf`.**
-
 Data are retrieve from the [Institut Pierre-Simon Laplace
 node](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/). You need
 first to [create an
@@ -66,21 +64,14 @@ on this page ([create
 account](https://esgf-node.ipsl.upmc.fr/user/add/?next=http://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/)
 link at corner right).
 
-Then you’ll need to register credentials locally to use the workflow. A
-[help
-page](https://esgf.github.io/esgf-user-support/user_guide.html?highlight=credentials%20pem#access-data-with-the-command-line-via-opendap)
-is available. In linux, you need `myproxy-logon` installed and to run
-this command line (with your user name):
+Then you’ll need to register credentials locally to use the workflow.
+For that use a credentials_esgf yaml file reported in config.yml with
+keys openid and pwd. For example using bash in linux:
 
 ``` bash
-myproxy-logon -sesgf-node.ipsl.upmc.fr -l {user_name} -b -T -t 72 -o ~/.esg/credentials.pem
-```
-
-To run the workflow on a cluster, you can simply copy your local
-credentials to the cluster. For instance:
-
-``` bash
-cp ~/.esg/credentials.pem /my_cluster/
+openid=https://esgf-node.ipsl.upmc.fr/esgf-idp/openid/{user}
+pwd={pwd}
+echo -e "openid: $openid\npwd: $pwd" > config/credentials_esgf.yml
 ```
 
 # Usage
