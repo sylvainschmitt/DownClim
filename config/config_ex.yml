@@ -12,7 +12,7 @@ variables: ["tas", "tasmin", "tasmax", "pr"]
 
 # Baseline
 baseline: ["chelsa2", "worldclim2"]
-base_years: ["1980-2019"]
+base_years: "1980-2019"
 
 # Projection
 projections: "config/projections_ex.tsv"
