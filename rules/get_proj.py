@@ -7,7 +7,7 @@ rule get_proj:
         "results/logs/get_cordex_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}.log"
     benchmark:
         "results/benchmarks/get_cordex_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}.benchmark.txt"
-    threads: 1
+    threads: 10
     resources:
         mem_mb=1000
     conda:
@@ -27,5 +27,5 @@ rule get_proj:
         time_frequency=config["time_frequency"],
         proj_years=config["esgf_years"],
         esgf_credential=config["esgf_credential"]
-    shell:
+    script:
       "../scripts/get_proj.py"

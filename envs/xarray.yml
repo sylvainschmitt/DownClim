@@ -10,3 +10,7 @@ dependencies:
   - rioxarray
   - netCDF4
   - bottleneck
+  - esgf-pyclient
+  - yaml
+  - nctoolkit
+  - dask

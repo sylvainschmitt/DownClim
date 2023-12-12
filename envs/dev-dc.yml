@@ -19,3 +19,6 @@ dependencies:
   - cartopy
   - requests
   - aiohttp
+  - nctoolkit
+  - cfchecker
+  - dask
