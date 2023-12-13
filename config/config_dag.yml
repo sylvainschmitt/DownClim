@@ -16,7 +16,6 @@ base_years: "1980-2018" # 2019 is available for all except pr !!!
 
 # Projection
 projections: "config/projections_ex.tsv"
-esgf_years: ["1980-2100"]
 esgf_credential: "config/credentials_esgf.yml"
 
 # Downscaling

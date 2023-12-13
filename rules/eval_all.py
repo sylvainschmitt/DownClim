@@ -16,19 +16,7 @@ rule evaluate_bc:
     conda:
         "../envs/xarray.yml"
     params:
-        area="{area}",
-        project="{project}",
-        activity="{activity}",
-        domain="{domain}",
-        institute="{institute}",
-        model="{model}",
-        experiment="{experiment}",
-        ensemble="{ensemble}",
-        rcm="{rcm}",
-        downscaling="{downscaling}",
-        baseline="{baseline}",
         period_base="{period_base}",
-        period_eval="{period_eval}",
-        base_eval="{period_base}"
+        period_eval="{period_eval}"
     script:
       "../scripts/evaluate_bc.py"

@@ -52,9 +52,7 @@ snakemake -np
 
 Data are retrieve from the [Institut Pierre-Simon Laplace node](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/). You need first to [create an account](https://esgf.github.io/esgf-user-support/user_guide.html#create-an-account) on this page ([create account](https://esgf-node.ipsl.upmc.fr/user/add/?next=http://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/) link at corner right).
 
-Then you'll need to register credentials locally to use the workflow.
-For that use a credentials_esgf yaml file reported in config.yml with keys openid and pwd.
-For example using bash in linux:
+Then you'll need to register credentials locally to use the workflow. For that use a credentials_esgf yaml file reported in config.yml with keys openid and pwd. For example using bash in linux:
 
 ``` bash
 openid=https://esgf-node.ipsl.upmc.fr/esgf-idp/openid/{user}

@@ -22,3 +22,4 @@ dependencies:
   - nctoolkit
   - cfchecker
   - dask
+  - r-tidyverse 

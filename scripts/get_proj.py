@@ -17,7 +17,6 @@ rcm = snakemake.params.rcm
 downscaling = snakemake.params.downscaling
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
-proj_years = snakemake.params.proj_years
 esgf_credential = snakemake.params.esgf_credential
 nc_file = snakemake.output[0]
 cores = snakemake.threads
@@ -50,6 +49,11 @@ import geopandas
 import nctoolkit as nc
 import dask.multiprocessing
 import re
+from datetime import datetime as dt
+
+# funs
+def convert_to_dt(x):
+    return dt.strptime(str(x), '%Y-%m-%d %H:%M:%S')
 
 # list
 server = 'https://esgf-node.ipsl.upmc.fr/esg-search/'
@@ -62,7 +66,7 @@ if(project == "CORDEX"):
     domain = domain,
     institute = institute,
     driving_model = model,
-    experiment = experiment,
+    experiment = [experiment, "historical"],
     ensemble = ensemble,
     rcm_name= rcm,
     rcm_version = downscaling,
@@ -75,9 +79,8 @@ results = ctx.search()
 datasets = [res.dataset_id for res in results]
 all_results = list(map(lambda res: res.file_context().search(), results))
 all_files = []
-for res in all_results:
+for res in all_results: 
   all_files = all_files + [file.opendap_url for file in res]
-print(all_files)
 
 # connect
 creds = yaml.safe_load(open(esgf_credential, 'r'))
@@ -89,6 +92,10 @@ lm.is_logged_on()
 area = geopandas.read_file(area_file)
 res = int(re.findall(r'\d+', domain)[0])/100
 ds = xr.open_mfdataset(all_files, parallel=True)
+ds['time'] = [*map(convert_to_dt, ds.time.values)]
+if 'pr' in list(ds.keys()):
+  ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1
+  ds.pr.attrs["units"] = 'mm month-1'
 ds = ds.compute(scheduler='threads')
 ds_nc = nc.from_xarray(ds)
 ds_nc.to_latlon(lon = [area.bounds.minx[0], area.bounds.maxx[0]], lat = [area.bounds.miny[0], area.bounds.maxy[0]], res = res)
