@@ -11,25 +11,25 @@ get_area:
   time: "01:00:00"
 
 get_proj:
-  jobname: "get_area"
+  jobname: "get_proj"
   mem: "20G"
   cpus: 1
   time: "01:00:00"
 
-get_chelsa:
-  jobname: "get_area"
+get_chelsa2:
+  jobname: "get_chelsa2"
   mem: "20G"
   cpus: 1
   time: "01:00:00"
   
 downscale_bc:
-  jobname: "get_area"
+  jobname: "downscale_bc"
   mem: "20G"
   cpus: 1
   time: "01:00:00"
   
 evaluate_bc:
-  jobname: "get_area"
+  jobname: "evaluate_bc"
   mem: "20G"
   cpus: 1
   time: "01:00:00"

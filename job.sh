@@ -15,11 +15,7 @@ module load devel/Miniconda/Miniconda3
 
 # Variables
 CONFIG=config/ressources.genobioinfo.yaml # to adapt to your HPC
-COMMAND="sbatch --cpus-per-task={cluster.cpus} 
-                --time={cluster.time} --mem={cluster.mem} 
-                -J {cluster.jobname} 
-                -o snake_subjob_log/{cluster.jobname}.%N.%j.out 
-                -e snake_subjob_log/{cluster.jobname}.%N.%j.err"
+COMMAND="sbatch --cpus-per-task={cluster.cpus} --time={cluster.time} --mem={cluster.mem} -J {cluster.jobname} -o snake_subjob_log/{cluster.jobname}.%N.%j.out -e snake_subjob_log/{cluster.jobname}.%N.%j.err"
 CORES=100
 mkdir -p snake_subjob_log
 
