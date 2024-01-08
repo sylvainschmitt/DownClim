@@ -15,3 +15,4 @@ dependencies:
   - nctoolkit
   - dask
   - xesmf
+  - myproxyclient
