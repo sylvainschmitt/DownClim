@@ -15,7 +15,7 @@ baseline: "chelsa2"
 base_years: "1980-2018" # 2019 is available for all except pr !!!
 
 # Projection
-projections: "config/projections_projects.tsv"
+projections: "config/projections_all.tsv"
 esgf_credential: "config/credentials_esgf.yml"
 
 # Downscaling

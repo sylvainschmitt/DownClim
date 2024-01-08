@@ -1,0 +1,35 @@
+__default__:
+  jobname: "default"
+  mem: "10G"
+  cpus: 1
+  time: "48:00:00"
+  
+get_area:
+  jobname: "get_area"
+  mem: "10G"
+  cpus: 1
+  time: "01:00:00"
+
+get_proj:
+  jobname: "get_area"
+  mem: "20G"
+  cpus: 1
+  time: "01:00:00"
+
+get_chelsa:
+  jobname: "get_area"
+  mem: "20G"
+  cpus: 1
+  time: "01:00:00"
+  
+downscale_bc:
+  jobname: "get_area"
+  mem: "20G"
+  cpus: 1
+  time: "01:00:00"
+  
+evaluate_bc:
+  jobname: "get_area"
+  mem: "20G"
+  cpus: 1
+  time: "01:00:00"

@@ -240,3 +240,19 @@ You can now check that you have the correct path with `reticulate` in Rstudio R 
 ```{r }
 reticulate::py_config()
 ```
+
+# Stats
+
+```{r}
+lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>% 
+  bind_rows() %>% 
+  mutate(file = list.files("results/benchmarks/")) %>% 
+  separate(file, c("rule1", "rule2")) %>% 
+  mutate(rule = paste(rule1, rule2)) %>% 
+  ggplot(aes(s/60, rule, label = `h:m:s`)) +
+  geom_point() +
+  ggrepel::geom_text_repel() +
+  theme_bw() +
+  scale_x_sqrt() +
+  xlab("Minutes") + ylab("")
+```

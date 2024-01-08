@@ -34,7 +34,7 @@ rule all:
 include: "rules/get_area.py"
 
 ## baseline ##
-# include: "rules/get_chelsa2.py"
+include: "rules/get_chelsa2.py"
 include: "rules/get_worldclim2.py"
 include: "rules/get_cru4.py"
 

@@ -11,10 +11,10 @@
 # Environment
 module purge
 module load bioinfo/Snakemake/7.20.0 # snakemake depending on your HPC
-module load containers/singularity/3.9.9 # singularity depending on your HPC
+module load devel/Miniconda/Miniconda3
 
 # Variables
-CONFIG=config/ressources.genologin.yaml # to adapt to your HPC
+CONFIG=config/ressources.genobioinfo.yaml # to adapt to your HPC
 COMMAND="sbatch --cpus-per-task={cluster.cpus} 
                 --time={cluster.time} --mem={cluster.mem} 
                 -J {cluster.jobname} 
@@ -26,7 +26,7 @@ mkdir -p snake_subjob_log
 # Workflow
 snakemake \
   -s Snakefile \
-  --use-singularity \
+  --use-conda \
   -j $CORES \
   --cluster-config $CONFIG \
   --cluster "$COMMAND" \

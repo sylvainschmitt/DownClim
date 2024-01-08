@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9020: test genobioinfo
 -   DownClim 0.1.0.9019: full minimal working python pipeline
 -   DownClim 0.1.0.9018: get_proj python script v1 fully working with dask support in 6'
 -   DownClim 0.1.0.9017: fully working get_chelsa2 but without pr 2013 & 2016 in 30'
