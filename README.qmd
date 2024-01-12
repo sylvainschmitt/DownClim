@@ -250,9 +250,59 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
   separate(file, c("rule1", "rule2")) %>% 
   mutate(rule = paste(rule1, rule2)) %>% 
   ggplot(aes(s/60, rule, label = `h:m:s`)) +
+  geom_boxplot() +
   geom_point() +
-  ggrepel::geom_text_repel() +
   theme_bw() +
   scale_x_sqrt() +
   xlab("Minutes") + ylab("")
+```
+
+# Test
+
+```{r}
+library(tidyverse)
+read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>% 
+  select(-index) %>% 
+  separate(dataset, c("project", "product", "domain", "institute",
+                      "model", "experiment", "ensemble", "rcm",
+                      "downscaling", "time_frequency", "variable", "version_data_node"),
+                      remove = F, sep = "\\.") %>% 
+  separate(version_data_node, c("version", "data_node"), "\\|") %>% 
+  select(-data_node, -dataset, -product, -version) %>% 
+  group_by(project, domain, institute, model, experiment, ensemble, rcm,
+           downscaling, time_frequency) %>% 
+  filter(sort(unique(variable)) == c("pr", "tas", "tasmax", "tasmin")) %>% 
+  select(-variable) %>% 
+  unique() %>% 
+  mutate(activity = "none") %>% 
+  mutate(area = recode(domain, 
+                       "SAM-22" = "French-Guiana",
+                       "AUS-22" = "New-Caledonia",
+                       "AFR-22" = "Côte-d'ivoire")) %>% 
+  mutate(project = toupper(project)) %>% 
+  mutate(projection = paste0(area, "_", project, "_", activity, "_",
+                            domain, "_", institute, "_", model, "_",
+                            experiment, "_", ensemble, "_", rcm, "_", downscaling)) %>% 
+  ungroup() %>% 
+  select(projection, area, project, activity, domain, institute, model, 
+         experiment, ensemble, rcm, downscaling) %>% 
+  write_tsv("config/projections_all.tsv")
+```
+
+# Results
+
+```{r}
+library(tidyverse)
+list.files("results/evaluation/", full.names = T) %>% 
+  lapply(read_tsv) %>% 
+  bind_rows() %>% 
+  mutate(value = ifelse(variable == "pr" & source == "chelsa2", value/10, value)) %>% 
+  mutate(projection = paste(project, domain, institute, model,
+                            experiment, ensemble, rcm, downscaling)) %>% 
+  ggplot(aes(value, col = paste(source, status), group = projection)) +
+  geom_density() +
+  facet_wrap(~ area + variable, scales = "free") +
+  theme_bw() +
+  theme(legend.position = "bottom") +
+  scale_color_discrete("")
 ```

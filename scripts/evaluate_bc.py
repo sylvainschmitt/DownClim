@@ -55,7 +55,7 @@ x_indexer = xr.DataArray(pts.x, dims=["point"])
 y_indexer = xr.DataArray(pts.y, dims=["point"])
 
 # dates 
-eval_dmin = period_eval.split("-")[0] + "-01-01"
+eval_dmin = period_eval.split("-")[0] + "-01-01" # only january for the moment !
 eval_dmax = period_eval.split("-")[1] + "-01-01"
 
 # projection
@@ -131,4 +131,4 @@ ds_df["period_base"] = period_base
 ds_df["base_eval"] = base_eval
 
 # gather & write
-pd.concat([proj_df, base_df]).to_csv(eval, sep="\t")
+pd.concat([proj_df, base_df, ds_df]).to_csv(eval, sep="\t")

@@ -1,4 +1,4 @@
-configfile: "config/config_dag.yml"
+configfile: "config/config_all.yml"
 
 import pandas as pd
 proj = pd.read_table(config["projections"]).set_index("projection", drop=False)

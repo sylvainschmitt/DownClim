@@ -11,7 +11,7 @@ pts_file = snakemake.output[2]
 pts_fig = snakemake.output[3]
 
 # test
-# area = "New-Caledonia"
+# area = "Côte-d'ivoire"
 # log10_eval_pts = 4
 
 # libs

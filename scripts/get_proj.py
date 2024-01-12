@@ -22,23 +22,23 @@ nc_file = snakemake.output[0]
 cores = snakemake.threads
 
 # test
-# area_file = "results/countries/New-Caledonia.shp"
+# area_file = "results/countries/French-Guiana.shp"
 # nc_file = "test.nc"
-# area = "New-Caledonia"
+# area = "French-Guiana"
 # project = "CORDEX"
 # activity = "none"
-# domain = "AUS-22"
+# domain = "AFR-22"
 # institute = "CLMcom-HZG"
-# model = "MOHC-HadGEM2-ES"
-# experiment = "rcp26"
+# model = "NCC-NorESM1-M"
+# experiment = "rcp85"
 # ensemble = "r1i1p1"
-# rcm = "CCLM5-0-15"
+# rcm = "CCLM-0-15"
 # downscaling = "v1"
 # variables = ["tas", "tasmin", "tasmax", "pr"]
 # time_frequency = "mon"
 # proj_years = "2071-2100"
 # esgf_credential = "config/credentials_esgf.yml"
-# cores = 20
+# cores = 10
 
 # libs
 from pyesgf.search import SearchConnection
@@ -50,6 +50,7 @@ import nctoolkit as nc
 import dask.multiprocessing
 import re
 from datetime import datetime as dt
+import numpy
 
 # funs
 def convert_to_dt(x):
@@ -92,7 +93,8 @@ lm.is_logged_on()
 area = geopandas.read_file(area_file)
 res = int(re.findall(r'\d+', domain)[0])/100
 ds = xr.open_mfdataset(all_files, parallel=True)
-ds['time'] = [*map(convert_to_dt, ds.time.values)]
+if type(ds["time"].values[0]) is not numpy.datetime64:
+  ds['time'] = [*map(convert_to_dt, ds.time.values)]
 if 'pr' in list(ds.keys()):
   ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1
   ds.pr.attrs["units"] = 'mm month-1'

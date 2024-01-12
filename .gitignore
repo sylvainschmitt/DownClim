@@ -29,5 +29,6 @@ data
 achille
 # credentials
 config/credentials_esgf.yml
+test.tsv
 
 /.quarto/

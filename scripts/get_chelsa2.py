@@ -64,7 +64,7 @@ def get_var(years, area, var, time_freq, month_max, temp_fold, cores):
                 os.remove(p)
         ds_var = xr.concat(a, "time")
         del a
-        ds_var["var"] = ds_var["var"] * 0.1
+        ds_var["var"] = ds_var["var"] * 0.1 # pr need to be divided by 100!
         if var == "pr":
                 ds_var = ds_var.rename_vars({"var" : "pr"})
                 ds_var.pr.attrs = {'standard_name': 'precipitation', 'long_name': 'Monthly precipitation',
