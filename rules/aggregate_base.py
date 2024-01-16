@@ -2,7 +2,7 @@ rule aggregate_base:
     input:
         "results/{base}/raw/{area}_{base}.nc"
     output:
-        "results/{base}/raw/{area}_{base}_{aggregation}_{period}.nc"
+        "results/{base}/means/{area}_{base}_{aggregation}_{period}.nc"
     log:
         "results/logs/aggregate_{base}_{area}_{aggregation}_{period}.log"
     benchmark:

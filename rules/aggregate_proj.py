@@ -2,7 +2,7 @@ rule aggregate_proj:
     input:
         "results/projection/raw/{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}"
     output:
-        "results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period}.nc"
+        "results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period}.nc"
     log:
         "results/logs/aggregate_proj_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period}.log"
     benchmark:

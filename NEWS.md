@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9023: get_chelsa2 multi-areas
 -   DownClim 0.1.0.9022: new structure (not working code) for single product dl over areas
 -   DownClim 0.1.0.9021: premeeting (few fixes, few issues, and list_cordex.py)
 -   DownClim 0.1.0.9020: test genobioinfo
