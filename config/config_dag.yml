@@ -1,4 +1,5 @@
 # Area
+area: ["New-Caledonia", "Australia"]
 proj_crs: "default"
 
 # Time
@@ -16,7 +17,9 @@ base_years: "1980-2018" # 2019 is available for all except pr !!!
 
 # Projection
 projections: "config/projections_ex.tsv"
+domains: "config/domains_ex.tsv"
 esgf_credential: "config/credentials_esgf.yml"
+aggregation: "monthly-means"
 
 # Downscaling
 ds_method: "bc"

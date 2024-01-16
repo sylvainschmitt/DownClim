@@ -1,13 +1,14 @@
 rule downscale_bc:
     input:
-        proj="results/projection/raw/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}.nc",
-        base="results/{baseline}/raw/{area}_{baseline}.nc"
+        proj_proj="results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period_proj}.nc",
+        proj_base="results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period_base}.nc",
+        base_base="results/{base}/raw/{area}_{base}_{aggregation}_{period_base}.nc"
     output:
-        "results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}_bc.nc"
+        "results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}_{period_base}_bc.nc"
     log:
-        "results/logs/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}.log"
+        "results/logs/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}_{period_base}.log"
     benchmark:
-        "results/benchmarks/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{period_proj}_{period_base}.benchmark.txt"
+        "results/benchmarks/downscale_bc_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}_{period_base}.benchmark.txt"
     threads: 1
     resources:
         mem_mb=1000

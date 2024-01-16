@@ -69,3 +69,19 @@ Python questions/devs:
 -   Use a personal dev environment in yaml to be shared with co-authors for tests and developments
 -   Use single rule minimal environments for rules libraries
 -   Ask for help on specific rules scripts on a continuous-flow basis using if possible GitHub issues
+
+## 24/01/12 - Thomas A.
+
+-   Global grid to define (on baseline?)
+-   xECMF with xe.Regular instead of nc.to_lonlat
+-   Beware of downscale metadata with lost info
+-   Evaluation as netcdf
+-   Create monthly mean files with intermediate rule for temporal aggregation
+-   get_proj into get_cordex and get_cmip
+-   only 1 get_cordex per domain for all countries (same for get_chelsa and other baselines)
+-   add a rule to produce table of country per domain based on python library cordex
+-   Evaluation plots as R and suggest to be built as python
+-   Ask help to Thomas for workflow structure with countries
+-   Ask help to Thomas for figures in python
+-   Ask help to Thomas for dictionaries in netcdf metadata
+-   Schedule a meeting with Ghislain and Achille

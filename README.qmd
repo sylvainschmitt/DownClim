@@ -275,16 +275,12 @@ read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>%
   select(-variable) %>% 
   unique() %>% 
   mutate(activity = "none") %>% 
-  mutate(area = recode(domain, 
-                       "SAM-22" = "French-Guiana",
-                       "AUS-22" = "New-Caledonia",
-                       "AFR-22" = "Côte-d'ivoire")) %>% 
   mutate(project = toupper(project)) %>% 
-  mutate(projection = paste0(area, "_", project, "_", activity, "_",
+  mutate(projection = paste0(project, "_", activity, "_",
                             domain, "_", institute, "_", model, "_",
                             experiment, "_", ensemble, "_", rcm, "_", downscaling)) %>% 
   ungroup() %>% 
-  select(projection, area, project, activity, domain, institute, model, 
+  select(projection, project, activity, domain, institute, model, 
          experiment, ensemble, rcm, downscaling) %>% 
   write_tsv("config/projections_all.tsv")
 ```
