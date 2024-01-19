@@ -18,7 +18,7 @@ rule all:
              period_proj=config["proj_years"],
              ds_method=config["ds_method"]),
       # evaluation
-      expand("results/evaluation/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base_eval}.tsv",
+      expand("results/evaluation/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base_eval}.nc",
              proj=proj_dom.id,
              baseline=config["baseline"],
              aggregation=config["aggregation"],

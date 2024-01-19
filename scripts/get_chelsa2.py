@@ -142,9 +142,7 @@ ds_all = {key: None for key in list(map(lambda x: x.NAME_0.values[0], areas))}
 for area in areas:
         ds_all[area.NAME_0.values[0]] = xr.merge(a[area.NAME_0.values[0]])
 del a
-
 for i in list(range(len(nc_files))):
-        ds_all[areas[i].NAME_0.values[0]].to_netcdf(nc_files[i])
-        
+        ds_all[areas[i].NAME_0.values[0]].to_netcdf(nc_files[i])       
 del ds_all
 shutil.rmtree(temp_fold)

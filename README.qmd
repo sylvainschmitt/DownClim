@@ -287,17 +287,61 @@ read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>%
 
 # Results
 
+geom_density() +
+
+facet_wrap(\~ area + variable, scales = "free") +
+
+theme_bw() +
+
+theme(legend.position = "bottom") +
+
+scale_color_discrete("")
+
 ```{r}
+library(terra)
 library(tidyverse)
-list.files("results/evaluation/", full.names = T) %>% 
-  lapply(read_tsv) %>% 
-  bind_rows() %>% 
-  mutate(value = ifelse(variable == "pr" & source == "chelsa2", value/10, value)) %>% 
-  mutate(projection = paste(project, domain, institute, model,
-                            experiment, ensemble, rcm, downscaling)) %>% 
-  ggplot(aes(value, col = paste(source, status), group = projection)) +
+list(Vanuatu = "results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc",
+           "Nouvelle-Caledonie" = "results/evaluation/New-Caledonia_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc") %>% 
+  lapply(rast) %>% 
+  lapply(as.data.frame, xy = TRUE) %>% 
+  bind_rows(.id = "area") %>% 
+  as.data.frame(xy = TRUE) %>% 
+  gather(variable, value, -x, -y, -area) %>% 
+  separate(variable, paste0("VAR", 1:9), "_") %>% 
+  rename(variable = VAR1, month = VAR3, type = VAR9) %>% 
+  select(-starts_with("VAR")) %>% 
+  mutate(month = as.numeric(gsub("month=", "", month))) %>%
+  mutate(type = recode(type, "1" = "downscaled", "2" = "projection", "3" = "raw")) %>% 
+  pivot_wider(names_from = type, values_from = value) %>% 
+  gather(type, value, -x, -y, -month, -raw, -area) %>% 
+  nest_by(area, month, type) %>% 
+  mutate(R2 = summary(lm(raw ~ value, data = data))$r.squared,
+         CC = cor(data$value, data$raw),
+         RMSEP = sqrt(mean((data$value-data$raw)^2)),
+         RRMSEP = sqrt(mean((data$value-data$raw)^2))/mean(data$raw),
+         SD =sd(data$value-data$raw),
+         RSD =sd(data$value-data$raw)/mean(data$raw)) %>% 
+  select(-data) %>% 
+  ggplot(aes(RRMSEP, 1-CC, label = month, col = paste(area, type))) +
+  geom_point() +
+  ggrepel::geom_text_repel() +
+  theme_bw()
+```
+
+```{r}
+library(terra)
+library(tidyverse)
+rast("results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc") %>% 
+  as.data.frame() %>% 
+  gather(variable, value) %>% 
+  separate(variable, paste0("X", 1:9), "_") %>% 
+  rename(variable = X1, month = X3, type = X9) %>% 
+  select(-starts_with("X")) %>% 
+  # mutate(month = as.numeric(gsub("month=", "", month))) %>%
+  mutate(type = recode(type, "1" = "downscaled", "2" = "projection", "3" = "raw")) %>% 
+  ggplot(aes(value, col = as.factor(type))) +
   geom_density() +
-  facet_wrap(~ area + variable, scales = "free") +
+  facet_wrap(~ month + variable, scales = "free") +
   theme_bw() +
   theme(legend.position = "bottom") +
   scale_color_discrete("")

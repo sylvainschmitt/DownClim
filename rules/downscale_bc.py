@@ -1,7 +1,7 @@
 rule downscale_bc:
     input:
-        proj_proj="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period_proj}.nc",
-        proj_base="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period_base}.nc",
+        proj_proj="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}.nc",
+        proj_base="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_base}.nc",
         base_base="results/{base}/means/{area}_{base}_{aggregation}_{period_base}.nc"
     output:
         "results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}_{period_base}_bc.nc"
@@ -16,6 +16,7 @@ rule downscale_bc:
         "../envs/xarray.yml"
     params:
         period_base="{period_base}",
-        period_proj="{period_proj}"
+        period_proj="{period_proj}",
+        base="{base}"
     script:
       "../scripts/downscale_bc.py"

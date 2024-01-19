@@ -1,11 +1,11 @@
 rule evaluate:
     input:
-        proj="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{aggregation}_{period_eval}.nc",
+        proj="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}.nc",
         base="results/{base}/means/{area}_{base}_{aggregation}_{period_eval}.nc",
         ds="results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
-        pts="results/countries/{area}_pts.shp"
+        shp="results/countries/{area}.shp"
     output:
-        "results/evaluation/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.tsv"
+        "results/evaluation/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.nc"
     log:
         "results/logs/evaluate_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.log"
     benchmark:

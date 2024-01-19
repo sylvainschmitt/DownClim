@@ -1,5 +1,5 @@
 # Area
-area: ["New-Caledonia", "New-Zealand"]
+area: ["New-Caledonia", "Vanuatu"]
 proj_crs: "default"
 
 # Time
@@ -9,7 +9,7 @@ eval_years: ["2006-2019"]
 proj_years: ["2071-2100"]
 
 # Variables
-variables: ["tas", "tasmin", "tasmax", "pr"]
+variables: ["tas"]
 
 # Baseline
 baseline: "chelsa2"

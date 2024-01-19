@@ -23,3 +23,4 @@ dependencies:
   - cfchecker
   - dask
   - r-tidyverse 
+  - salem
