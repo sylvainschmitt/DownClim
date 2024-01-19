@@ -1,9 +1,7 @@
 rule get_area:
     output:
         "results/countries/{area}.shp",
-        "results/countries/{area}.png",
-        "results/countries/{area}_pts.shp",
-        "results/countries/{area}_pts.png"
+        "results/countries/{area}.png"
     log:
         "results/logs/get_country_{area}.log"
     benchmark:

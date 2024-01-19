@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9025: fasten get_chelsa2 & merge
 -   DownClim 0.1.0.9024: get_cordex multiareas, aggregate, revised downscale_bc and evaluate, pre-merge
 -   DownClim 0.1.0.9023: get_chelsa2 multi-areas
 -   DownClim 0.1.0.9022: new structure (not working code) for single product dl over areas
