@@ -50,7 +50,7 @@ def get_year(year, areas, var, time_freq, month_max, temp_fold):
                 del a[area_name]
                 ds_year = ds_year[["time", "x", "y", var]]
                 paths[area_name] = temp_fold + "/" + area_name + "_" + var + "_" + str(year) + ".nc"
-                ds_year.chunk({'time':1, 'x':100, 'y':100}).to_netcdf(paths[area_name], unlimited_dims="time")
+                ds_year.chunk({'time':1, 'x':100, 'y':100}).to_netcdf(paths[area_name])
                 del ds_year
         return(paths)
 
@@ -98,7 +98,7 @@ if time_frequency != "mon":
 paths = {key: list() for key in areas_names}
 for v in variables:
         for y in years:
-                raw_paths = get_year(y, list(map(geopandas.read_file, area_files)), v, "monthly", 2, temp_fold)
+                raw_paths = get_year(y, areas, v, tf, months, temp_fold)
                 for area_name in areas_names:
                         paths[area_name].append(raw_paths[area_name])
                 
