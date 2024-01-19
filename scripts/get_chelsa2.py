@@ -10,6 +10,7 @@ time_frequency = snakemake.params.time_frequency
 base_years = snakemake.params.base_years
 temp_fold = snakemake.params.tmp
 nc_files = snakemake.output
+cores = snakemake.threads
 
 # test
 # area_files = ["results/countries/New-Caledonia.shp", "results/countries/Vanuatu.shp"]
@@ -19,6 +20,7 @@ nc_files = snakemake.output
 # temp_fold = "results/chelsa2/raw/tmp"
 # base_years = "1997-1998"
 # nc_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
+# cores=10
 
 # libs
 import os
@@ -28,7 +30,8 @@ import rioxarray as rio
 import pandas as pd
 import geopandas
 import datetime
-
+import multiprocessing as mp
+        
 # funs
 def get_year(year, areas, var, time_freq, month_max, temp_fold):
         areas_names = list(map(lambda x: x.NAME_0.values[0], areas))
@@ -49,45 +52,49 @@ def get_year(year, areas, var, time_freq, month_max, temp_fold):
                 ds_year = xr.concat(a[area_name], pd.Index(pd.date_range(datetime.datetime(year, 1, 1), periods=month_max, freq="M"), name="time"))
                 del a[area_name]
                 ds_year = ds_year[["time", "x", "y", var]]
+                if var == "pr":
+                        ds_year[var].values = ds_year[var].values * 0.01
+                        ds_year.pr.attrs = {'standard_name': 'precipitation', 
+                                           'long_name': 'Monthly precipitation',
+                                           'units': 'mm month-1', 
+                                           'explanation' : 'Precipitation" in the earth\'s atmosphere means precipitation of water in all phases.'}
+                elif var == "tas":
+                        ds_year[var] = ds_year[var] * 0.1
+                        ds_year.tas.attrs = {'standard_name': 'temperature at surface', 
+                                            'long_name': 'Monthly mean daily air temperature',
+                                            'units': 'K', 
+                                            'explanation' : 'Daily mean air temperatures at 2 meters.'}
+                elif var == "tasmin":
+                        ds_year[var] = ds_year[var] * 0.1
+                        ds_var.tasmin.attrs = {'standard_name': 'minimum temperature at surface', 
+                                               'long_name': 'Monthly minimum daily air temperature',
+                                               'units': 'K', 
+                                               'explanation' : 'Daily minimum air temperatures at 2 meters.'}
+                elif var == "tasmax":
+                        ds_year[var] = ds_year[var] * 0.1
+                        ds_year.tasmax.attrs = {'standard_name': 'maximum temperature at surface', 
+                                               'long_name': 'Monthly maximum daily air temperature',
+                                               'units': 'K', 
+                                               'explanation' : 'Daily maximum air temperatures at 2 meters.'}
+                else:   
+                        "Problem, variable "+ var + " not recognized, you should use one of the following: tas, tasmin, tasmax, pr."
                 paths[area_name] = temp_fold + "/" + area_name + "_" + var + "_" + str(year) + ".nc"
-                ds_year.chunk({'time':1, 'x':100, 'y':100}).to_netcdf(paths[area_name])
+                ds_year.chunk({'time':1, 'x':200, 'y':200}).to_netcdf(paths[area_name])
                 del ds_year
         return(paths)
-
-def prep_netcdf(ds):
-        if 'pr' in list(ds.keys()):
-                ds['pr'].values = ds['pr'].values * 0.01
-                ds.pr.attrs = {'standard_name': 'precipitation', 
-                        'long_name': 'Monthly precipitation',
-                        'units': 'mm month-1', 
-                        'explanation' : 'Precipitation" in the earth\'s atmosphere means precipitation of water in all phases.'}
-        if 'tas' in list(ds.keys()):
-                ds['tas'].values = ds['tas'].values * 0.1
-                ds.tas.attrs = {'standard_name': 'temperature at surface', 
-                        'long_name': 'Monthly mean daily air temperature',
-                        'units': 'K', 
-                        'explanation' : 'Daily mean air temperatures at 2 meters.'}        
-        if 'tasmin' in list(ds.keys()):
-                ds['tasmin'].values = ds['tasmin'].values * 0.1
-                ds.tasmin.attrs = {'standard_name': 'minimum temperature at surface', 
-                        'long_name': 'Monthly minimum daily air temperature',
-                        'units': 'K', 
-                        'explanation' : 'Daily minimum air temperatures at 2 meters.'}   
-        if 'tasmax' in list(ds.keys()):
-                ds['tasmax'].values = ds['tasmax'].values * 0.1
-                ds.tasmax.attrs = {'standard_name': 'maximum temperature at surface', 
-                        'long_name': 'Monthly maximum daily air temperature',
-                        'units': 'K', 
-                        'explanation' : 'Daily maximum air temperatures at 2 meters.'}
-        return(ds)
   
 # code
 os.mkdir(temp_fold)
 
 areas = list(map(geopandas.read_file, area_files))
+areas_names = list(map(lambda x: x.NAME_0.values[0], areas))
+
 base_years = list(map(int, base_years.split("-")))
 years = list(range(base_years[0], base_years[1]+1))
-areas_names = list(map(lambda x: x.NAME_0.values[0], areas))
+if "pr" in variables and years[1] >= 2013:
+        years.remove(2013) # issue with the tif
+if "pr" in variables and years[1] >= 2016:
+        years.remove(2016) # issue with the tif                
 
 if time_frequency == "mon":
         tf = "monthly"
@@ -95,16 +102,21 @@ if time_frequency == "mon":
 if time_frequency != "mon":
         raise Exception("Currently only monthly time frequency available!")
 
-paths = {key: list() for key in areas_names}
+pool = mp.Pool(cores)
+paths=[]
 for v in variables:
-        for y in years:
-                raw_paths = get_year(y, areas, v, tf, months, temp_fold)
+        paths.append(pool.starmap_async(get_year, [(y, areas, v, tf, months, temp_fold) for y in years]).get())
+pool.close()
+paths2 = {key: list() for key in areas_names}
+for path in paths:
+        for p in path:
                 for area_name in areas_names:
-                        paths[area_name].append(raw_paths[area_name])
+                        paths2[area_name].append(p[area_name])
+del paths
                 
 for i, area_name in enumerate(areas_names):
         print("Merging files for area " + area_name + "...")
-        ds=xr.open_mfdataset(paths["NewCaledonia"], parallel=True)
+        ds=xr.open_mfdataset(paths2[area_name], parallel=True)
         ds=prep_netcdf(ds)
         delayed = ds.to_netcdf(nc_files[i], compute=False)
         results = delayed.compute(scheduler='threads')

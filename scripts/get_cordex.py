@@ -21,21 +21,21 @@ folder = snakemake.output[0]
 cores = snakemake.threads
 
 # test
-# base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
-# areas = ["New-Caledonia", "Vanuatu"]
-# activity = "none"
-# domain = "AUS-22"
-# institute = "ICTP"
-# model = "NCC-NorESM1-M"
-# experiment = "rcp26"
-# ensemble = "r1i1p1"
-# rcm = "RegCM4-7"
-# downscaling = "v0"
-# variables = ["tas"]
-# time_frequency = "mon"
-# esgf_credential = "config/credentials_esgf.yml"
-# cores = 10
+base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
+folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
+areas = ["New-Caledonia", "Vanuatu"]
+activity = "none"
+domain = "AUS-22"
+institute = "ICTP"
+model = "NCC-NorESM1-M"
+experiment = "rcp26"
+ensemble = "r1i1p1"
+rcm = "RegCM4-7"
+downscaling = "v0"
+variables = ["tas"]
+time_frequency = "mon"
+esgf_credential = "config/credentials_esgf.yml"
+cores = 10
 
 # libs
 import os
@@ -82,10 +82,16 @@ lm.logon_with_openid(openid=creds['openid'], password=creds['pwd'], interactive=
 # read & prepare
 res = int(re.findall(r'\d+', domain)[0])/100
 ds = xr.open_mfdataset(all_files, parallel=True)
-if type(ds["time"].values[0]) is not numpy.datetime64:
-  ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] # only cftime if not dt but should include more cases
+cf = type(ds["time"].values[0]) is not numpy.datetime64
+if cf: # only cftime if not dt but should include more cases
+  ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] 
 if 'pr' in list(ds.keys()):
-  ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1 // to correct with correct number of days per month
+  if(cf):
+    ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1 with 30 days per month in cftime
+  else:
+    ds['pr'] = ds['pr']*60*60*24*30
+    # ds['pr'] = list(map(lambda p,y,m: p*60*60*24*calendar.monthrange(y, m)[1], 
+    #                 ds['tas'].values, ds["time"].dt.year.values, ds["time"].dt.month.values)) # force the reading of the data !
   ds.pr.attrs["units"] = 'mm month-1'
 
 # regrid and write per country

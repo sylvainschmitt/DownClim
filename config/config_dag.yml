@@ -9,7 +9,7 @@ eval_years: ["2006-2019"]
 proj_years: ["2071-2100"]
 
 # Variables
-variables: ["tas"]
+variables: ["tas", "tasmin", "tasmax", "pr"]
 
 # Baseline
 baseline: "chelsa2"
