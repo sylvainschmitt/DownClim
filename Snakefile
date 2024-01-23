@@ -1,4 +1,4 @@
-configfile: "config/config_dag.yml"
+configfile: "config/config_ex.yml"
 
 import pandas as pd
 proj = pd.read_table(config["projections"])
@@ -42,6 +42,8 @@ include: "rules/aggregate_base.py"
 
 ## projection ##
 include: "rules/get_cordex.py"
+include: "rules/get_cmip5.py"
+include: "rules/get_cmip6.py"
 include: "rules/aggregate_proj.py"
 
 ## downscaling ##

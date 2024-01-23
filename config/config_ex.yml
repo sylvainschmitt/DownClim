@@ -1,5 +1,5 @@
 # Area
-area: ["New-Caledonia"]
+area: ["New-Caledonia", "Vanuatu"]
 proj_crs: "default"
 
 # Time
@@ -16,7 +16,7 @@ baseline: "chelsa2"
 base_years: "2004-2007" # 2019 is available for all except pr !!!
 
 # Projection
-projections: "config/projections_dag.tsv"
+projections: "config/projections_ex.tsv"
 domains: "config/domains.tsv"
 esgf_credential: "config/credentials_esgf.yml"
 

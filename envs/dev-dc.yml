@@ -24,3 +24,5 @@ dependencies:
   - dask
   - r-tidyverse 
   - salem
+  - gcsfs
+  - zarr

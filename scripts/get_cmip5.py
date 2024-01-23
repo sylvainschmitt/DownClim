@@ -6,13 +6,10 @@ sys.stderr = sys.stdout = log_file
 base_files = snakemake.input
 domain = snakemake.params.domain
 areas = snakemake.params.area
-domain = snakemake.params.domain
 institute = snakemake.params.institute
 model = snakemake.params.model
 experiment = snakemake.params.experiment
 ensemble = snakemake.params.ensemble
-rcm = snakemake.params.rcm
-downscaling = snakemake.params.downscaling
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
 esgf_credential = snakemake.params.esgf_credential
@@ -21,16 +18,13 @@ cores = snakemake.threads
 
 # test
 # base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
+# folder = "results/projection/raw/CMIP5_world_NCC_NorESM1-M_rcp26_r1i1p1_none_none_chelsa2"
 # areas = ["New-Caledonia", "Vanuatu"]
-# domain = "AUS-22"
-# institute = "ICTP"
-# model = "NCC-NorESM1-M"
+# institute = "NCC"
+# model = "NorESM1-M"
 # experiment = "rcp26"
 # ensemble = "r1i1p1"
-# rcm = "RegCM4-7"
-# downscaling = "v0"
-# variables = ["tas"]
+# variables = ["tas", "pr"]
 # time_frequency = "mon"
 # esgf_credential = "config/credentials_esgf.yml"
 # cores = 10
@@ -43,7 +37,7 @@ from pyesgf.logon import LogonManager
 import xarray as xr
 import xesmf as xe
 from datetime import datetime as dt
-import numpy
+import numpy as np
 
 # funs
 def convert_cf_to_dt(x):
@@ -52,24 +46,24 @@ def convert_cf_to_dt(x):
 # list
 server = 'https://esgf-node.ipsl.upmc.fr/esg-search/'
 conn = SearchConnection(server, distrib=True)
-# keys: https://esgf-node.llnl.gov/esg-search/search?project=CORDEX&facets=*&limit=0
 ctx = conn.new_context(
-  facets='*',
-  project = "CORDEX",
-  domain = domain,
-  institute = institute,
-  driving_model = model,
-  experiment = [experiment, "historical"],
-  ensemble = ensemble,
-  rcm_name= rcm,
-  rcm_version = downscaling,
-  time_frequency = time_frequency,
-  variable = variables
-)
+    project="CMIP5",
+    institute = institute,
+    model = model,
+    experiment=[experiment, "historical"],    
+    ensemble = ensemble,
+    variable=variables,
+    time_frequency=time_frequency,
+    realm='atmos',
+    data_node="esgf.ceda.ac.uk")
+# ctx.hit_count
+# list(map(lambda res: res.dataset_id, ctx.search()))
 all_results = list(map(lambda res: res.file_context().search(), ctx.search()))
 all_files = []
 for res in all_results: 
-  all_files = all_files + [file.opendap_url for file in res]
+    for file in res:
+        if any(var in file.opendap_url for var in list(map(lambda x: x + "_", variables))): # the variables filter above is useless!
+            all_files.append(file.opendap_url)
 
 # connect
 creds = yaml.safe_load(open(esgf_credential, 'r'))
@@ -77,8 +71,8 @@ lm = LogonManager()
 lm.logon_with_openid(openid=creds['openid'], password=creds['pwd'], interactive=False)
 
 # read & prepare
-ds = xr.open_mfdataset(all_files, parallel=True)
-cf = type(ds["time"].values[0]) is not numpy.datetime64
+ds = xr.open_mfdataset(all_files, combine='nested', concat_dim='time', parallel=True)
+cf = type(ds["time"].values[0]) is not np.datetime64
 if cf: # only cftime if not dt but should include more cases
   ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] 
 if 'pr' in list(ds.keys()):
@@ -99,3 +93,4 @@ for i in list(range(len(areas))):
   path = folder + "/" + areas[i] + '.nc'
   delayed = ds_r.to_netcdf(path, compute=False)
   results = delayed.compute(scheduler='threads') # we may need to limit dask to a defined number of cores
+  
