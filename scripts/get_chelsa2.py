@@ -15,12 +15,12 @@ cores = snakemake.threads
 # test
 # area_files = ["results/countries/New-Caledonia.shp", "results/countries/Vanuatu.shp"]
 # areas=["New-Caledonia", "Vanuatu"]
-# variables = ["tas", "tasmin"]
+# variables = ["tas", "tasmin", "tasmax", "pr"]
 # time_frequency = "mon"
 # temp_fold = "results/chelsa2/raw/tmp"
-# base_years = "1997-1998"
+# base_years = "1980-1981"
 # nc_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# cores=10
+# cores=3
 
 # libs
 import os
@@ -66,7 +66,7 @@ def get_year(year, areas, var, time_freq, month_max, temp_fold):
                                             'explanation' : 'Daily mean air temperatures at 2 meters.'}
                 elif var == "tasmin":
                         ds_year[var] = ds_year[var] * 0.1
-                        ds_var.tasmin.attrs = {'standard_name': 'minimum temperature at surface', 
+                        ds_year.tasmin.attrs = {'standard_name': 'minimum temperature at surface', 
                                                'long_name': 'Monthly minimum daily air temperature',
                                                'units': 'K', 
                                                'explanation' : 'Daily minimum air temperatures at 2 meters.'}
@@ -116,9 +116,7 @@ del paths
                 
 for i, area_name in enumerate(areas_names):
         print("Merging files for area " + area_name + "...")
-        ds=xr.open_mfdataset(paths2[area_name], parallel=True)
-        ds=prep_netcdf(ds)
-        delayed = ds.to_netcdf(nc_files[i], compute=False)
-        results = delayed.compute(scheduler='threads')
+        ds=xr.open_mfdataset(paths2[area_name], decode_coords="all", parallel=True)
+        ds.to_netcdf(nc_files[i])
         
 shutil.rmtree(temp_fold)

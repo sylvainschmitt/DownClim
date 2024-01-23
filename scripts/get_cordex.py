@@ -6,7 +6,6 @@ sys.stderr = sys.stdout = log_file
 base_files = snakemake.input
 domain = snakemake.params.domain
 areas = snakemake.params.area
-activity = snakemake.params.activity
 domain = snakemake.params.domain
 institute = snakemake.params.institute
 model = snakemake.params.model
@@ -21,21 +20,20 @@ folder = snakemake.output[0]
 cores = snakemake.threads
 
 # test
-base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
-areas = ["New-Caledonia", "Vanuatu"]
-activity = "none"
-domain = "AUS-22"
-institute = "ICTP"
-model = "NCC-NorESM1-M"
-experiment = "rcp26"
-ensemble = "r1i1p1"
-rcm = "RegCM4-7"
-downscaling = "v0"
-variables = ["tas"]
-time_frequency = "mon"
-esgf_credential = "config/credentials_esgf.yml"
-cores = 10
+# base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
+# folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
+# areas = ["New-Caledonia", "Vanuatu"]
+# domain = "AUS-22"
+# institute = "ICTP"
+# model = "NCC-NorESM1-M"
+# experiment = "rcp26"
+# ensemble = "r1i1p1"
+# rcm = "RegCM4-7"
+# downscaling = "v0"
+# variables = ["tas"]
+# time_frequency = "mon"
+# esgf_credential = "config/credentials_esgf.yml"
+# cores = 10
 
 # libs
 import os

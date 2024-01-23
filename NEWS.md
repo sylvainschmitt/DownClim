@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9026: get_chelsa2 fixed & rm activity from keys, CMIP tbc
 -   DownClim 0.1.0.9025: fasten get_chelsa2 & merge
 -   DownClim 0.1.0.9024: get_cordex multiareas, aggregate, revised downscale_bc and evaluate, pre-merge
 -   DownClim 0.1.0.9023: get_chelsa2 multi-areas

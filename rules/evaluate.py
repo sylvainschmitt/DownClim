@@ -1,15 +1,15 @@
 rule evaluate:
     input:
-        proj="results/projection/means/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}.nc",
+        proj="results/projection/means/{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}.nc",
         base="results/{base}/means/{area}_{base}_{aggregation}_{period_eval}.nc",
-        ds="results/projection/downscaled/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
+        ds="results/projection/downscaled/{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
         shp="results/countries/{area}.shp"
     output:
-        "results/evaluation/{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.nc"
+        "results/evaluation/{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.nc"
     log:
-        "results/logs/evaluate_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.log"
+        "results/logs/evaluate_{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.log"
     benchmark:
-        "results/benchmarks/evaluate_{area}_{project}_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.benchmark.txt"
+        "results/benchmarks/evaluate_{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base}.benchmark.txt"
     threads: 1
     resources:
         mem_mb=10000
@@ -18,7 +18,6 @@ rule evaluate:
     params:
         area="{area}",
         project="{project}",
-        activity="{activity}",
         domain="{domain}",
         institute="{institute}",
         model="{model}",

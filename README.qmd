@@ -10,6 +10,7 @@ format:
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
 rm(list = ls()) ; invisible(gc()) ; set.seed(42)
 knitr::opts_chunk$set(echo = F, message = F, warning = F, fig.height = 6, fig.width = 8,
                       cache = F, cache.lazy = F)
@@ -273,31 +274,17 @@ read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>%
            downscaling, time_frequency) %>% 
   filter(sort(unique(variable)) == c("pr", "tas", "tasmax", "tasmin")) %>% 
   select(-variable) %>% 
-  unique() %>% 
-  mutate(activity = "none") %>% 
-  mutate(project = toupper(project)) %>% 
-  mutate(projection = paste0(project, "_", activity, "_",
-                            domain, "_", institute, "_", model, "_",
-                            experiment, "_", ensemble, "_", rcm, "_", downscaling)) %>% 
   ungroup() %>% 
-  select(projection, project, activity, domain, institute, model, 
-         experiment, ensemble, rcm, downscaling) %>% 
+  unique() %>% 
+  mutate(project = toupper(project)) %>% 
+  select(project, domain, institute, model, experiment, ensemble, rcm, downscaling) %>% 
   write_tsv("config/projections_all.tsv")
 ```
 
 # Results
 
-geom_density() +
-
-facet_wrap(\~ area + variable, scales = "free") +
-
-theme_bw() +
-
-theme(legend.position = "bottom") +
-
-scale_color_discrete("")
-
 ```{r}
+#| eval: false
 library(terra)
 library(tidyverse)
 list(Vanuatu = "results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc",
@@ -329,6 +316,7 @@ list(Vanuatu = "results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-Ha
 ```
 
 ```{r}
+#| eval: false
 library(terra)
 library(tidyverse)
 rast("results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc") %>% 

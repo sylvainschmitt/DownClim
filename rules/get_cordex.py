@@ -9,11 +9,11 @@ rule get_cordex:
     input:
         list_cordex_in
     output:
-        directory("results/projection/raw/CORDEX_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}/")
+        directory("results/projection/raw/CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}/")
     log:
-        "results/logs/get_CORDEX_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}.log"
+        "results/logs/get_CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}.log"
     benchmark:
-        "results/benchmarks/get_cordex_CORDEX_{activity}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}.benchmark.txt"
+        "results/benchmarks/get_cordex_CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}.benchmark.txt"
     threads: 10
     resources:
         mem_mb=1000
@@ -21,7 +21,6 @@ rule get_cordex:
         "../envs/xarray.yml"
     params:
         area=list_areas,
-        activity="{activity}",
         domain="{domain}",
         institute="{institute}",
         model="{model}",
