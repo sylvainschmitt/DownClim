@@ -4,7 +4,6 @@ sys.stderr = sys.stdout = log_file
 
 # variables
 base_files = snakemake.input
-domain = snakemake.params.domain
 areas = snakemake.params.area
 institute = snakemake.params.institute
 model = snakemake.params.model
@@ -12,7 +11,6 @@ experiment = snakemake.params.experiment
 ensemble = snakemake.params.ensemble
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
-esgf_credential = snakemake.params.esgf_credential
 folder = snakemake.output[0]
 cores = snakemake.threads
 
@@ -20,15 +18,12 @@ cores = snakemake.threads
 # base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
 # folder = "results/projection/raw/CMIP6_world_NCC_NorESM2-MM_ssp126_r1i1p1f1_none_none_chelsa2"
 # areas = ["New-Caledonia", "Vanuatu"]
-# institute = "NCC"
-# model = "NorESM2-MM"
+# institute = "MRI"
+# model = "MRI-ESM2-0"
 # experiment = "ssp126"
 # ensemble = "r1i1p1f1"
-# rcm = "RegCM4-7"
-# downscaling = "v0"
-# variables = ["pr", "tas"]
+# variables =  ["tas", "tasmin", "tasmax", "pr"]
 # time_frequency = "mon"
-# esgf_credential = "config/credentials_esgf.yml"
 # cores = 10
 
 # libs
@@ -71,12 +66,7 @@ cf = type(ds["time"].values[0]) is not np.datetime64
 if cf: # only cftime if not dt but should include more cases
   ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] 
 if 'pr' in list(ds.keys()):
-  if(cf):
-    ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1 with 30 days per month in cftime
-  else:
-    ds['pr'] = ds['pr']*60*60*24*30
-    # ds['pr'] = list(map(lambda p,y,m: p*60*60*24*calendar.monthrange(y, m)[1], 
-    #                 ds['tas'].values, ds["time"].dt.year.values, ds["time"].dt.month.values)) # force the reading of the data !
+  ds['pr'] = ds.pr * 60*60*24*ds.time.dt.days_in_month  # s-1 to month-1
   ds.pr.attrs["units"] = 'mm month-1'
   
 os.mkdir(folder)

@@ -82,12 +82,7 @@ cf = type(ds["time"].values[0]) is not numpy.datetime64
 if cf: # only cftime if not dt but should include more cases
   ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] 
 if 'pr' in list(ds.keys()):
-  if(cf):
-    ds['pr'] = ds['pr']*60*60*24*30 # s-1 to month-1 with 30 days per month in cftime
-  else:
-    ds['pr'] = ds['pr']*60*60*24*30
-    # ds['pr'] = list(map(lambda p,y,m: p*60*60*24*calendar.monthrange(y, m)[1], 
-    #                 ds['tas'].values, ds["time"].dt.year.values, ds["time"].dt.month.values)) # force the reading of the data !
+  ds['pr'] = ds.pr * 60*60*24*ds.time.dt.days_in_month  # s-1 to month-1 with 30 days per month
   ds.pr.attrs["units"] = 'mm month-1'
 
 # regrid and write per country

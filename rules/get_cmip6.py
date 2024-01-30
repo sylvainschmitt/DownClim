@@ -19,7 +19,6 @@ rule get_cmip6:
         experiment="{experiment}",
         ensemble="{ensemble}",
         variables=config["variables"],
-        time_frequency=config["time_frequency"],
-        esgf_credential=config["esgf_credential"]
+        time_frequency=config["time_frequency"]
     script:
       "../scripts/get_cmip6.py"
