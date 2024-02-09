@@ -16,17 +16,17 @@ folder = snakemake.output[0]
 cores = snakemake.threads
 
 # test
-# base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# folder = "results/projection/raw/CMIP5_world_NCC_NorESM1-M_rcp26_r1i1p1_none_none_chelsa2"
-# areas = ["New-Caledonia", "Vanuatu"]
-# institute = "NCC"
-# model = "NorESM1-M"
-# experiment = "rcp26"
-# ensemble = "r1i1p1"
-# variables = ["tas", "pr"]
-# time_frequency = "mon"
-# esgf_credential = "config/credentials_esgf.yml"
-# cores = 10
+base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
+folder = "results/projection/raw/CMIP5_world_NCC_NorESM1-M_rcp26_r1i1p1_none_none_chelsa2"
+areas = ["New-Caledonia", "Vanuatu"]
+institute = "MOHC"
+model = "HadGEM2-ES"
+experiment = "rcp26"
+ensemble = "r1i1p1"
+variables = ["tas", "pr"]
+time_frequency = "mon"
+esgf_credential = "config/credentials_esgf.yml"
+cores = 10
 
 # libs
 import os
@@ -53,8 +53,9 @@ ctx = conn.new_context(
     ensemble = ensemble,
     variable=variables,
     time_frequency=time_frequency,
-    realm='atmos',
-    data_node="esgf.ceda.ac.uk")
+    realm='atmos'
+    data_node="esgf.ceda.ac.uk"
+    )
 # ctx.hit_count
 # list(map(lambda res: res.dataset_id, ctx.search()))
 all_results = list(map(lambda res: res.file_context().search(), ctx.search()))

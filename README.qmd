@@ -285,6 +285,19 @@ read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>%
 
 ```{r}
 #| eval: false
+
+# exemple for hist
+read_csv("test.csv", col_names = c("tas", "count"), skip = 1) %>% 
+  ggplot(aes(tas, count)) +
+  geom_col() +
+  theme_bw()
+# all table could be aggregated by a single rule
+
+# similarly for metrics if evaluation could be done with pandas and then table collected in R for ease of computation
+```
+
+```{r}
+#| eval: false
 library(terra)
 library(tidyverse)
 list(Vanuatu = "results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc",

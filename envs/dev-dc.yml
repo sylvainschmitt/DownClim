@@ -26,3 +26,4 @@ dependencies:
   - salem
   - gcsfs
   - zarr
+  - xhistogram

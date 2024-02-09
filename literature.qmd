@@ -93,6 +93,8 @@
 
 ## Climate data
 
+<https://climatedataguide.ucar.edu/type/satellite-data-products>
+
 ### Reanalysis
 
 -   ERA5-Land: reanalysis dataset from European Centre for Medium-Range Weather Forecasts (ECMWF) [@muñoz-sabater2021]

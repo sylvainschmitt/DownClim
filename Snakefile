@@ -20,16 +20,16 @@ rule all:
              aggregation=config["aggregation"],
              period_base=config["hist_years"],
              period_proj=config["proj_years"],
-             ds_method=config["ds_method"])
-      # evaluation
-      # expand("results/evaluation/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}_{base_eval}.nc",
-      #        proj=proj_dom.id,
-      #        baseline=config["baseline"],
-      #        aggregation=config["aggregation"],
-      #        period_base=config["hist_years"],
-      #        period_eval=config["eval_years"],
-      #        base_eval=config["base_eval"],
-      #        ds_method=config["ds_method"])
+             ds_method=config["ds_method"]),
+      # evaluation histograms (to concat)
+      expand("results/evaluation/hist/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
+              proj=proj_dom.id,
+              baseline=config["baseline"],
+              aggregation=config["aggregation"],
+              period_base=config["hist_years"],
+              period_eval=config["eval_years"],
+              base_eval=config["base_eval"],
+              ds_method=config["ds_method"])
 
 ## area ##
 include: "rules/get_area.py"
@@ -51,7 +51,7 @@ include: "rules/downscale_bc.py"
 # include: "rules/downscale_qt.py"
 
 ## evaluation ##
-include: "rules/evaluate.py"
+include: "rules/eval_hist.py"
 
 ## ensemble ##
 # include: "rules/ensemble_sma.py"

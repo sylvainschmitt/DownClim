@@ -12,7 +12,7 @@ ensemble = snakemake.params.ensemble
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
 folder = snakemake.output[0]
-cores = snakemake.threads
+threads = snakemake.threads
 
 # test
 # base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
@@ -22,9 +22,9 @@ cores = snakemake.threads
 # model = "MRI-ESM2-0"
 # experiment = "ssp126"
 # ensemble = "r1i1p1f1"
-# variables =  ["tas", "tasmin", "tasmax", "pr"]
+# variables =  ["tas"]
 # time_frequency = "mon"
-# cores = 10
+# threads = 10
 
 # libs
 import os
@@ -62,13 +62,14 @@ for exp in ["historical", experiment]:
     a.append(xr.open_zarr(mapper, consolidated=True))
 ds = xr.merge(a)
 ds['time'] = np.sort(ds['time'].values)
+ds = ds.chunk(chunks = {'time':100, 'lat': 400, 'lon': 400})
 cf = type(ds["time"].values[0]) is not np.datetime64
 if cf: # only cftime if not dt but should include more cases
   ds['time'] = [*map(convert_cf_to_dt, ds.time.values)] 
 if 'pr' in list(ds.keys()):
   ds['pr'] = ds.pr * 60*60*24*ds.time.dt.days_in_month  # s-1 to month-1
   ds.pr.attrs["units"] = 'mm month-1'
-  
+
 os.mkdir(folder)
 for i in list(range(len(areas))):
   base = xr.open_dataset(base_files[i])
@@ -76,4 +77,4 @@ for i in list(range(len(areas))):
   ds_r = regridder(ds, keep_attrs=True)
   path = folder + "/" + areas[i] + '.nc'
   delayed = ds_r.to_netcdf(path, compute=False)
-  results = delayed.compute(scheduler='threads') # we may need to limit dask to a defined number of cores
+  results = delayed.compute(scheduler='threads') # we may need to limit dask to a defined number of cores, see in this case "from distributed import Client"

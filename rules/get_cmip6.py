@@ -9,7 +9,7 @@ rule get_cmip6:
         "results/benchmarks/get_cmip6_world_{institute}_{model}_{experiment}_{ensemble}_none_none_{base}.benchmark.txt"
     threads: 10
     resources:
-        mem_mb=1000
+        mem_mb=20000
     conda:
         "../envs/xarray.yml"
     params:

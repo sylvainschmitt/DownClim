@@ -17,3 +17,4 @@ dependencies:
   - myproxyclient
   - gcsfs
   - zarr
+  - xhistogram
