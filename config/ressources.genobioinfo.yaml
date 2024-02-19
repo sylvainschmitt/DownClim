@@ -4,32 +4,44 @@ __default__:
   cpus: 1
   time: "48:00:00"
   
+aggregate_base:
+  jobname: "aggregate_base"
+  mem: "10G"
+  cpus: 1
+  time: "01:00:00"
+
+aggregate_proj:
+  jobname: "aggregate_proj"
+  mem: "10G"
+  cpus: 1
+  time: "01:00:00"
+  
+downscale_bc:
+  jobname: "downscale_bc"
+  mem: "10G"
+  cpus: 1
+  time: "01:00:00"
+
 get_area:
   jobname: "get_area"
   mem: "10G"
   cpus: 1
   time: "01:00:00"
 
-get_proj:
-  jobname: "get_proj"
-  mem: "20G"
-  cpus: 1
-  time: "01:00:00"
-
 get_chelsa2:
   jobname: "get_chelsa2"
   mem: "20G"
-  cpus: 1
+  cpus: 10
   time: "01:00:00"
-  
-downscale_bc:
-  jobname: "downscale_bc"
+
+get_cmip6:
+  jobname: "get_cmip6"
   mem: "20G"
-  cpus: 1
+  cpus: 10
   time: "01:00:00"
-  
-evaluate_bc:
-  jobname: "evaluate_bc"
+
+get_cordex:
+  jobname: "get_cordex"
   mem: "20G"
-  cpus: 1
+  cpus: 10
   time: "01:00:00"
