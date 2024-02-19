@@ -258,92 +258,21 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
   xlab("Minutes") + ylab("")
 ```
 
-# Test
-
-```{r}
-library(tidyverse)
-read_tsv("test.tsv", col_names = c("index", "dataset"), skip = 1) %>% 
-  select(-index) %>% 
-  separate(dataset, c("project", "product", "domain", "institute",
-                      "model", "experiment", "ensemble", "rcm",
-                      "downscaling", "time_frequency", "variable", "version_data_node"),
-                      remove = F, sep = "\\.") %>% 
-  separate(version_data_node, c("version", "data_node"), "\\|") %>% 
-  select(-data_node, -dataset, -product, -version) %>% 
-  group_by(project, domain, institute, model, experiment, ensemble, rcm,
-           downscaling, time_frequency) %>% 
-  filter(sort(unique(variable)) == c("pr", "tas", "tasmax", "tasmin")) %>% 
-  select(-variable) %>% 
-  ungroup() %>% 
-  unique() %>% 
-  mutate(project = toupper(project)) %>% 
-  select(project, domain, institute, model, experiment, ensemble, rcm, downscaling) %>% 
-  write_tsv("config/projections_all.tsv")
-```
-
 # Results
 
 ```{r}
 #| eval: false
 
 # exemple for hist
-read_csv("test.csv", col_names = c("tas", "count"), skip = 1) %>% 
-  ggplot(aes(tas, count)) +
-  geom_col() +
-  theme_bw()
+
 # all table could be aggregated by a single rule
 
 # similarly for metrics if evaluation could be done with pandas and then table collected in R for ease of computation
-```
-
-```{r}
-#| eval: false
-library(terra)
-library(tidyverse)
-list(Vanuatu = "results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc",
-           "Nouvelle-Caledonie" = "results/evaluation/New-Caledonia_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc") %>% 
-  lapply(rast) %>% 
-  lapply(as.data.frame, xy = TRUE) %>% 
-  bind_rows(.id = "area") %>% 
-  as.data.frame(xy = TRUE) %>% 
-  gather(variable, value, -x, -y, -area) %>% 
-  separate(variable, paste0("VAR", 1:9), "_") %>% 
-  rename(variable = VAR1, month = VAR3, type = VAR9) %>% 
-  select(-starts_with("VAR")) %>% 
-  mutate(month = as.numeric(gsub("month=", "", month))) %>%
-  mutate(type = recode(type, "1" = "downscaled", "2" = "projection", "3" = "raw")) %>% 
-  pivot_wider(names_from = type, values_from = value) %>% 
-  gather(type, value, -x, -y, -month, -raw, -area) %>% 
-  nest_by(area, month, type) %>% 
-  mutate(R2 = summary(lm(raw ~ value, data = data))$r.squared,
-         CC = cor(data$value, data$raw),
-         RMSEP = sqrt(mean((data$value-data$raw)^2)),
-         RRMSEP = sqrt(mean((data$value-data$raw)^2))/mean(data$raw),
-         SD =sd(data$value-data$raw),
-         RSD =sd(data$value-data$raw)/mean(data$raw)) %>% 
-  select(-data) %>% 
-  ggplot(aes(RRMSEP, 1-CC, label = month, col = paste(area, type))) +
-  geom_point() +
-  ggrepel::geom_text_repel() +
-  theme_bw()
-```
-
-```{r}
-#| eval: false
-library(terra)
-library(tidyverse)
-rast("results/evaluation/Vanuatu_CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_monthly-means_2006-2019_1980-2005_bc_chelsa2.nc") %>% 
-  as.data.frame() %>% 
-  gather(variable, value) %>% 
-  separate(variable, paste0("X", 1:9), "_") %>% 
-  rename(variable = X1, month = X3, type = X9) %>% 
-  select(-starts_with("X")) %>% 
-  # mutate(month = as.numeric(gsub("month=", "", month))) %>%
-  mutate(type = recode(type, "1" = "downscaled", "2" = "projection", "3" = "raw")) %>% 
-  ggplot(aes(value, col = as.factor(type))) +
-  geom_density() +
-  facet_wrap(~ month + variable, scales = "free") +
+vroom::vroom("results/evaluation/hist/base/New-Caledonia_chelsa2_monthly-means_2006-2019.tsv") %>% 
+  filter(count > 0) %>% 
+  ggplot(aes(bin, count, fill = as.factor((month)))) +
+  geom_col(col = NA) +
+  facet_wrap(~ variable, scales = "free") +
   theme_bw() +
-  theme(legend.position = "bottom") +
-  scale_color_discrete("")
+  scale_fill_viridis_d()
 ```
