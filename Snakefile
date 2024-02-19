@@ -22,14 +22,14 @@ rule all:
              period_proj=config["proj_years"],
              ds_method=config["ds_method"]),
       # evaluation histograms (to concat)
-      expand("results/evaluation/hist/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
-              proj=proj_dom.id,
-              baseline=config["baseline"],
-              aggregation=config["aggregation"],
-              period_base=config["hist_years"],
-              period_eval=config["eval_years"],
-              base_eval=config["base_eval"],
-              ds_method=config["ds_method"])
+      # expand("results/evaluation/hist/{proj}_{baseline}_{aggregation}_{period_eval}_{period_base}_{ds_method}.nc",
+      #         proj=proj_dom.id,
+      #         baseline=config["baseline"],
+      #         aggregation=config["aggregation"],
+      #         period_base=config["hist_years"],
+      #         period_eval=config["eval_years"],
+      #         base_eval=config["base_eval"],
+      #         ds_method=config["ds_method"])
 
 ## area ##
 include: "rules/get_area.py"
