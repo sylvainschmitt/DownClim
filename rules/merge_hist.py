@@ -25,4 +25,4 @@ rule merge_hist:
     benchmark:
       "results/benchmarks/merge_hist.benchmark.txt"
     script:
-      "../scripts/eval_hist.py"
+      "../scripts/merge_hist.py"

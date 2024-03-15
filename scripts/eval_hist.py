@@ -24,9 +24,8 @@ period_eval = snakemake.params.period_eval
 ds_method = snakemake.params.ds_method
       
 # test
-# in_file = "results/projection/downscaled/New-Caledonia_CORDEX_AUS-22_ICTP_NCC-NorESM1-M_rcp26_r1i1p1_RegCM4-7_v0_chelsa2_monthly-means_2006-2019_1980-2005_bc.nc"
+# in_file = "results/projection/means/New-Caledonia_CORDEX_AUS-22_ICTP_NCC-NorESM1-M_rcp26_r1i1p1_RegCM4-7_v0_chelsa2_monthly-means_2006-2019.nc"
 # area_file = "results/countries/New-Caledonia.shp"
-# file = "New-Caledonia_CORDEX_AUS-22_ICTP_NCC-NorESM1-M_rcp26_r1i1p1_RegCM4-7_v0_chelsa2_monthly-means_2006-2019_1980-2005_bc.nc"
 
 # libs
 import pandas as pd     
@@ -36,7 +35,10 @@ import geopandas as gp
 
 # code
 area_shp = gp.read_file(area_file)
-ds = xr.open_dataset(in_file).rio.clip(area_shp.geometry.values, area_shp.crs)
+ds = xr.open_dataset(in_file)
+if(ds["tas"].rio.crs is None): # to be fixed in CORDEX raw data, wokring for pr but not the others
+    ds = ds.rio.write_crs()
+ds = ds.rio.clip(area_shp.geometry.values, area_shp.crs)
 variables = list(ds.keys())
 months = list(range(1,13))
 a = []
@@ -45,7 +47,7 @@ for v in variables:
         if v == "pr":
             low = 0
             high = 2000
-            step = 5
+            step = 10
         else :
             low = 0
             high = 1000
@@ -81,3 +83,5 @@ tab[["area", "origin", "type", "domain", "institute", "model", "experiment", "en
 # import matplotlib.pyplot as plt
 # ds.sel(month=1).tas.plot()
 # plt.show()
+
+

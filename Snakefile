@@ -48,20 +48,16 @@ rule all:
 include: "rules/get_area.py"
 
 ## baseline ##
-include: "rules/get_chelsa2.py"
-# include: "rules/get_worldclim2.py"
-# include: "rules/get_cru4.py"
+# include: "rules/get_chelsa2.py"
 include: "rules/aggregate_base.py"
 
 ## projection ##
-include: "rules/get_cordex.py"
-include: "rules/get_cmip5.py"
-include: "rules/get_cmip6.py"
+# include: "rules/get_cordex.py"
+# include: "rules/get_cmip6.py"
 include: "rules/aggregate_proj.py"
 
 ## downscaling ##
 include: "rules/downscale_bc.py"
-# include: "rules/downscale_qt.py"
 
 ## evaluation ##
 include: "rules/hist_base.py"

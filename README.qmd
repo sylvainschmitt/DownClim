@@ -261,18 +261,16 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
 # Results
 
 ```{r}
-#| eval: false
-
 # exemple for hist
-
-# all table could be aggregated by a single rule
-
-# similarly for metrics if evaluation could be done with pandas and then table collected in R for ease of computation
-vroom::vroom("results/evaluation/hist/base/New-Caledonia_chelsa2_monthly-means_2006-2019.tsv") %>% 
-  filter(count > 0) %>% 
+# to do similarly for metrics if evaluation could be done with pandas and then table collected in R for ease of computation
+vroom::vroom("results/evaluation/histograms.tsv") %>% 
+  filter(variable == "pr", area == "Vanuatu") %>% 
   ggplot(aes(bin, count, fill = as.factor((month)))) +
   geom_col(col = NA) +
-  facet_wrap(~ variable, scales = "free") +
+  facet_wrap(origin ~ type, scales = "free_y") +
   theme_bw() +
-  scale_fill_viridis_d()
+  scale_fill_viridis_d("Month", 
+                       labels = c("J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")) +
+  xlab("Precipitation (mm/month)") +
+  theme(legend.position = "bottom")
 ```
