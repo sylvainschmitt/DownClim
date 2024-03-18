@@ -8,7 +8,6 @@ book:
   date: last-modified
   chapters:
     - index.qmd
-    - test_nc.qmd
   appendices:
     - literature.qmd
     - meetings.qmd

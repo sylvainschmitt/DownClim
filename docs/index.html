@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sylvain Schmitt">
-<meta name="dcterms.date" content="2023-12-06">
+<meta name="dcterms.date" content="2024-03-18">
 
 <title>DownClim - Downscale Climate Projections</title>
 <style>
@@ -51,7 +51,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./test_nc.html" rel="next">
+<link href="./literature.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -125,12 +125,6 @@ div.csl-indent {
  <span class="menu-text">Introduction</span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./test_nc.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Test New Caledonia</span></a>
-  </div>
-</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
@@ -172,17 +166,6 @@ div.csl-indent {
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
   <ul class="collapse">
-  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
-  <ul class="collapse">
-  <li><a href="#area" id="toc-area" class="nav-link" data-scroll-target="#area">Area</a></li>
-  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables">Variables</a></li>
-  <li><a href="#baseline" id="toc-baseline" class="nav-link" data-scroll-target="#baseline">Baseline</a></li>
-  <li><a href="#climate-projections" id="toc-climate-projections" class="nav-link" data-scroll-target="#climate-projections">Climate projections</a></li>
-  </ul></li>
-  <li><a href="#workflow" id="toc-workflow" class="nav-link" data-scroll-target="#workflow">Workflow</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#assesment" id="toc-assesment" class="nav-link" data-scroll-target="#assesment">Assesment</a></li>
-  <li><a href="#next-steps" id="toc-next-steps" class="nav-link" data-scroll-target="#next-steps">Next steps</a></li>
   <li><a href="#poeple" id="toc-poeple" class="nav-link" data-scroll-target="#poeple">Poeple</a></li>
   </ul></li>
   </ul>
@@ -210,7 +193,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">December 6, 2023</p>
+      <p class="date">March 18, 2024</p>
     </div>
   </div>
   
@@ -222,86 +205,8 @@ div.csl-indent {
 
 <section id="introduction" class="level1 unnumbered">
 <h1 class="unnumbered">Introduction</h1>
-<p>The purpose of <code>DownClim</code> is to offer a tool for regional and national climate projections including the mechanistic ‘dynamic’ downscaling of the CORDEX initiative. <code>DownClim</code> is opposed to the direct statistical downscaling of global climate projections found in WorldClim and CHELSA. <code>DownClim</code> is directly inspired of AFRICLIM <span class="citation" data-cites="platts2014">(<a href="references.html#ref-platts2014" role="doc-biblioref">Platts, Omeny, and Marchant 2014</a>)</span>. The approach is justified by an improvement in regional projections of CORDEX compared to CMIP (insert few references), although it can increase uncertainty and sometimes be less reliable (insert indian monsoon reference). The tool is an automated <code>singularity</code> workflow easily reproducible and scalable associated to <code>singularity</code> images for enhance reproducibility and portability.</p>
-<p>As a first step we will develop the pipeline for three study countries (French Guiana, Ivory Coast and New Caledonia) over three continents, with a single baseline (CHELSA) and a reduced number of global (GCM) and regional (RCM) climate models for a few scenarios (RCP or SSP). Behind the choice of countries we have different hypotheses. (1) we expect New Caledonia regional topography to be important for projections. (2) we expect Ivory Coast regional climates to be important for projections. (3) we assume French Guiana to be a control with mainly lowland and homogeneous climate. To demonstrate the aim of the tool, we want to validate and/or assess the projections for each country using (1) projections on observed year (e.g.&nbsp;2005&gt;2020, even if the differences between scenarios will not be significant), and (2) the difference with forest climatic extent with this product versus classical products.</p>
-<blockquote class="blockquote">
-<p>Note: Why using CHELSA + CORDEX and why not ERA5-Land + CORDEX + KrigR <span class="citation" data-cites="davy2021">(<a href="references.html#ref-davy2021" role="doc-biblioref">Davy and Kusch 2021</a>)</span>? CORDEX data are available on the CDS store and not only on the esgf node. Some study are comparing ERA5-Land, CHELSA, and TerraClimate <span class="citation" data-cites="hamed2021">(<a href="references.html#ref-hamed2021" role="doc-biblioref">Hamed, Nashwan, and Shahid 2021</a>)</span>.</p>
-</blockquote>
-<section id="data" class="level2">
-<h2 class="anchored" data-anchor-id="data">Data</h2>
-<section id="area" class="level3">
-<h3 class="anchored" data-anchor-id="area">Area</h3>
-<p>New Caledonia (Australasia) to start with (random choice among the three but see arguments above).</p>
-</section>
-<section id="variables" class="level3">
-<h3 class="anchored" data-anchor-id="variables">Variables</h3>
-<p>For the moment we will only use monthly temperature (temperature at surface, tas, °C), and rainfall (total precipitation, tp, m). The idea is to further compute bioclimatic variables :</p>
-<blockquote class="blockquote">
-<p>Bioclimatic variables are derived from the monthly temperature and rainfall values in order to generate more biologically meaningful variables. These are often used in species distribution modeling and related ecological modeling techniques. The bioclimatic variables represent annual trends (e.g., mean annual temperature, annual precipitation) seasonality (e.g., annual range in temperature and precipitation) and extreme or limiting environmental factors (e.g., temperature of the coldest and warmest month, and precipitation of the wet and dry quarters). A quarter is a period of three months (1/4 of the year).</p>
-</blockquote>
-</section>
-<section id="baseline" class="level3">
-<h3 class="anchored" data-anchor-id="baseline">Baseline</h3>
-<p><em>WorldClim, Chelsa, ERA5-Land, CRU, TAMSAT, CHIRPS, …</em></p>
-<p>We will use CHELSA V2.1 <span class="citation" data-cites="karger2017">(<a href="references.html#ref-karger2017" role="doc-biblioref">Karger et al. 2017</a>)</span> for the example with 1-km and monthly resolutions. Ideally the tool should be built for different baselines (next steps).</p>
-</section>
-<section id="climate-projections" class="level3">
-<h3 class="anchored" data-anchor-id="climate-projections">Climate projections</h3>
-<p>Depending on temporal resolution of the baseline and the study area (specifically the continent), we should list available data on CORDEX regarding:</p>
-<ul>
-<li>global climate models (GCM)</li>
-<li>regional climate models (RCM)</li>
-<li>temporal resolution (monthly for the example)</li>
-<li>spatial resolution (a priori the finest)</li>
-<li>scenarios (RCP or SSP, RCP 2.6 &amp; 8.5 for the example)</li>
-</ul>
-<p>Available CORDEX experiments are described here: <a href="http://htmlpreview.github.io/?http://is-enes-data.github.io/CORDEX_status.html" class="uri">http://htmlpreview.github.io/?http://is-enes-data.github.io/CORDEX_status.html</a> .</p>
-<p>For Australasia (New Caledonia), we have:</p>
-<ul>
-<li>AUS-22 as the finest domain, e.g.&nbsp;Australasia at 0.22° - 25km</li>
-<li>4 GCM: ECMWF-ERAINT, MOHC-HadGEM2-ES, MPI-M-MPI-ESM-(LR/MR), NCC-NorESM1-M</li>
-<li>3 RCM: CCLM5-0-15, REMO2015, RegCM4-7</li>
-<li>2 RCP: RCP 2.6 &amp; RCP 8.5</li>
-</ul>
-</section>
-</section>
-<section id="workflow" class="level2">
-<h2 class="anchored" data-anchor-id="workflow">Workflow</h2>
-<p>The workflow is summarised in the draft scheme below.</p>
-<div class="cell">
-<div class="cell-output-display">
-<p><img src="dag/DownClim.png" class="img-fluid" width="480"></p>
-</div>
-</div>
-<p>Monthly temperature and precipitation are retrieved for the defined area for both the baseline and the projections across the historical, evaluation and projection years. The projections are retrieved for different global (GCM) and regional (RCM) climatic models with several scenarios (RCP). Monthly climate is summarised for both the baseline and the projections across the historical years. For each evaluation and projection year, monthly climate anomalies of projections compared with historical means of the projections are computed. For each evaluation and projection year, the monthly anomalies are interpolated and added to the historical means of the baseline. For each evaluation year, the downscaled projections are compared to the baseline. Downscaled projections evaluation are summarised across evaluation years. Similarly, downscaled projections are summarised across projection years. Finally, ensemble of projections &amp; evaluation are made across global (GCM) and regional (RCM) climatic models while computing across models uncertainties.</p>
-<p>Based on:</p>
-<ul>
-<li>snakemake</li>
-<li>singularity</li>
-<li>GRASS GIS for raster operation and interpolation</li>
-<li>R ncdf4 (or more appropriate NetCDF tools)</li>
-<li>rmarkdown for automatic reporting of the pipeline?</li>
-</ul>
-</section>
-<section id="examples" class="level2">
-<h2 class="anchored" data-anchor-id="examples">Examples</h2>
-<ul>
-<li>French Guiana, Ivory Coast, New Caledonia</li>
-<li>Chelsa v2.1 - 1km - monthly</li>
-<li>All RCM x GCM x RCP available at the finest resolution - monthly</li>
-</ul>
-</section>
-<section id="assesment" class="level2">
-<h2 class="anchored" data-anchor-id="assesment">Assesment</h2>
-<ul>
-<li>predicted vs observed 2005-2023</li>
-<li>tropical moist forest potential distribution based on CHELSA future vs DownClim projections</li>
-</ul>
-</section>
-<section id="next-steps" class="level2">
-<h2 class="anchored" data-anchor-id="next-steps">Next steps</h2>
-<p><em>To develop once first steps done.</em></p>
-</section>
+<p>The purpose of <code>DownClim</code> is to offer a tool for regional and national climate projections including the mechanistic ‘dynamic’ downscaling of the CORDEX initiative. <code>DownClim</code> is opposed to the direct statistical downscaling of global climate projections found in WorldClim and CHELSA. <code>DownClim</code> is directly inspired of AFRICLIM <span class="citation" data-cites="platts2014">(<a href="references.html#ref-platts2014" role="doc-biblioref">Platts, Omeny, and Marchant 2014</a>)</span>. The approach is justified by an improvement in regional projections of CORDEX compared to CMIP (insert few references), although it can increase uncertainty and sometimes be less reliable (insert indian monsoon reference). The tool is an automated <code>snakemake</code> workflow easily reproducible and scalable associated to <code>conda</code> environments for enhance reproducibility and portability.</p>
+<p>As a first step we will develop the pipeline for three study countries (French Guiana, Ivory Coast and New Caledonia) over three continents, with a single baseline (CHELSA V2) and a reduced number of global (GCM) and regional (RCM) climate models for a few scenarios (RCP or SSP). Behind the choice of countries we have different hypotheses. (1) we expect New Caledonia regional topography to be important for projections. (2) we expect Ivory Coast regional climates to be important for projections. (3) we assume French Guiana to be a control with mainly lowland and homogeneous climate. To demonstrate the aim of the tool, we want to validate and/or assess the projections for each country using (1) projections on observed year (e.g.&nbsp;2005&gt;2020, even if the differences between scenarios will not be significant), and (2) the difference with forest climatic extent with this product versus classical products.</p>
 <section id="poeple" class="level2">
 <h2 class="anchored" data-anchor-id="poeple">Poeple</h2>
 <ul>
@@ -313,15 +218,6 @@ div.csl-indent {
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
-<div id="ref-davy2021" class="csl-entry" role="listitem">
-Davy, Richard, and Erik Kusch. 2021. <span>“Reconciling High Resolution Climate Datasets Using KrigR.”</span> <em>Environmental Research Letters</em> 16 (12): 124040. <a href="https://doi.org/10.1088/1748-9326/ac39bf">https://doi.org/10.1088/1748-9326/ac39bf</a>.
-</div>
-<div id="ref-hamed2021" class="csl-entry" role="listitem">
-Hamed, Mohammed Magdy, Mohamed Salem Nashwan, and Shamsuddin Shahid. 2021. <span>“Performance Evaluation of Reanalysis Precipitation Products in Egypt Using Fuzzy Entropy Time Series Similarity Analysis.”</span> <em>International Journal of Climatology</em> 41 (11): 5431–46. <a href="https://doi.org/10.1002/joc.7286">https://doi.org/10.1002/joc.7286</a>.
-</div>
-<div id="ref-karger2017" class="csl-entry" role="listitem">
-Karger, Dirk Nikolaus, Olaf Conrad, Jürgen Böhner, Tobias Kawohl, Holger Kreft, Rodrigo Wilber Soria-Auza, Niklaus E. Zimmermann, H. Peter Linder, and Michael Kessler. 2017. <span>“Climatologies at High Resolution for the Earth<span>’</span>s Land Surface Areas.”</span> <em>Scientific Data</em> 4 (1). <a href="https://doi.org/10.1038/sdata.2017.122">https://doi.org/10.1038/sdata.2017.122</a>.
-</div>
 <div id="ref-platts2014" class="csl-entry" role="listitem">
 Platts, Philip J., Peter A. Omeny, and Rob Marchant. 2014. <span>“AFRICLIM: High<span>-</span>Resolution Climate Projections for Ecological Applications in Africa.”</span> <em>African Journal of Ecology</em> 53 (1): 103–8. <a href="https://doi.org/10.1111/aje.12180">https://doi.org/10.1111/aje.12180</a>.
 </div>
@@ -567,8 +463,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./test_nc.html" class="pagination-link">
-        <span class="nav-page-text">Test New Caledonia</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./literature.html" class="pagination-link">
+        <span class="nav-page-text">Literature</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
