@@ -4,7 +4,8 @@ sys.stderr = sys.stdout = log_file
 
 # variables
 in_file =  snakemake.input[0]
-area_file =  snakemake.input[1]
+base_file = snakemake.input[1]
+area_file =  snakemake.input[2]
 out_file = snakemake.output[0]
 area = snakemake.params.area
 origin = snakemake.params.origin
@@ -22,38 +23,38 @@ period_proj = snakemake.params.period_proj
 period_proj = snakemake.params.period_proj
 period_eval = snakemake.params.period_eval
 ds_method = snakemake.params.ds_method
+base_eval = snakemake.params.base_eval
       
 # test
-# in_file = "results/projection/means/New-Caledonia_CORDEX_AUS-22_ICTP_NCC-NorESM1-M_rcp26_r1i1p1_RegCM4-7_v0_chelsa2_monthly-means_2006-2019.nc"
+# in_file = "results/projection/means/New-Caledonia_CMIP6_world_MRI_MRI-ESM2-0_ssp126_r1i1p1f1_none_none_chelsa2_monthly-means_2006-2019.nc"
+# base_file = "results/chelsa2/means/New-Caledonia_chelsa2_monthly-means_2006-2019.nc"
 # area_file = "results/countries/New-Caledonia.shp"
 
 # libs
 import pandas as pd     
 import numpy as np   
+import numpy.ma as ma
 import xarray as xr
 import geopandas as gp
 
 # code
 area_shp = gp.read_file(area_file)
 ds = xr.open_dataset(in_file).rio.write_crs("epsg:4326", inplace=True).rio.clip(area_shp.geometry.values, area_shp.crs) # crs should be checked earlier, concern only CORDEX raw
+base = xr.open_dataset(base_file).rio.clip(area_shp.geometry.values, area_shp.crs)
 variables = list(ds.keys())
 months = list(range(1,13))
 a = []
 for v in variables:
     for m in months:
-        if v == "pr":
-            low = 0
-            high = 2000
-            step = 10
-        else :
-            low = 0
-            high = 1000
-            step = 1
-        bins= np.arange(low, high, step)
-        labels= np.arange(low+step/2, high-step/2, step)
-        out = pd.cut(ds.sel(month=m)[v].values.ravel(), bins=bins, labels=labels)
-        res = out.value_counts().to_frame()
-        res['bin'] = res.index
+        pred = ds.sel(month=m)[v].values.ravel()
+        pred = pred[~np.isnan(pred)]
+        obs = base.sel(month=m)[v].values.ravel()
+        obs = obs[~np.isnan(obs)]
+        d = {
+            'metric': ['CC', 'RMSE', "SDE", "bias"],
+            'value': [np.corrcoef(pred, obs)[1,0], np.sqrt(np.mean(pow(pred - obs, 2))), np.std(pred - obs), np.mean(pred - obs)]
+            }
+        res = pd.DataFrame(data = d)
         res.insert(0, "month", m)
         res.insert(0, "variable", v)
         a.append(res)
@@ -73,5 +74,7 @@ tab.insert(0, "aggregation", aggregation)
 tab.insert(0, "period_proj", period_proj)
 tab.insert(0, "period_eval", period_eval)
 tab.insert(0, "ds_method", ds_method)
+tab.insert(0, "base_eval", base_eval)
 tab[["area", "origin", "type", "domain", "institute", "model", "experiment", "ensemble", "rcm", "downscaling", "base", 
-     "aggregation", "period_proj", "period_eval", "ds_method", "month", "variable", "bin", "count"]].to_csv(out_file, sep="\t", index=False)
+     "aggregation", "period_proj", "period_eval", "ds_method", "base_eval",
+     "month", "variable", "metric", "value"]].to_csv(out_file, sep="\t", index=False)

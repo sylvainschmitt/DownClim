@@ -1,6 +1,5 @@
 # Area
 area: ["New-Caledonia", "Vanuatu"]
-proj_crs: "default"
 
 # Time
 time_frequency: "mon"
