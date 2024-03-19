@@ -133,7 +133,7 @@ Python script to aggregate CHELSA V2.1 to the defined time period.
 ### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cordex.py)
 
 -   Data: [CORDEX projections](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/)
--   Script: [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex.py)
+-   Script: [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex2.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Python script to download, crop, reproject, and adjust CORDEX projections.
@@ -145,7 +145,6 @@ Python script to download, crop, reproject, and adjust CORDEX projections.
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Python script to download, crop, reproject, and adjust CMIP6 projections.
-
 
 ### [aggregate_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/aggregate_proj.py)
 
@@ -161,9 +160,7 @@ Python script to aggregate CORDEX and CMIP6 projections to the defined time peri
 -   Script: [`downscale_bc.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/downscale_bc.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to compute downscaled projection with bias correction (delta or change-factor method). 
-Anomalies between historical and projected periods are computed for the projections.
-Anomalies are interpolated and added to the historical period of the baseline.
+Python script to compute downscaled projection with bias correction (delta or change-factor method). Anomalies between historical and projected periods are computed for the projections. Anomalies are interpolated and added to the historical period of the baseline.
 
 ## Evaluation
 
@@ -172,26 +169,18 @@ Anomalies are interpolated and added to the historical period of the baseline.
 -   Script: [`eval_hist.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_hist.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Extract histograms of values for land of the baseline. 
-Similarly, [hist_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_raw.py)
-and [hist_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_ds.py)
-extract histograms for the projection before and after downscaling.
+Extract histograms of values for land of the baseline. Similarly, [hist_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_raw.py) and [hist_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_ds.py) extract histograms for the projection before and after downscaling.
 
 ### [merge_hist](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_hist.py)
-
-
 
 ### [eval_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_ds.py)
 
 -   Script: [`eval_metrics.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_metrics.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Compute evaluation metrics (CC, RMSEP, SDE, Bias) for the projection after downscaling.
-Similarly, [eval_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_raw.py) compute the metrics before downscaling.
+Compute evaluation metrics (CC, RMSEP, SDE, Bias) for the projection after downscaling. Similarly, [eval_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_raw.py) compute the metrics before downscaling.
 
 ### [merge_eval](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_eval.py)
-
-
 
 # Data
 
@@ -249,7 +238,7 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
 
 # Results
 
-```{r hists}
+```{r hists, eval=FALSE}
 #| fig-width: 10
 #| fig-height: 10
 vroom::vroom("results/evaluation/histograms.tsv") %>% 
@@ -265,7 +254,7 @@ vroom::vroom("results/evaluation/histograms.tsv") %>%
   scale_color_discrete("") + scale_fill_discrete("")
 ```
 
-```{r eval}
+```{r eval, eval=FALSE}
 #| fig-width: 10
 #| fig-height: 10
 vroom::vroom("results/evaluation/evaluations.tsv") %>% 

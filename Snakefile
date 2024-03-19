@@ -31,12 +31,12 @@ rule all:
 include: "rules/get_area.py"
 
 ## baseline ##
-# include: "rules/get_chelsa2.py"
+include: "rules/get_chelsa2.py"
 include: "rules/aggregate_base.py"
 
 ## projection ##
-# include: "rules/get_cordex.py"
-# include: "rules/get_cmip6.py"
+include: "rules/get_cordex.py"
+include: "rules/get_cmip6.py"
 include: "rules/aggregate_proj.py"
 
 ## downscaling ##

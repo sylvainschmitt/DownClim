@@ -57,25 +57,25 @@ def get_year(year, areas, var, time_freq, month_max, temp_fold):
                         ds_year.pr.attrs = {'standard_name': 'precipitation', 
                                            'long_name': 'Monthly precipitation',
                                            'units': 'mm month-1', 
-                                           'explanation' : 'Precipitation" in the earth\'s atmosphere means precipitation of water in all phases.'}
+                                           'explanation' : 'Precipitation in the earth\'s atmosphere, monthly means precipitation of water in all phases.'}
                 elif var == "tas":
-                        ds_year[var] = ds_year[var] * 0.1
+                        ds_year[var] = ds_year[var] * 0.1 - 273.15
                         ds_year.tas.attrs = {'standard_name': 'temperature at surface', 
                                             'long_name': 'Monthly mean daily air temperature',
-                                            'units': 'K', 
-                                            'explanation' : 'Daily mean air temperatures at 2 meters.'}
+                                            'units': '°C', 
+                                            'explanation' : 'Monthly mean air temperatures at 2 meters.'}
                 elif var == "tasmin":
-                        ds_year[var] = ds_year[var] * 0.1
+                        ds_year[var] = ds_year[var] * 0.1 - 273.15
                         ds_year.tasmin.attrs = {'standard_name': 'minimum temperature at surface', 
                                                'long_name': 'Monthly minimum daily air temperature',
-                                               'units': 'K', 
-                                               'explanation' : 'Daily minimum air temperatures at 2 meters.'}
+                                               'units': '°C', 
+                                               'explanation' : 'Monthly minimum air temperatures at 2 meters.'}
                 elif var == "tasmax":
-                        ds_year[var] = ds_year[var] * 0.1
+                        ds_year[var] = ds_year[var] * 0.1 - 273.15
                         ds_year.tasmax.attrs = {'standard_name': 'maximum temperature at surface', 
                                                'long_name': 'Monthly maximum daily air temperature',
-                                               'units': 'K', 
-                                               'explanation' : 'Daily maximum air temperatures at 2 meters.'}
+                                               'units': '°C', 
+                                               'explanation' : 'Monthly maximum air temperatures at 2 meters.'}
                 else:   
                         "Problem, variable "+ var + " not recognized, you should use one of the following: tas, tasmin, tasmax, pr."
                 paths[area_name] = temp_fold + "/" + area_name + "_" + var + "_" + str(year) + ".nc"

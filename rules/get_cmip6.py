@@ -19,6 +19,7 @@ rule get_cmip6:
         experiment="{experiment}",
         ensemble="{ensemble}",
         variables=config["variables"],
-        time_frequency=config["time_frequency"]
+        time_frequency=config["time_frequency"],
+        exp_years=config["exp_years"]
     script:
       "../scripts/get_cmip6.py"

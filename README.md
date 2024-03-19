@@ -1,6 +1,6 @@
 # DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Mar 18, 2024
+Mar 19, 2024
 
 - [Installation](#installation)
 - [Credentials](#credentials)
@@ -178,7 +178,7 @@ Python script to aggregate CHELSA V2.1 to the defined time period.
 - Data: [CORDEX
   projections](https://esgf-node.ipsl.upmc.fr/search/cordex-ipsl/)
 - Script:
-  [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex.py)
+  [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex2.py)
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
@@ -316,7 +316,3 @@ mamab activate dev-dc
 ![](README_files/figure-commonmark/stats-1.png)
 
 # Results
-
-![](README_files/figure-commonmark/hists-1.png)
-
-![](README_files/figure-commonmark/eval-1.png)

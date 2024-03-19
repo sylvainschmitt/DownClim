@@ -27,3 +27,7 @@ dependencies:
   - gcsfs
   - zarr
   - xhistogram
+  - intake
+  - intake-esm
+  - s3fs
+  

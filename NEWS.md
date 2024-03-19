@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9032: cordex with wget
 -   DownClim 0.1.0.9031: eval_metrics merged and working, full pipeline milestone 1
 -   DownClim 0.1.0.9030: eval_tab merged and working, eval_metrics to add
 -   DownClim 0.1.0.9029: eval_tab done, eval_metrics to add

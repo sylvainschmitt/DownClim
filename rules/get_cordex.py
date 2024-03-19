@@ -32,4 +32,4 @@ rule get_cordex:
         time_frequency=config["time_frequency"],
         esgf_credential=config["esgf_credential"]
     script:
-      "../scripts/get_cordex.py"
+      "../scripts/get_cordex2.py"
