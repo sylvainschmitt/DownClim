@@ -9,7 +9,7 @@ Mar 19, 2024
 - [Workflow](#workflow)
 - [Data](#data)
 - [Development](#development)
-- [Stats](#stats)
+- [Benchmark](#benchmark)
 - [Results](#results)
 
 [`snakemake`](https://github.com/sylvainschmitt/snakemake_singularity)
@@ -138,8 +138,6 @@ ordered by steps:
 
 # Workflow
 
-## Area
-
 ### [get_area](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_area.py)
 
 - Data: [GADM](https://gadm.org/)
@@ -150,8 +148,6 @@ ordered by steps:
 
 Python script to get area limits with GADM if country or continent.
 
-## Baseline
-
 ### [get_chelsa2](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_chelsa2.py)
 
 - Data: [CHELSA V2.1](https://chelsa-climate.org/)
@@ -160,18 +156,7 @@ Python script to get area limits with GADM if country or continent.
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, adjust CHELSA V2.1.
-
-### [aggregate_base](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/aggregate_base.py)
-
-- Script:
-  [`aggregate_base.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/aggregate_base.py)
-- Environment:
-  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
-
-Python script to aggregate CHELSA V2.1 to the defined time period.
-
-## Projection
+Python script to download, crop, adjust and aggregate CHELSA V2.1.
 
 ### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cordex.py)
 
@@ -182,7 +167,7 @@ Python script to aggregate CHELSA V2.1 to the defined time period.
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, reproject, and adjust CORDEX
+Python script to download, crop, reproject, adjust, and aggregate CORDEX
 projections.
 
 ### [get_cmip6](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cmip6.py)
@@ -194,20 +179,8 @@ projections.
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, reproject, and adjust CMIP6
+Python script to download, crop, reproject, adjust, and aggregate CMIP6
 projections.
-
-### [aggregate_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/aggregate_proj.py)
-
-- Script:
-  [`aggregate_proj.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/aggregate_proje.py)
-- Environment:
-  [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
-
-Python script to aggregate CORDEX and CMIP6 projections to the defined
-time period.
-
-## Downscaling
 
 ### [downscale_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/downscale_bc.py)
 
@@ -221,36 +194,34 @@ Python script to compute downscaled projection with bias correction
 projected periods are computed for the projections. Anomalies are
 interpolated and added to the historical period of the baseline.
 
-## Evaluation
-
 ### [hist_base](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_base.py)
 
 - Script:
-  [`eval_hist.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_hist.py)
+  [`hist_base.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/hist_base.py)
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Extract histograms of values for land of the baseline. Similarly,
-[hist_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_raw.py)
-and
-[hist_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_ds.py)
+[hist_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj.py)
 extract histograms for the projection before and after downscaling.
 
 ### [merge_hist](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_hist.py)
 
-### [eval_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_ds.py)
+Merge all histograms.
+
+### [eval_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj.py)
 
 - Script:
-  [`eval_metrics.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_metrics.py)
+  [`eval_proj.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_proj.py)
 - Environment:
   [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
 Compute evaluation metrics (CC, RMSEP, SDE, Bias) for the projection
-after downscaling. Similarly,
-[eval_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_raw.py)
-compute the metrics before downscaling.
+before and after downscaling.
 
 ### [merge_eval](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_eval.py)
+
+Merge all evaluations.
 
 # Data
 
@@ -311,8 +282,12 @@ mamba env update -f envs/dev-dc.yml --prune # update
 mamab activate dev-dc
 ```
 
-# Stats
+# Benchmark
 
 ![](README_files/figure-commonmark/stats-1.png)
 
 # Results
+
+![](README_files/figure-commonmark/hists-1.png)
+
+![](README_files/figure-commonmark/eval-1.png)

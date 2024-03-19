@@ -1,8 +1,12 @@
 rule get_cmip6:
     input:
-        expand("results/chelsa2/raw/{area}_chelsa2.nc", area=config["area"])
+        expand("results/baselines/{area}_{base}_{aggregation}_{period}.nc", 
+                area=config["area"],
+                period=config["hist_years"],
+                aggregation=config["aggregation"],
+                allow_missing=True)
     output:
-        directory("results/projection/raw/CMIP6_world_{institute}_{model}_{experiment}_{ensemble}_none_none_{base}/")
+        "results/projections/_CMIP6_world_{institute}_{model}_{experiment}_{ensemble}_none_none_{base}_done.txt"
     log:
         "results/logs/get_cmip6_world_{institute}_{model}_{experiment}_{ensemble}_none_none_{base}.log"
     benchmark:
@@ -18,8 +22,10 @@ rule get_cmip6:
         model="{model}",
         experiment="{experiment}",
         ensemble="{ensemble}",
+        base="{base}",
         variables=config["variables"],
         time_frequency=config["time_frequency"],
-        exp_years=config["exp_years"]
+        periods=all_periods,
+        aggregation=config["aggregation"]
     script:
       "../scripts/get_cmip6.py"

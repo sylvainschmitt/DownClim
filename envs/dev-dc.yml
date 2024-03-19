@@ -24,7 +24,7 @@ dependencies:
   - dask
   - r-tidyverse 
   - salem
-  - gcsfs
+  - gcsfs=2022.7.1
   - zarr
   - xhistogram
   - intake

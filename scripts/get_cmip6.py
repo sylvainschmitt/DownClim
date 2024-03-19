@@ -9,24 +9,29 @@ institute = snakemake.params.institute
 model = snakemake.params.model
 experiment = snakemake.params.experiment
 ensemble = snakemake.params.ensemble
+baseline = snakemake.params.base
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
-folder = snakemake.output[0]
+check_file = snakemake.output[0]
 threads = snakemake.threads
-exp_years = snakemake.params.exp_years
+periods = snakemake.params.periods
+aggregation = snakemake.params.aggregation
 
 # test
-# base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# folder = "results/projection/raw/CMIP6_world_NCC_NorESM2-MM_ssp126_r1i1p1f1_none_none_chelsa2"
+# base_files = ["results/baselines/New-Caledonia_chelsa2_monthly-means_1980-2005.nc", 
+#               "results/baselines/Vanuatu_chelsa2_monthly-means_1980-2005.nc"]
+# check_file = ["results/projections/New-Caledonia_CMIP6_world_MRI_MRI-ESM2-0_ssp126_r1i1p1f1_none_none_chelsa2_monthly-means_1980-2005.nc"]
 # areas = ["New-Caledonia", "Vanuatu"]
 # institute = "MRI"
 # model = "MRI-ESM2-0"
 # experiment = "ssp126"
 # ensemble = "r1i1p1f1"
+# baseline = "chelsa2"
 # variables =  ["pr", "tas", "tasmin", "tasmax"]
 # time_frequency = "mon"
 # threads = 10
-# exp_years = "1980-2100"
+# periods= ["1980-2005", "2006-2019", "2071-2100"]
+# aggregation="monthly-means"
 
 # libs
 import os
@@ -64,8 +69,8 @@ for exp in ["historical", experiment]:
     a.append(xr.open_zarr(mapper, consolidated=True))
 ds = xr.merge(a)
 ds['time'] = np.sort(ds['time'].values)
-dmin = exp_years.split("-")[0] + "-01-01"
-dmax = exp_years.split("-")[1] + "-01-01"
+dmin = min(map(lambda x: x.split("-")[0], periods)) + "-01-01"
+dmax = max(map(lambda x: x.split("-")[1], periods)) + "-01-01"
 ds = ds.sel(time=slice(dmin, dmax))
 ds = ds.chunk(chunks = {'time':100, 'lat': 400, 'lon': 400})
 cf = type(ds["time"].values[0]) is not np.datetime64
@@ -96,12 +101,17 @@ if 'tasmax' in list(ds.keys()):
                      'units': '°C', 
                      'explanation' : 'Monthly maximum air temperatures at 2 meters.'}
 
-os.mkdir(folder)
-for i in list(range(len(areas))):
-  base = xr.open_dataset(base_files[i])
-  regridder = xe.Regridder(ds, base, "bilinear")
-  ds_r = regridder(ds, keep_attrs=True)
-  path = folder + "/" + areas[i] + '.nc'
-  delayed = ds_r.to_netcdf(path, compute=False)
-  results = delayed.compute(scheduler='threads') 
-  # we may need to limit dask to a defined number of cores, see in this case "from distributed import Client"
+for period in periods:
+  dmin = period.split("-")[0] + "-01-01"
+  dmax = period.split("-")[1] + "-01-01"
+  ds_a = ds.sel(time=slice(dmin, dmax)).groupby("time.month").mean("time")
+  for i in list(range(len(areas))):
+    base = xr.open_dataset(base_files[i])
+    regridder = xe.Regridder(ds_a, base, "bilinear")
+    ds_r = regridder(ds_a, keep_attrs=True)
+    path = os.path.dirname(check_file) + "/" + areas[i] + "_CMIP6_world_" + institute + "_" + model + "_" + experiment + "_" + ensemble + "_none_none_" + baseline + "_" + aggregation + "_" + period + ".nc"
+    ds_r.to_netcdf(path)
+
+f = open(check_file, "a")
+f.write("Done.")
+f.close()

@@ -1,7 +1,7 @@
 rule hist_base:
     input:
-        "results/{base}/means/{area}_{base}_{aggregation}_{period_eval}.nc",
-        "results/countries/{area}.shp"
+        "results/baselines/{area}_{base}_{aggregation}_{period_eval}.nc",
+        "results/areas/{area}.shp"
     output:
         "results/evaluation/hist/base/{area}_{base}_{aggregation}_{period_eval}.tsv"
     log:
@@ -12,7 +12,6 @@ rule hist_base:
     params:
       area="{area}",
       origin="{base}",
-      type="raw",
       domain="none",
       institute="none",
       model="none",
@@ -26,4 +25,4 @@ rule hist_base:
       period_eval="{period_eval}",
       ds_method="none"
     script:
-      "../scripts/eval_hist.py"
+      "../scripts/hist_base.py"

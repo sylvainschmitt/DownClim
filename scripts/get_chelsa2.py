@@ -11,17 +11,24 @@ base_years = snakemake.params.base_years
 temp_fold = snakemake.params.tmp
 nc_files = snakemake.output
 cores = snakemake.threads
+periods = snakemake.params.periods
+aggregation = snakemake.params.aggregation
 
 # test
-# area_files = ["results/countries/New-Caledonia.shp", "results/countries/Vanuatu.shp"]
+# area_files = ["results/areas/New-Caledonia.shp", "results/areas/Vanuatu.shp"]
 # areas=["New-Caledonia", "Vanuatu"]
 # variables = ["tas", "tasmin", "tasmax", "pr"]
 # time_frequency = "mon"
-# temp_fold = "results/chelsa2/raw/tmp"
-# base_years = "1980-1981"
-# nc_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
+# temp_fold = "results/baselines/chelsa2_tmp"
+# base_years = "2004-2007"
+# nc_files = ["results/baselines/New-Caledonia_chelsa2_monthly-means_1980-2005.nc", 
+#             "results/baselines/New-Caledonia_chelsa2_monthly-means_2006-2019.nc", 
+#             "results/baselines/Vanuatu_chelsa2_monthly-means_1980-2005.nc", 
+#             "results/baselines/Vanuatu_chelsa2_monthly-means_2006-2019.nc"]
 # cores=3
-
+# periods= ["1980-2005", "2006-2019"]
+# aggregation="monthly-means"
+        
 # libs
 import os
 import shutil
@@ -113,10 +120,15 @@ for path in paths:
                 for area_name in areas_names:
                         paths2[area_name].append(p[area_name])
 del paths
-                
+      
 for i, area_name in enumerate(areas_names):
         print("Merging files for area " + area_name + "...")
         ds=xr.open_mfdataset(paths2[area_name], decode_coords="all", parallel=True)
-        ds.to_netcdf(nc_files[i])
+        for j, period in enumerate(periods):
+                dmin = period.split("-")[0] + "-01-01"
+                dmax = period.split("-")[1] + "-01-01"
+                ds_a = ds.sel(time=slice(dmin, dmax)).groupby("time.month").mean("time")
+                path = os.path.dirname(nc_files[0]) + "/" + area_name + "_chelsa2_" + aggregation + "_" + period + ".nc"
+                ds_a.to_netcdf(path)
         
 shutil.rmtree(temp_fold)

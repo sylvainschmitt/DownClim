@@ -1,8 +1,11 @@
 rule get_chelsa2:
     input:
-        expand("results/countries/{area}.shp", area=config["area"])
+        expand("results/areas/{area}.shp", area=config["area"])
     output:
-        expand("results/chelsa2/raw/{area}_chelsa2.nc", area=config["area"])
+        expand("results/baselines/{area}_chelsa2_{aggregation}_{period}.nc", 
+                area=config["area"], 
+                period=base_periods,
+                aggregation=config["aggregation"])
     log:
         "results/logs/get_chelsa2.log"
     benchmark:
@@ -17,6 +20,8 @@ rule get_chelsa2:
         variables=config["variables"],
         time_frequency=config["time_frequency"],
         base_years=config["base_years"],
-        tmp="results/chelsa2/raw/tmp/"
+        periods=base_periods,
+        aggregation=config["aggregation"],
+        tmp="results/baselines/chelsa2_tmp"
     script:
       "../scripts/get_chelsa2.py"

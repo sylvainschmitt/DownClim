@@ -2,14 +2,17 @@ def list_areas(wildcards):
     return dom[dom.domain == wildcards.domain].area
 
 def list_cordex_in(wildcards):
-    return expand("results/{base}/raw/{area}_{base}.nc", 
-                   area=dom[dom.domain == wildcards.domain].area, allow_missing=True)
-
+    return expand("results/baselines/{area}_{base}_{aggregation}_{period}.nc", 
+                   area=dom[dom.domain == wildcards.domain].area, 
+                   period=config["hist_years"],
+                   aggregation=config["aggregation"],
+                   allow_missing=True)
+                   
 rule get_cordex:
     input:
         list_cordex_in
     output:
-        directory("results/projection/raw/CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}/")
+        "results/projections/_CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_done.txt"
     log:
         "results/logs/get_CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}.log"
     benchmark:
@@ -28,8 +31,12 @@ rule get_cordex:
         ensemble="{ensemble}",
         rcm="{rcm}",
         downscaling="{downscaling}",
+        base="{base}",
         variables=config["variables"],
         time_frequency=config["time_frequency"],
-        esgf_credential=config["esgf_credential"]
+        esgf_credential=config["esgf_credential"],
+        periods=all_periods,
+        aggregation=config["aggregation"],
+        tmp="results/projections/CORDEX_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_tmp/"
     script:
       "../scripts/get_cordex2.py"

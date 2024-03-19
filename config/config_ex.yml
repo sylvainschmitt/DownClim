@@ -16,7 +16,6 @@ base_years: "2004-2007" # 2019 is available for all except pr !!!
 
 # Projection
 projections: "config/projections_ex.tsv"
-exp_years: "1980-2100"
 domains: "config/domains.tsv"
 esgf_credential: "config/credentials_esgf.yml"
 
@@ -26,7 +25,3 @@ ds_method: "bc"
 
 # Evaluation
 base_eval: "chelsa2"
-log10_eval_pts: 4
-
-# Ensemble
-ens_method: "sma"

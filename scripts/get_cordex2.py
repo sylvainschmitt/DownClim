@@ -11,17 +11,22 @@ institute = snakemake.params.institute
 model = snakemake.params.model
 experiment = snakemake.params.experiment
 ensemble = snakemake.params.ensemble
+baseline = snakemake.params.base
 rcm = snakemake.params.rcm
 downscaling = snakemake.params.downscaling
 variables = snakemake.params.variables
 time_frequency = snakemake.params.time_frequency
 esgf_credential = snakemake.params.esgf_credential
-folder = snakemake.output[0]
+check_file = snakemake.output[0]
 cores = snakemake.threads
+periods = snakemake.params.periods
+aggregation = snakemake.params.aggregation
+temp_fold = snakemake.params.tmp
 
 # test
-# base_files = ["results/chelsa2/raw/New-Caledonia_chelsa2.nc", "results/chelsa2/raw/Vanuatu_chelsa2.nc"]
-# folder = "results/projection/raw/CORDEX_none_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2"
+# base_files = ["results/baselines/New-Caledonia_chelsa2_monthly-means_1980-2005.nc", 
+#               "results/baselines/Vanuatu_chelsa2_monthly-means_1980-2005.nc"]
+# check_file = "results/projections/CORDEX_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_done.txt"
 # areas = ["New-Caledonia", "Vanuatu"]
 # domain = "AUS-22"
 # institute = "CLMcom-HZG"
@@ -30,10 +35,14 @@ cores = snakemake.threads
 # ensemble = "r1i1p1"
 # rcm = "CCLM5-0-15"
 # downscaling = "v1"
+# baseline = "chelsa2"
 # variables = ["tas"]
 # time_frequency = "mon"
 # esgf_credential = "config/credentials_esgf.yml"
 # cores = 10
+# periods= ["1980-2005", "2006-2019", "2071-2100"]
+# aggregation="monthly-means"
+# temp_fold="results/projections/CORDEX_AUS-22_CLMcom-HZG_MOHC-HadGEM2-ES_rcp26_r1i1p1_CCLM5-0-15_v1_chelsa2_tmp/"
  
 # libs
 import os
@@ -52,10 +61,10 @@ import multiprocessing as mp
 # funs
 def get_nc(scripts, i):
   script_name = "wget_" + str(i) + ".sh"
-  with open(tmp + script_name, "w") as writer:
+  with open(temp_fold + script_name, "w") as writer:
     writer.write(scripts[i])
-  os.chmod(tmp + script_name, 0o750)
-  subprocess.check_output(['/bin/bash', script_name], cwd=tmp)
+  os.chmod(temp_fold + script_name, 0o750)
+  subprocess.check_output(['/bin/bash', script_name], cwd=temp_fold)
   return(True)
 
 def convert_cf_to_dt(x):
@@ -86,15 +95,13 @@ ctx = conn.new_context(
 all_scripts = list(map(lambda res: res.file_context().get_download_script(), ctx.search()))
 
 # download
-os.mkdir(folder)
-tmp = folder + "/tmp/"
-os.mkdir(tmp)
+os.mkdir(temp_fold)
 pool = mp.Pool(cores)
 pool.starmap_async(get_nc, [(all_scripts, i) for i in list(range(len(all_scripts)))]).get()
 pool.close()
 
 # read & prepare
-files = [tmp + f for f in os.listdir(tmp) if re.match(r'.*\.(nc)', f)]
+files = [temp_fold + f for f in os.listdir(temp_fold) if re.match(r'.*\.(nc)', f)]
 ds = xr.open_mfdataset(files, parallel=True)
 cf = type(ds["time"].values[0]) is not numpy.datetime64
 if cf: # only cftime if not dt but should include more cases
@@ -125,12 +132,18 @@ if 'tasmax' in list(ds.keys()):
                      'explanation' : 'Monthly maximum air temperatures at 2 meters.'}
 
 # regrid and write per country
-for i in list(range(len(areas))):
-  base = xr.open_dataset(base_files[i])
-  regridder = xe.Regridder(ds, base, "bilinear")
-  ds_r = regridder(ds, keep_attrs=True)
-  path = folder + "/" + areas[i] + '.nc'
-  delayed = ds_r.to_netcdf(path, compute=False)
-  results = delayed.compute(scheduler='threads') 
-  # we may need to limit dask to a defined number of cores
-shutil.rmtree(tmp)
+for period in periods:
+  dmin = period.split("-")[0] + "-01-01"
+  dmax = period.split("-")[1] + "-01-01"
+  ds_a = ds.sel(time=slice(dmin, dmax)).groupby("time.month").mean("time")
+  for i in list(range(len(areas))):
+    base = xr.open_dataset(base_files[i])
+    regridder = xe.Regridder(ds_a, base, "bilinear")
+    ds_r = regridder(ds_a, keep_attrs=True)
+    path = os.path.dirname(check_file) + "/" + areas[i] + "_CORDEX_" + domain + "_" + institute + "_" + model + "_" + experiment + "_" + ensemble + "_" + rcm + "_" + downscaling + "_" + baseline + "_" + aggregation + "_" + period + ".nc"
+    ds_r.to_netcdf(path)
+
+shutil.rmtree(temp_fold)
+f = open(check_file, "a")
+f.write("Done.")
+f.close()

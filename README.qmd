@@ -101,8 +101,6 @@ Different configuration parameters to set in [`config/config.yml`](https://githu
 
 # Workflow
 
-## Area
-
 ### [get_area](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_area.py)
 
 -   Data: [GADM](https://gadm.org/)
@@ -111,24 +109,13 @@ Different configuration parameters to set in [`config/config.yml`](https://githu
 
 Python script to get area limits with GADM if country or continent.
 
-## Baseline
-
 ### [get_chelsa2](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_chelsa2.py)
 
 -   Data: [CHELSA V2.1](https://chelsa-climate.org/)
 -   Script: [`get_chelsa2.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_chelsa2.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, adjust CHELSA V2.1.
-
-### [aggregate_base](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/aggregate_base.py)
-
--   Script: [`aggregate_base.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/aggregate_base.py)
--   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
-
-Python script to aggregate CHELSA V2.1 to the defined time period.
-
-## Projection
+Python script to download, crop, adjust and aggregate CHELSA V2.1.
 
 ### [get_cordex](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cordex.py)
 
@@ -136,7 +123,7 @@ Python script to aggregate CHELSA V2.1 to the defined time period.
 -   Script: [`get_cordex.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cordex2.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, reproject, and adjust CORDEX projections.
+Python script to download, crop, reproject, adjust, and aggregate CORDEX projections.
 
 ### [get_cmip6](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/get_cmip6.py)
 
@@ -144,16 +131,7 @@ Python script to download, crop, reproject, and adjust CORDEX projections.
 -   Script: [`get_cmip6.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/get_cmip6x.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Python script to download, crop, reproject, and adjust CMIP6 projections.
-
-### [aggregate_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/aggregate_proj.py)
-
--   Script: [`aggregate_proj.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/aggregate_proje.py)
--   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
-
-Python script to aggregate CORDEX and CMIP6 projections to the defined time period.
-
-## Downscaling
+Python script to download, crop, reproject, adjust, and aggregate CMIP6 projections.
 
 ### [downscale_bc](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/downscale_bc.py)
 
@@ -162,25 +140,27 @@ Python script to aggregate CORDEX and CMIP6 projections to the defined time peri
 
 Python script to compute downscaled projection with bias correction (delta or change-factor method). Anomalies between historical and projected periods are computed for the projections. Anomalies are interpolated and added to the historical period of the baseline.
 
-## Evaluation
-
 ### [hist_base](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_base.py)
 
--   Script: [`eval_hist.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_hist.py)
+-   Script: [`hist_base.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/hist_base.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Extract histograms of values for land of the baseline. Similarly, [hist_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_raw.py) and [hist_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj_ds.py) extract histograms for the projection before and after downscaling.
+Extract histograms of values for land of the baseline. Similarly, [hist_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/hist_proj.py) extract histograms for the projection before and after downscaling.
 
 ### [merge_hist](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_hist.py)
 
-### [eval_proj_ds](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_ds.py)
+Merge all histograms.
 
--   Script: [`eval_metrics.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_metrics.py)
+### [eval_proj](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj.py)
+
+-   Script: [`eval_proj.py`](https://github.com/sylvainschmitt/DownClim/blob/dev/scripts/eval_proj.py)
 -   Environment: [`xarray.yml`](https://github.com/sylvainschmitt/DownClim/blob/dev/envs/xarray.yml)
 
-Compute evaluation metrics (CC, RMSEP, SDE, Bias) for the projection after downscaling. Similarly, [eval_proj_raw](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/eval_proj_raw.py) compute the metrics before downscaling.
+Compute evaluation metrics (CC, RMSEP, SDE, Bias) for the projection before and after downscaling.
 
 ### [merge_eval](https://github.com/sylvainschmitt/DownClim/blob/dev/rules/merge_eval.py)
+
+Merge all evaluations.
 
 # Data
 
@@ -218,7 +198,7 @@ mamba env update -f envs/dev-dc.yml --prune # update
 mamab activate dev-dc
 ```
 
-# Stats
+# Benchmark
 
 ```{r stats}
 #| fig-width: 4
@@ -238,7 +218,7 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
 
 # Results
 
-```{r hists, eval=FALSE}
+```{r hists}
 #| fig-width: 10
 #| fig-height: 10
 vroom::vroom("results/evaluation/histograms.tsv") %>% 
@@ -254,7 +234,7 @@ vroom::vroom("results/evaluation/histograms.tsv") %>%
   scale_color_discrete("") + scale_fill_discrete("")
 ```
 
-```{r eval, eval=FALSE}
+```{r eval}
 #| fig-width: 10
 #| fig-height: 10
 vroom::vroom("results/evaluation/evaluations.tsv") %>% 
@@ -265,7 +245,7 @@ vroom::vroom("results/evaluation/evaluations.tsv") %>%
                aes(fill = paste(origin, type), 
                    group = paste(origin, type))) +
   geom_point() +
-  facet_grid(area ~ variable) +
+  facet_grid(area ~ variable, scales = "free_x") +
   theme_bw() +
   theme(legend.title = element_blank())
 ```
