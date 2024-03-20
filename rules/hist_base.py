@@ -9,6 +9,8 @@ rule hist_base:
     benchmark:
         "results/benchmarks/hist_base_{area}_{base}_{aggregation}_{period_eval}.benchmark.txt"
     threads: 1
+    conda:
+        "../envs/xarray.yml"
     params:
       area="{area}",
       origin="{base}",

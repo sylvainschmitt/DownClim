@@ -9,6 +9,8 @@ rule hist_proj:
     benchmark:
         "results/benchmarks/hist_ds_{area}_{project}_{domain}_{institute}_{model}_{experiment}_{ensemble}_{rcm}_{downscaling}_{base}_{aggregation}_{period_proj}_{period_eval}_{ds_method}.benchmark.txt"
     threads: 1
+    conda:
+        "../envs/xarray.yml"
     params:
       area="{area}",
       origin="{project}",

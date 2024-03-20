@@ -19,5 +19,7 @@ rule merge_hist:
       "results/logs/merge_hist.log"
     benchmark:
       "results/benchmarks/merge_hist.benchmark.txt"
+    conda:
+      "../envs/xarray.yml"
     script:
       "../scripts/merge_hist.py"

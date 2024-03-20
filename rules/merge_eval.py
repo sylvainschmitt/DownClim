@@ -14,5 +14,7 @@ rule merge_eval:
       "results/logs/merge_eval.log"
     benchmark:
       "results/benchmarks/merge_eval.benchmark.txt"
+    conda:
+      "../envs/xarray.yml"
     script:
       "../scripts/merge_eval.py"
