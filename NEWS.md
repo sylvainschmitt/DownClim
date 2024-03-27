@@ -1,3 +1,4 @@
+-   DownClim 0.1.0.9034: few fixes to be shared with Thomas
 -   DownClim 0.1.0.9033: lighter and faster wkl with aggregation fused to data retrieval
 -   DownClim 0.1.0.9032: cordex with wget
 -   DownClim 0.1.0.9031: eval_metrics merged and working, full pipeline milestone 1

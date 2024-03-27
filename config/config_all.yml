@@ -1,5 +1,5 @@
 # Area
-proj_crs: "default"
+area: ["New-Caledonia", "Côte-d'Ivoire", "French-Guiana"]
 
 # Time
 time_frequency: "mon"
@@ -16,14 +16,12 @@ base_years: "1980-2018" # 2019 is available for all except pr !!!
 
 # Projection
 projections: "config/projections_all.tsv"
+domains: "config/domains.tsv"
 esgf_credential: "config/credentials_esgf.yml"
 
 # Downscaling
+aggregation: "monthly-means"
 ds_method: "bc"
 
 # Evaluation
 base_eval: "chelsa2"
-log10_eval_pts: 4
-
-# Ensemble
-ens_method: "sma"

@@ -1,6 +1,6 @@
 # DownClim - Downscale Climate Projections
 Sylvain Schmitt -
-Mar 19, 2024
+Mar 27, 2024
 
 - [Installation](#installation)
 - [Credentials](#credentials)
@@ -288,6 +288,4 @@ mamab activate dev-dc
 
 # Results
 
-![](README_files/figure-commonmark/hists-1.png)
-
-![](README_files/figure-commonmark/eval-1.png)
+![](README_files/figure-commonmark/eval2-1.png)

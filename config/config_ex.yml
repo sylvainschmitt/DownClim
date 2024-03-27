@@ -12,7 +12,7 @@ variables: ["tas", "tasmin", "tasmax", "pr"]
 
 # Baseline
 baseline: "chelsa2"
-base_years: "2004-2007" # 2019 is available for all except pr !!!
+base_years: "1980-2018" # 2019 is available for all except pr !!!
 
 # Projection
 projections: "config/projections_ex.tsv"

@@ -98,9 +98,9 @@ areas_names = list(map(lambda x: x.NAME_0.values[0], areas))
 
 base_years = list(map(int, base_years.split("-")))
 years = list(range(base_years[0], base_years[1]+1))
-if "pr" in variables and years[1] >= 2013:
+if "pr" in variables and base_years[1] >= 2013:
         years.remove(2013) # issue with the tif
-if "pr" in variables and years[1] >= 2016:
+if "pr" in variables and base_years[1] >= 2016:
         years.remove(2016) # issue with the tif                
 
 if time_frequency == "mon":

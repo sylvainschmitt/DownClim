@@ -203,7 +203,7 @@ mamab activate dev-dc
 ```{r stats}
 #| fig-width: 4
 #| fig-height: 4
-lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>% 
+lapply(list.files("results/benchmarks/", full.names = T), readr::read_tsv) %>% 
   bind_rows() %>% 
   mutate(file = list.files("results/benchmarks/")) %>% 
   separate(file, c("rule1", "rule2")) %>% 
@@ -221,6 +221,7 @@ lapply(list.files("results/benchmarks/", full.names = T), vroom::vroom) %>%
 ```{r hists}
 #| fig-width: 10
 #| fig-height: 10
+#| eval: false
 vroom::vroom("results/evaluation/histograms.tsv") %>% 
   group_by(variable, area, month) %>% 
   mutate(density = count / sum(count)) %>% 
@@ -234,9 +235,10 @@ vroom::vroom("results/evaluation/histograms.tsv") %>%
   scale_color_discrete("") + scale_fill_discrete("")
 ```
 
-```{r eval}
+```{r eval, eval=False}
 #| fig-width: 10
 #| fig-height: 10
+#| eval: false
 vroom::vroom("results/evaluation/evaluations.tsv") %>% 
   pivot_wider(names_from = metric, values_from = value) %>% 
   ggplot(aes(RMSE, CC, shape =  paste(institute, model, rcm), 
@@ -245,6 +247,24 @@ vroom::vroom("results/evaluation/evaluations.tsv") %>%
                aes(fill = paste(origin, type), 
                    group = paste(origin, type))) +
   geom_point() +
+  facet_grid(area ~ variable, scales = "free_x") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+```
+
+```{r eval2}
+#| fig-width: 10
+#| fig-height: 10
+t <- list.files("results/evaluation/metrics/", full.names = T) %>% 
+  lapply(vroom::vroom) %>% 
+  bind_rows()
+t %>% 
+  pivot_wider(names_from = metric, values_from = value) %>% 
+  filter(RMSE < 10^3) %>% 
+  ggplot(aes(RMSE, CC, 
+             # shape =  paste(institute, model, rcm), 
+             col = paste(origin, type))) +
+  geom_point(alpha = 0.3) +
   facet_grid(area ~ variable, scales = "free_x") +
   theme_bw() +
   theme(legend.title = element_blank())

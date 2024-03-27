@@ -1,4 +1,4 @@
-configfile: "config/config_ex.yml"
+configfile: "config/config_all.yml"
 
 base_periods = config["hist_years"] + config["eval_years"]
 all_periods = config["hist_years"] + config["eval_years"] + config["proj_years"]
