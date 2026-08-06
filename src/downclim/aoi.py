@@ -61,6 +61,32 @@ def _get_aoi_gadm(aoi: str) -> gpd.geodataframe:
     return gdf
 
 
+def _get_aoi_name(
+    aoi: str | tuple[float, float, float, float, str] | gpd.GeoDataFrame,
+) -> str:
+    """Validate the input and compute the slugified aoi name, without any download."""
+    if isinstance(aoi, str):
+        return slugify(aoi)
+    if isinstance(aoi, tuple):
+        if len(aoi) != 5:
+            msg = """If aoi is defined as a tuple,
+            it must be on the format [xmin, ymin, xmax, ymax, name],
+            hence a tuple with 4 float defining the bounds of the aoi and a string defining the name."""
+            logger.error(msg)
+            raise ValueError(msg)
+        return slugify(aoi[-1])
+    if isinstance(aoi, gpd.GeoDataFrame):
+        try:
+            return slugify(aoi.NAME_0.to_numpy()[0])
+        except AttributeError as err:
+            msg = (
+                "The geodataframe must have a column 'NAME_0' with the name of the aoi."
+            )
+            raise AttributeError(msg) from err
+    msg = "aoi must be a string, a tuple of 4 floats + 1 string or a geopandas.geodataframe"
+    raise ValueError(msg)
+
+
 def get_aoi(
     aoi: str | tuple[float, float, float, float, str] | gpd.GeoDataFrame,
     output_path: str = "results/aois",
@@ -118,9 +144,25 @@ def get_aoi(
     # create output folder
     Path(f"{output_path}").mkdir(parents=True, exist_ok=True)
 
+    aoi_name = _get_aoi_name(aoi)
+
+    if save_aoi_file:
+        aoi_path = Path(f"{output_path}/{aoi_name}.shp")
+        if aoi_path.exists():
+            logger.info("   AOI shapefile already exists: loading %s", aoi_path)
+            gdf = gpd.read_file(aoi_path)
+            if (
+                save_points_file
+                and not Path(f"{output_path}/{aoi_name}_pts.shp").exists()
+            ):
+                logger.info("   Points file missing: regenerating")
+                save_to_file(
+                    sample_aoi(gdf, log10_eval_pts), f"{output_path}/{aoi_name}_pts.shp"
+                )
+            return gdf
+
     if isinstance(aoi, str):
         logger.info("   AOI given as a string: retrieving from GADM for %s", aoi)
-        aoi_name = slugify(aoi)
         gdf = _get_aoi_gadm(aoi)
     elif isinstance(aoi, tuple):
         logger.info(
@@ -128,30 +170,12 @@ def get_aoi(
             aoi[:-1],
             aoi[-1],
         )
-        if len(aoi) != 5:
-            msg = """If aoi is defined as a tuple,
-            it must be on the format [xmin, ymin, xmax, ymax, name],
-            hence a tuple with 4 float defining the bounds of the aoi and a string defining the name."""
-            logger.error(msg)
-            raise ValueError(msg)
-
         gdf = gpd.GeoDataFrame(
             {"geometry": MultiPolygon([box(*aoi[:-1])]), "NAME_0": [aoi[-1]]}
         )
-        aoi_name = slugify(aoi[-1])
-    elif isinstance(aoi, gpd.GeoDataFrame):
+    else:
         logger.info("   AOI given as a GeoDataFrame: using existing geometry")
         gdf = aoi
-        try:
-            aoi_name = slugify(gdf.NAME_0.to_numpy()[0])
-        except AttributeError as err:
-            msg = (
-                "The geodataframe must have a column 'NAME_0' with the name of the aoi."
-            )
-            raise AttributeError(msg) from err
-    else:
-        msg = "aoi must be a string, a tuple of 4 floats + 1 string or a geopandas.geodataframe"
-        raise ValueError(msg)
 
     # Define a crs if not already defined
     if gdf.crs is None:

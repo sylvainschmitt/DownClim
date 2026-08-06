@@ -9,6 +9,7 @@ import pandas as pd
 import pytest
 from shapely import MultiPolygon
 from shapely.geometry import box
+from slugify import slugify
 
 from downclim.aoi import extend_bounds, get_aoi, get_aoi_informations, sample_aoi
 
@@ -79,3 +80,44 @@ def test_sample_aoi():
     grid = sample_aoi(aoi, log10_eval_pts=4)
     assert isinstance(grid, gpd.GeoDataFrame)
     assert len(grid) > 0
+
+
+def test_get_aoi_reuses_existing_shapefile(tmp_path, monkeypatch):
+    def fake_gadm(aoi):
+        return gpd.GeoDataFrame(
+            {"geometry": [box(0, 0, 10, 10)], "NAME_0": [slugify(aoi)]}
+        )
+
+    monkeypatch.setattr("downclim.aoi._get_aoi_gadm", fake_gadm)
+    get_aoi("Vanuatu", output_path=str(tmp_path), save_aoi_file=True)
+    assert (tmp_path / "vanuatu.shp").exists()
+
+    def boom(_):
+        msg = "should not re-run GADM retrieval"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr("downclim.aoi._get_aoi_gadm", boom)
+    reloaded = get_aoi("Vanuatu", output_path=str(tmp_path), save_aoi_file=True)
+    assert isinstance(reloaded, gpd.GeoDataFrame)
+    assert reloaded.NAME_0.to_numpy()[0] == "vanuatu"
+
+
+def test_get_aoi_regenerates_missing_points_file(tmp_path):
+    get_aoi(
+        (0, 0, 10, 10, "box"),
+        output_path=str(tmp_path),
+        save_aoi_file=True,
+        save_points_file=True,
+    )
+    assert (tmp_path / "box.shp").exists()
+    assert (tmp_path / "box_pts.shp").exists()
+
+    (tmp_path / "box_pts.shp").unlink()
+    reloaded = get_aoi(
+        (0, 0, 10, 10, "box"),
+        output_path=str(tmp_path),
+        save_aoi_file=True,
+        save_points_file=True,
+    )
+    assert isinstance(reloaded, gpd.GeoDataFrame)
+    assert (tmp_path / "box_pts.shp").exists()
