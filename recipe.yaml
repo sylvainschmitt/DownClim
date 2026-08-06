@@ -1,0 +1,63 @@
+context:
+  version: "0.1.0"
+
+package:
+  name: downclim
+  version: ${{ version }}
+
+source:
+  url: https://pypi.io/packages/source/d/downclim/downclim-${{ version }}.tar.gz
+  sha256: # filled by conda-forge bot on feedstock
+
+build:
+  number: 0
+  noarch: python
+  script:
+    - ${{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools
+    - setuptools-scm
+  run:
+    - python >=3.10
+    # From [project.dependencies]
+    - aenum
+    - esgf-pyclient
+    - gcsfs
+    - geopandas
+    - multiprocess
+    - numpy
+    - pandas
+    - pydantic
+    - pygadm
+    - python-slugify
+    - rioxarray
+    - shapely
+    - xarray
+    - xee
+    - zarr
+    # From [tool.conda] (no wheels on PyPI)
+    - earthengine-api
+    - llvmlite
+    - numba
+    - dask
+    - netcdf4
+    - xesmf
+
+tests:
+  - python:
+      imports:
+        - downclim
+
+about:
+  homepage: https://github.com/DownClim/DownClim
+  summary: Workflow to Downscale Climate Projections
+  license: MIT
+  license_file: LICENSE
+  description: |
+    DownClim is an open source project that will help you to downscale your climate data easily !
+    It provides a bunch of tools to download and process climate data, and to downscale it over your area of interest.
+  documentation: https://downclim.readthedocs.io/en/latest/
