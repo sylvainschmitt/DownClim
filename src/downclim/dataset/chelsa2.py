@@ -4,6 +4,7 @@ import datetime
 import shutil
 from dataclasses import asdict
 from pathlib import Path
+from typing import cast
 from urllib.error import URLError
 from urllib.request import urlopen
 
@@ -54,7 +55,7 @@ def _get_chelsa2_one_file(
     chelsa_files = {}
 
     if time_freq == Frequency.MONTHLY:
-        url = f"{DataProduct.CHELSA.url}/monthly/{variable}/CHELSA_{variable}_{month:02d}_{year}_V.2.1.tif"
+        url = f"{DataProduct.CHELSA.url}/monthly/{variable}/{year}/CHELSA_{variable}_{month:02d}_{year}_V.2.1.tif"
     else:
         msg = "Only monthly time frequency is available for retrieving CHELSA data."
         raise ValueError(msg)
@@ -72,14 +73,18 @@ def _get_chelsa2_one_file(
     ##for aoi_n, aoi_b in zip(aoi_name, aoi_bound, strict=False):
     ##    chelsa_files[aoi_n] = ds.rio.clip_box(*aoi_b.to_numpy()[0]).assign_coords(time=datetime.datetime(year,month,1))
 
-    with rio.open_rasterio(url) as ds_rio:
+    ds_rio = cast(xr.DataArray, rio.open_rasterio(url))
+    try:
         for aoi_n, aoi_b in zip(aoi_name, aoi_bound, strict=False):
             chelsa_files[aoi_n] = (
                 ds_rio.to_dataset("band")
                 .rename_vars({1: variable})
                 .rio.clip_box(*aoi_b.to_numpy()[0])
                 .assign_coords(time=datetime.datetime(year, month, 1))
+                .load()
             )
+    finally:
+        ds_rio.close()
 
     return chelsa_files
 
