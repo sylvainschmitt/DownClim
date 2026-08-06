@@ -44,7 +44,7 @@ def connect_to_ee(ee_project: str | None = None) -> None:
             "Already connected to Earth Engine with project '%s'.",
             project_config["name"].split("/")[1],
         )
-    except ee.EEException:
+    except ee.EEException:  # type: ignore[attr-defined]
         logger.warning("""You are not logged in to Earth Engine.
               Authenticating to Earth Engine...""")
         try:

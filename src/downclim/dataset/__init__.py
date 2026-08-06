@@ -15,6 +15,12 @@ from .cordex import (
 )
 from .era5 import get_era5
 from .gshtd import get_gshtd
+from .simulations import (
+    PeriodKind,
+    Simulation,
+    SimulationCatalog,
+    SimulationFile,
+)
 from .tmf import compute_tmf, get_tmf
 from .utils import (
     Aggregation,
@@ -38,6 +44,10 @@ __all__ = [
     "CORDEXContext",
     "DataProduct",
     "Frequency",
+    "PeriodKind",
+    "Simulation",
+    "SimulationCatalog",
+    "SimulationFile",
     "VariableAttributes",
     "check_input_dir",
     "climatology_filename",

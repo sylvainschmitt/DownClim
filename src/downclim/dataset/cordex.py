@@ -21,6 +21,7 @@ from pyesgf.search.connection import SearchConnection
 from ..aoi import extend_bounds, get_aoi_informations
 from ..logging_config import get_logger
 from .connectors import connect_to_esgf
+from .simulations import Simulation, SimulationFile
 from .utils import (
     Aggregation,
     DataProduct,
@@ -362,18 +363,27 @@ def _get_cordex_wget(
                 writer.write(line)
 
     script_path.chmod(0o750)
-    subprocess.check_output(["/bin/bash", script_path.name], cwd=tmp_dir)
+    subprocess.run(
+        [
+            "/bin/bash",
+            script_path.name,
+            "-o https://esg-dn1.nsc.liu.se/esgf-idp/openid/thomasarsouze",
+        ],
+        cwd=tmp_dir,
+        check=True,
+    )
 
 
 @lru_cache
 def _get_cordex_domains(
-    url: str = "https://raw.githubusercontent.com/WCRP-CORDEX/domain-tables/main/CORDEX-CMIP5_rotated_grids.csv",
+    url: str = "https://raw.githubusercontent.com/WCRP-CORDEX/domain-tables/26696d7a0c559b32791ea3940ea3b0c5e79901e7/CORDEX-CMIP5_rotated_grids.csv",
 ) -> pd.DataFrame:
     """Get the CORDEX domains boundaries.
 
     Args:
         url (_type_, optional): URL to the CORDEX domains boundaries.
-            Defaults to "https://raw.githubusercontent.com/WCRP-CORDEX/domain-tables/main/CORDEX-CMIP5_rotated_grids.csv".
+            Defaults to "https://raw.githubusercontent.com/WCRP-CORDEX/domain-tables/26696d7a0c559b32791ea3940ea3b0c5e79901e7/CORDEX-CMIP5_rotated_grids.csv".
+            Note that grid definition has evolved in 2026-06, that why the file refers to the last commit before change.
 
     Returns:
         pd.DataFrame: DataFrame containing the boundaries of the CORDEX domains.
@@ -502,15 +512,14 @@ def _get_filename_from_cordex_context(
     ensemble: str,
     rcm_version: str,
     aggregation: Aggregation,
-    tmin: int,
-    tmax: int,
+    tmin: str,
+    tmax: str,
 ) -> str:
     """Internal function. Get the name of the output file for the simulation given a Cordex context."""
-    return f"{output_dir}/{aoi_n}_{data_product.product_name}_{domain}_{driving_model}_{rcm_name}_{ensemble}_\
-                    {rcm_version}_{aggregation.value}_{tmin}-{tmax}.nc"
+    return f"{output_dir}/{aoi_n}_{data_product.product_name}_{domain}_{driving_model}_{rcm_name}_{ensemble}_{rcm_version}_{aggregation.value}_{tmin}_{tmax}.nc"
 
 
-def get_cordex_context_from_filename(filename: str) -> dict[str, str]:
+def get_cordex_context_from_filename(filename: str) -> Simulation:
     """Get CORDEX context from a filename.
 
     Parameters
@@ -520,39 +529,10 @@ def get_cordex_context_from_filename(filename: str) -> dict[str, str]:
 
     Returns
     -------
-    dict[str, str]
-        List of main CORDEX context information, including:
-            - output_dir
-            - aoi_n
-            - data_product
-            - domain
-            - driving_model
-            - rcm_name
-            - ensemble
-            - rcm_version
-            - aggregation
-            - tmin
-            - tmax
-
+    Simulation
+        Main CORDEX context information of the simulation.
     """
-    context_items = [
-        "output_dir",
-        "aoi_n",
-        "data_product",
-        "domain",
-        "driving_model",
-        "rcm_name",
-        "ensemble",
-        "rcm_version",
-        "aggregation",
-        "tmin",
-        "tmax",
-    ]
-    context_elements = [
-        str(Path(filename).parent),
-        *Path(filename).name.split(".nc")[0].split("_"),
-    ]
-    return dict(zip(context_items, context_elements, strict=False))
+    return Simulation.from_filename(filename)
 
 
 def get_cordex(
@@ -728,6 +708,23 @@ def get_cordex(
                     aggregation,
                     tmin,
                     tmax,
+                )
+                simulation = Simulation(
+                    product=data_product,
+                    aoi_n=aoi_n,
+                    domain=domain,
+                    driving_model=driving_model,
+                    rcm_name=rcm_name,
+                    ensemble=ensemble,
+                    rcm_version=rcm_version,
+                    aggregation=aggregation,
+                )
+                ds_clim.attrs.update(
+                    SimulationFile(
+                        simulation=simulation,
+                        period=(int(tmin[:4]), int(tmax[:4])),
+                        path=Path(output_file),
+                    ).to_attrs()
                 )
                 ds_clim.to_netcdf(output_file)
 

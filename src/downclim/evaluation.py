@@ -7,8 +7,7 @@ import pandas as pd
 import xarray as xr
 import xesmf as xe
 
-from .dataset.cmip6 import get_cmip6_context_from_filename
-from .dataset.cordex import get_cordex_context_from_filename
+from .dataset.simulations import SimulationFile
 from .dataset.utils import (
     Aggregation,
     DataProduct,
@@ -19,6 +18,18 @@ from .dataset.utils import (
 from .logging_config import get_logger
 
 logger = get_logger(__name__)
+
+
+def _get_simulation_product(path: str) -> str:
+    """Get the data product name of a (downscaled) simulation file.
+
+    Uses the downclim netCDF global attributes when present, otherwise falls
+    back to the data product token in the filename.
+    """
+    try:
+        return SimulationFile.from_file(path).simulation.product.product_name
+    except ValueError:
+        return Path(path).name.split("_")[1]
 
 
 def _check_populate_simulations(
@@ -322,12 +333,10 @@ def run_evaluation(
                 )
 
             cmip6_aoi_evaluation = {
-                file: get_cmip6_context_from_filename(file)
-                for file in cmip6_simulations
+                file: _get_simulation_product(file) for file in cmip6_simulations
             }
             cordex_aoi_evaluation = {
-                file: get_cordex_context_from_filename(file)
-                for file in cordex_simulations
+                file: _get_simulation_product(file) for file in cordex_simulations
             }
 
             for k, v in {**cmip6_aoi_evaluation, **cordex_aoi_evaluation}.items():
@@ -347,9 +356,7 @@ def run_evaluation(
                 )
                 ds_evaluation = compute_evaluation(ds_product_reggrided, ds_evaluated)
                 # Save the evaluation metrics
-                eval_file = (
-                    f"{output_dir}/{v['data_product']}/{Path(k).stem}_evaluation.nc"
-                )
+                eval_file = f"{output_dir}/{v}/{Path(k).stem}_evaluation.nc"
                 ds_evaluation.to_netcdf(eval_file)
 
     return xr.Dataset()

@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field, field_validator
 from ..aoi import extend_bounds, get_aoi_informations
 from ..logging_config import get_logger
 from .connectors import connect_to_gcfs
+from .simulations import Simulation, SimulationFile
 from .utils import (
     TIME_CODER,
     Aggregation,
@@ -288,7 +289,7 @@ def _get_filename_from_cmip6_context(
     return f"{output_dir}/{aoi_n}_{data_product.product_name}_{institute}_{source}_{experiment}_{ensemble}_{aggregation.value}_{tmin}_{tmax}.nc"
 
 
-def get_cmip6_context_from_filename(filename: str) -> dict[str, str]:
+def get_cmip6_context_from_filename(filename: str) -> Simulation:
     """Get CMIP6 context given a simulation filename.
 
     Parameters
@@ -298,37 +299,10 @@ def get_cmip6_context_from_filename(filename: str) -> dict[str, str]:
 
     Returns
     -------
-    dict[str, str]
-        List of main CMIP6 context information, including:
-            - output_dir
-            - aoi_n
-            - data_product name
-            - institute
-            - source
-            - experiment
-            - ensemble
-            - aggregation
-            - tmin
-            - tmax
-
+    Simulation
+        Main CMIP6 context information of the simulation.
     """
-    context_items = [
-        "output_dir",
-        "aoi_n",
-        "data_product",
-        "institute",
-        "source",
-        "experiment",
-        "ensemble",
-        "aggregation",
-        "tmin",
-        "tmax",
-    ]
-    context_elements = [
-        str(Path(filename).parent),
-        *Path(filename).name.split(".nc")[0].split("_"),
-    ]
-    return dict(zip(context_items, context_elements, strict=False))
+    return Simulation.from_filename(filename)
 
 
 def get_cmip6(
@@ -455,4 +429,20 @@ def get_cmip6(
                     msg = "Currently only monthly-means aggregation available!"
                     raise ValueError(msg)
                 ds_clim = get_monthly_climatology(ds_aoi)
+                simulation = Simulation(
+                    product=data_product,
+                    aoi_n=aoi_n,
+                    institute=institute,
+                    source=source,
+                    ensemble=ensemble,
+                    experiment=experiment,
+                    aggregation=aggregation,
+                )
+                ds_clim.attrs.update(
+                    SimulationFile(
+                        simulation=simulation,
+                        period=(int(tmin[:4]), int(tmax[:4])),
+                        path=Path(output_file),
+                    ).to_attrs()
+                )
                 ds_clim.to_netcdf(output_file)

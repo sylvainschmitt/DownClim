@@ -133,8 +133,8 @@ class DataProduct(DataProductProperties, Enum):
             "surface_pressure": 0,
             "mean_sea_level_pressure": 0,
         },
-        (LonLatNames("lon", "lat")),
-        (LonLatNames("lon", "lat")),
+        (LonLatNames("lon", "lat"),),
+        (LonLatNames("lon", "lat"),),
         "ECMWF/ERA5/MONTHLY",
     )
     # cmi: Climate moisture index (kg.m-2.month-1)
@@ -168,9 +168,10 @@ class DataProduct(DataProductProperties, Enum):
             "tasmax": -273.15,
             "vpd": 0,
         },
-        (LonLatNames("lon", "lat")),
-        (LonLatNames("x", "y")),
-        "https://os.zhdk.cloud.switch.ch/chelsav2/GLOBAL",
+        (LonLatNames("lon", "lat"),),
+        (LonLatNames("x", "y"),),
+        # "https://os.zhdk.cloud.switch.ch/chelsav2/GLOBAL", deprecated
+        "https://os.unil.cloud.switch.ch/chelsa02/chelsa/global",
     )
     CMIP6 = (
         "cmip6",
@@ -178,8 +179,8 @@ class DataProduct(DataProductProperties, Enum):
         {},
         {"pr": 60.0 * 60.0 * 24.0, "tas": 1.0, "tasmin": 1.0, "tasmax": 1.0},
         {"pr": 0, "tas": -273.15, "tasmin": -273.15, "tasmax": -273.15},
-        (LonLatNames("lon", "lat")),
-        (LonLatNames("lon", "lat")),
+        (LonLatNames("lon", "lat"),),
+        (LonLatNames("lon", "lat"),),
         "https://storage.googleapis.com/cmip6/cmip6-zarr-consolidated-stores.csv",
     )
     CORDEX = (
@@ -189,7 +190,7 @@ class DataProduct(DataProductProperties, Enum):
         {"pr": 60.0 * 60.0 * 24.0, "tas": 1.0, "tasmin": 1.0, "tasmax": 1.0},
         {"pr": 0.0, "tas": -273.15, "tasmin": -273.15, "tasmax": -273.15},
         (LonLatNames("lon", "lat"), LonLatNames("rlon", "rlat")),
-        (LonLatNames("lon", "lat")),
+        (LonLatNames("lon", "lat"),),
         "https://esgf-node.ipsl.upmc.fr/esg-search",  # https://esg-dn1.nsc.liu.se/esg-search
     )
     GSHTD = (
@@ -198,8 +199,8 @@ class DataProduct(DataProductProperties, Enum):
         {"tas": "tas", "tasmin": "tasmin", "tasmax": "tasmax"},
         {"tas": 0.02, "tasmin": 0.02, "tasmax": 0.02},
         {"tas": -273.15, "tasmin": -273.15, "tasmax": -273.15},
-        (LonLatNames("lon", "lat")),
-        (LonLatNames("lon", "lat")),
+        (LonLatNames("lon", "lat"),),
+        (LonLatNames("lon", "lat"),),
         "projects/sat-io/open-datasets/GSHTD/",
     )
     CHIRPS = (
@@ -208,8 +209,8 @@ class DataProduct(DataProductProperties, Enum):
         {"precipitation": "pr"},
         {"pr": 1.0},
         {"pr": 0.0},
-        (LonLatNames("lon", "lat")),
-        (LonLatNames("lon", "lat")),
+        (LonLatNames("lon", "lat"),),
+        (LonLatNames("lon", "lat"),),
         "UCSB-CHG/CHIRPS/DAILY",
     )
 
@@ -361,7 +362,7 @@ def prep_dataset(ds: xr.Dataset, data_product: DataProduct) -> xr.Dataset:
                     + data_product.add_offset[key]
                 )
                 # Check if there is a mapping for variable names
-                if data_product.variables_names:
+                if key in data_product.variables_names:
                     ds[key].attrs = asdict(
                         VariableAttributes[data_product.variables_names[key]]
                     )
