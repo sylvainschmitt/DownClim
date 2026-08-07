@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import fnmatch
 from pathlib import Path
 
 import geopandas as gpd
@@ -46,7 +47,7 @@ def _check_populate_simulations(
         simulations (list[str] | None): List of simulations to evaluate.
         aoi_n (str): AOI name.
         input_dir (str): Input directory where the simulation files are located.
-        dataproduct (DataProduct): Data product.
+        dataproduct (DataProduct): Data product of the simulations.
         period (tuple[int, int]): Period to consider for the simulations.
         evaluation_grid (str): Evaluation grid name.
 
@@ -74,7 +75,7 @@ def _check_populate_simulations(
             and p.startswith(
                 f"{input_dir}/{dataproduct.product_name}/{aoi_n}_{dataproduct.product_name}"
             )
-            and p.endswith(f"{period[0]}*{period[1]}*{evaluation_grid}.nc")
+            and fnmatch.fnmatch(p, f"*{period[0]}*{period[1]}*{evaluation_grid}.nc")
         ]
     if simulations_ok == []:
         logger.warning(
@@ -85,6 +86,34 @@ def _check_populate_simulations(
             f"{input_dir}/{dataproduct.product_name}/{aoi_n}_{dataproduct.product_name}*{period[0]}*{period[1]}*{evaluation_grid}.nc",
         )
     return simulations_ok
+
+
+def _get_evaluation_grid_file(
+    evaluation_grid: DataProduct | list[str] | None,
+    product: DataProduct,
+    aoi_n: str,
+    input_dir: str,
+    i_aoi: int,
+) -> str:
+    """Resolve the evaluation grid file path for one AOI.
+
+    Args:
+        evaluation_grid (DataProduct | list[str] | None): Evaluation grid, either
+            a DataProduct (its grid file is used for every AOI), a list of grid
+            file paths (one per AOI), or None (grid of the evaluation product).
+        product (DataProduct): Evaluation product.
+        aoi_n (str): AOI name.
+        input_dir (str): Input directory where the simulation files are located.
+        i_aoi (int): Index of the AOI in the `aoi` argument.
+
+    Returns:
+        str: Path to the evaluation grid file for the AOI.
+    """
+    if evaluation_grid is None:
+        return f"{input_dir}/../{product.product_name}/{product.product_name}_{aoi_n}_grid.nc"
+    if isinstance(evaluation_grid, DataProduct):
+        return f"{input_dir}/../{evaluation_grid.product_name}/{evaluation_grid.product_name}_{aoi_n}_grid.nc"
+    return evaluation_grid[i_aoi]
 
 
 def compute_evaluation(
@@ -188,7 +217,7 @@ def run_evaluation(
     evaluation_product: list[DataProduct],
     cmip6_simulations_to_evaluate: list[str] | None = None,
     cordex_simulations_to_evaluate: list[str] | None = None,
-    evaluation_grid_file: list[str] | None = None,
+    evaluation_grid: DataProduct | list[str] | None = None,
     aggregation: Aggregation = Aggregation.MONTHLY_MEAN,  # type: ignore[assignment]
     input_dir: str | None = None,
     output_dir: str | None = None,
@@ -211,9 +240,15 @@ def run_evaluation(
         List of CORDEX simulations to evaluate.
         If None, all available simulations located in `<input_dir>/cordex` will be used.
         Default is None.
-    evaluation_grid_file: list[str] | None
-        List of evaluation grid files to use. Has to be the same length as `evaluation_product`.
-        If None, grid from the evaluation product will be used.
+    evaluation_grid: DataProduct | list[str] | None
+        Evaluation grid. One grid is resolved per AOI.
+        If a DataProduct is provided, the grid file
+        "{input_dir}/../{evaluation_grid.product_name}/{evaluation_grid.product_name}_{aoi_n}_grid.nc"
+        is used for each AOI.
+        If a list of grid file paths is provided, one path per AOI is used, in the
+        same order as the `aoi` argument. It must therefore have the same length
+        as `aoi`.
+        If None, the grid of the evaluation product is used for each AOI.
         Default is None.
     aggregation: Aggregation
         Aggregation method to use. Default is Aggregation.MONTHLY_MEAN.
@@ -237,41 +272,32 @@ def run_evaluation(
         output_dir, "./results/evaluation", ["cmip6", "cordex"]
     )
 
-    # Check evaluation grids
-    if (evaluation_grid_file) and (
-        len(evaluation_grid_file) != len(evaluation_product)
-    ):
-        msg = f"Number of evaluation grid files provided ({len(evaluation_grid_file)}) do not match the number of evaluation products ({len(evaluation_product)})."
+    if isinstance(evaluation_grid, list) and len(evaluation_grid) != len(aoi):
+        msg = f"Number of evaluation grid files provided ({len(evaluation_grid)}) does not match the number of AOIs ({len(aoi)})."
         logger.error(msg)
         raise ValueError(msg)
 
-    for aoi_i in aoi:
+    for i_aoi, aoi_i in enumerate(aoi):
         # Check and populate simulations to evaluate if needed
         aoi_n = aoi_i.NAME_0[0]
         aoi_g = aoi_i.geometry
         logger.info("   Start evaluation for AOI: %s", aoi_n)
 
-        for i, product in enumerate(evaluation_product):
+        for product in evaluation_product:
             logger.info(
                 "   Evaluating simulations over product: %s", product.product_name
             )
 
             # Get the evaluation grid
-            if evaluation_grid_file is None:
-                grid_file = f"{input_dir}/../{product.product_name}/{product.product_name}_{aoi_n}_grid.nc"
-                logger.warning(
-                    "    Evaluation grid file not provided. Using default grid file %s which is extracted from %s.",
-                    grid_file,
-                    product.product_name,
-                )
-            else:
-                grid_file = evaluation_grid_file[i]
+            grid_file = _get_evaluation_grid_file(
+                evaluation_grid, product, aoi_n, input_dir, i_aoi
+            )
+            logger.info("    Opening evaluation grid file: %s", grid_file)
             if not Path(grid_file).is_file():
                 msg = f"Evaluation grid file {grid_file} not found. Please provide a valid evaluation grid file."
                 logger.error(msg)
                 raise FileNotFoundError(msg)
-            logger.info("    Opening evaluation grid file: %s", grid_file)
-            evaluation_grid = xr.open_dataset(grid_file)
+            ds_evaluation_grid = xr.open_dataset(grid_file)
 
             logger.info("    Opening evaluation product %s...", product.product_name)
             product_file = climatology_filename(
@@ -296,7 +322,7 @@ def run_evaluation(
             # Check if evaluation product needs to be regridded onto evaluation grid
             product_grid_file = f"{input_dir}/../{product.product_name}/{product.product_name}_{aoi_n}_grid.nc"
             product_grid = xr.open_dataset(product_grid_file)
-            if product_grid.equals(evaluation_grid):
+            if product_grid.equals(ds_evaluation_grid):
                 logger.info(
                     "       Evaluation grid and %s grid are the same. No need to regrid.",
                     product.product_name,
@@ -308,7 +334,7 @@ def run_evaluation(
                 logger.info(
                     "       Regridding evaluation data onto the evaluation grid."
                 )
-                regridder = xe.Regridder(ds_product, evaluation_grid, "bilinear")
+                regridder = xe.Regridder(ds_product, ds_evaluation_grid, "bilinear")
                 ds_product_reggrided = regridder(ds_product, keep_attrs=True)
                 ds_product_reggrided = ds_product_reggrided.rio.clip(aoi_g)
 

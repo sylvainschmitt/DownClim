@@ -644,8 +644,17 @@ class DownClimContext(BaseModel):
             input_dir=self.output_dir,
         )
 
-    def run_evaluation(self, evaluation_grid_file: list[str] | None = None) -> None:
+    def run_evaluation(
+        self, evaluation_grid: DataProduct | list[str] | None = None
+    ) -> None:
         """Runs the evaluation process with the current context.
+
+        Args:
+            evaluation_grid (DataProduct | list[str] | None): Evaluation grid.
+                A DataProduct uses its grid file for every AOI, a list provides
+                one grid file per AOI (same length and order as the context AOIs),
+                and None uses the grid of each evaluation product.
+                Default is None.
 
         Returns
         -------
@@ -656,7 +665,7 @@ class DownClimContext(BaseModel):
             aoi=self.aoi,
             evaluation_period=self.evaluation_period,
             evaluation_product=self.evaluation_product,
-            evaluation_grid_file=evaluation_grid_file,
+            evaluation_grid=evaluation_grid,
         )
 
 
