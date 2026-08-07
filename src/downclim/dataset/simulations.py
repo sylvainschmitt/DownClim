@@ -161,7 +161,7 @@ class Simulation(BaseModel):
     def matching_key(self) -> tuple[str | None, ...]:
         """Fields identifying a simulation run regardless of experiment / period."""
         identity_fields = (
-            ("institute", "source", "ensemble")
+            ("source", "ensemble")
             if self.product is DataProduct.CMIP6
             else ("domain", "driving_model", "rcm_name", "ensemble", "rcm_version")
         )

@@ -491,7 +491,14 @@ def run_downscaling(
         )
 
         for simulation in catalog.simulations():
-            for historical_file in catalog.historical_files(simulation):
+            historical_files = catalog.historical_files(simulation)
+            if not historical_files:
+                logger.warning(
+                    "       No historical files found for %s. Skipping.",
+                    simulation.brief(),
+                )
+                continue
+            for historical_file in historical_files:
                 ds_historical = xr.open_dataset(historical_file.path)
                 regridder = get_regridder(
                     ds_historical,
@@ -512,9 +519,18 @@ def run_downscaling(
 
                 for period in periods_to_downscale:
                     # Check existing files matching the context to downscale
-                    files_to_downscale = catalog.matching_files(
-                        simulation, PeriodKind(period)
-                    )
+                    try:
+                        files_to_downscale = catalog.matching_files(
+                            simulation, PeriodKind(period)
+                        )
+                    except FileNotFoundError as exc:
+                        logger.warning(
+                            "       Skipping %s for %s period: %s",
+                            simulation.brief(),
+                            period,
+                            exc,
+                        )
+                        continue
                     _downscale_period(
                         period,
                         simulation.product,

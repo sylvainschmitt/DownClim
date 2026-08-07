@@ -199,6 +199,54 @@ class TestCatalog:
         with pytest.raises(FileNotFoundError):
             catalog.matching_files(catalog.simulations()[0], PeriodKind.PROJECTION)
 
+    def test_matching_across_institutes(self, tmp_path):
+        """Files of the same source/ensemble published under different institutes
+        (e.g. MPI-ESM1-2-HR tagged MPI-M for historical and DKRZ for ssp on the
+        CMIP6 zarr store) must be treated as one simulation."""
+        historical = Simulation(
+            product=DataProduct.CMIP6,
+            aoi_n="Vanuatu",
+            institute="MPI-M",
+            source="MPI-ESM1-2-HR",
+            ensemble="r1i1p1f1",
+            experiment="historical",
+        )
+        projection = Simulation(
+            product=DataProduct.CMIP6,
+            aoi_n="Vanuatu",
+            institute="DKRZ",
+            source="MPI-ESM1-2-HR",
+            ensemble="r1i1p1f1",
+            experiment="ssp585",
+        )
+        historical_file = _write_file(
+            tmp_path,
+            "Vanuatu_cmip6_MPI-M_MPI-ESM1-2-HR_historical_r1i1p1f1_"
+            "monthly-mean_1980-01-01_2005-12-31.nc",
+            historical,
+            (1980, 2005),
+        )
+        projection_file = _write_file(
+            tmp_path,
+            "Vanuatu_cmip6_DKRZ_MPI-ESM1-2-HR_ssp585_r1i1p1f1_"
+            "monthly-mean_2071-01-01_2100-12-31.nc",
+            projection,
+            (2071, 2100),
+        )
+        catalog = SimulationCatalog.from_files(
+            [historical_file, projection_file], self.PERIODS
+        )
+
+        simulations = catalog.simulations()
+        assert len(simulations) == 1
+        simulation = simulations[0]
+        assert [f.path for f in catalog.historical_files(simulation)] == [
+            historical_file
+        ]
+        assert [
+            f.path for f in catalog.matching_files(simulation, PeriodKind.PROJECTION)
+        ] == [projection_file]
+
     def test_distinct_simulations(self, tmp_path):
         first = _write_file(
             tmp_path,
