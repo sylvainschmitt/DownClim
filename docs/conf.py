@@ -93,13 +93,14 @@ suppress_warnings = [
 
 always_document_param_types = True
 
-# Notebook execution — uncomment when notebooks can run without failures
-# nb_execution_mode = "auto"
-# nb_execution_timeout = 600
-# nb_execution_allow_errors = True
-# nb_execution_excludepatterns = [
-#     "examples/get_available_simulation.ipynb",
-# ]
+# Notebook execution
+nb_execution_mode = "cache"
+nb_execution_timeout = 600
+nb_execution_allow_errors = True
+nb_execution_excludepatterns = [
+    "examples/get_available_simulation.ipynb",
+    "examples/Downclim-reproduce-manuscript.ipynb",
+]
 
 
 nbsphinx_prolog = r"""
