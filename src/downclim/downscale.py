@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Hashable, Iterable
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -233,6 +233,16 @@ def _regrid_baseline_data(
     return regridder(ds_baseline, keep_attrs=True)  # type: ignore[no-any-return]
 
 
+def _netcdf_encoding(ds: xr.Dataset) -> dict[Hashable, dict[str, Any]]:
+    """Compressed float32 encoding for all the data variables of a dataset.
+
+    zlib is lossless; float32 is the standard precision for stored climate data.
+    """
+    return {
+        var: {"zlib": True, "complevel": 5, "dtype": "float32"} for var in ds.data_vars
+    }
+
+
 def _regrid_historical_data(
     historical_file: str | Path,
     historical_period: tuple[int, int],
@@ -281,7 +291,10 @@ def _regrid_historical_data(
         ds_historical = xr.open_dataset(historical_file)
         regridder = xe.Regridder(ds_historical, downscaling_grid, "bilinear")
         ds_historical_regridded = regridder(ds_historical, keep_attrs=True)
-        ds_historical_regridded.to_netcdf(historical_regridded_file)
+        ds_historical_regridded.to_netcdf(
+            historical_regridded_file,
+            encoding=_netcdf_encoding(ds_historical_regridded),
+        )
     return ds_historical_regridded
 
 
@@ -330,7 +343,7 @@ def _downscale_period(
                 simulation_file.path,
                 downscaled_file,
             )
-            return
+            continue
         ds_to_downscale = xr.open_dataset(simulation_file.path)
         ds_to_downscale_regridded = regridder(ds_to_downscale, keep_attrs=True)
 
@@ -352,7 +365,9 @@ def _downscale_period(
         # Save downscaled dataset
         logger.info("       Saving downscaled dataset into: %s", downscaled_file)
         ds_downscaled.attrs.update(simulation_file.to_attrs())
-        ds_downscaled.to_netcdf(downscaled_file)
+        ds_downscaled.to_netcdf(
+            downscaled_file, encoding=_netcdf_encoding(ds_downscaled)
+        )
 
 
 def run_downscaling(
